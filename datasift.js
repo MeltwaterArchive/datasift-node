@@ -1,0 +1,105 @@
+/**
+ * Created by: spurcell
+ * 5/9/12
+ */
+
+"use strict";
+
+var https = require('https');
+var qs = require('querystring');
+var Q = require('q');
+
+////////////////////////////////////////////////////////////////////////////
+/**
+ *
+ * @constructor
+ */
+var __ = function (username, apiKey) {
+
+    if (username == null) {
+        throw new Error("DataSift client requires username");
+    }
+
+    if (apiKey == null) {
+        throw new Error("DataSift client requires API key");
+    }
+
+    this.headers = {
+        'User-Agent'        : 'DataSiftNodeSDK/0.3.0',
+        'Connection'        : 'Keep-Alive',
+        'Content-Type'      : 'application/x-www-form-urlencoded; charset=UTF-8',
+        'Auth'              : username + ':' + apiKey
+    };
+};
+
+////////////////////////////////////////////////////////////////////////////
+/**
+ * Calls the specified API endpoint.
+ *
+ * @return {promise}    promise resolved to post result
+ */
+__.prototype.doApiPost = function(endpoint, params) {
+
+    var d = Q.defer();
+    var postBody = qs.stringify(params);
+
+    var options = {
+        host: 'api.datasift.com',
+        path: '/' + endpoint,
+        method: 'POST',
+        headers: this.headers
+    };
+
+    options.headers["Content-Length"] = postBody.length;
+
+    var req = https.request(options, function(res) {
+
+        var body = "";
+
+        res.on('data', function(chunk) {
+            if (chunk) {
+                body += chunk.toString();
+            }
+        });
+
+        res.on('end', function() {
+
+            if (res.statusCode == 200) {
+
+                try {
+                    d.resolve(JSON.parse(body));
+                }
+                catch(err) {
+                    d.reject(new Error('API request returned non-JSON response: ' + body));
+                }
+            }
+            else {
+                d.reject(new Error('API request returned ' + res.statusCode));
+            }
+        });
+    });
+
+    req.on('error', function(e) {
+        d.reject(new Error('API request error: ' + e.message));
+    });
+
+    // write the request body
+    req.write(postBody);
+    req.end();
+
+    return d.promise;
+
+    // todo
+    //Add a connection timeout
+//            this.connectTimeout = setTimeout(function() {
+//                if (self.request != null) {
+//                    self.request.abort();
+//                    self.errorCallback(new Error('Error connecting to DataSift: Timed out waiting for a response'));
+//                    self.disconnect(true);
+//                }
+//                clearTimeout(self.connectTimeout);
+//                self.connectTimeout = null;
+//            }, 5000);
+}
+
+module.exports = __;
