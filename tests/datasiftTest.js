@@ -182,3 +182,13 @@ exports["api post"] = {
         );
     }
 };
+
+exports['createStream'] = {
+    'success' : function(test) {
+        var dsc = new DataSiftClient('ds-username', 'ds-api-key');
+        var dsStream = dsc.createStream();
+        test.equal(dsStream.login, 'ds-username');
+        test.equal(dsStream.apiKey, 'ds-api-key');
+        test.done();
+    }
+}

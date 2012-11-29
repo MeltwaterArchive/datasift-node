@@ -28,6 +28,7 @@
 
 var https = require('https');
 var qs = require('querystring');
+var DataSift = require('./DatasiftStream');
 var Q = require('q');
 
 ////////////////////////////////////////////////////////////////////////////
@@ -44,7 +45,8 @@ var __ = function (username, apiKey) {
     if (apiKey == null) {
         throw new Error("DataSift client requires API key");
     }
-
+    this.username = username;
+    this.apiKey = apiKey;
     this.headers = {
         'User-Agent'        : 'DataSiftNodeSDK/0.3.0',
         'Connection'        : 'Keep-Alive',
@@ -123,4 +125,7 @@ __.prototype.doApiPost = function(endpoint, params) {
 //            }, 5000);
 }
 
+__.prototype.createStream = function() {
+    return DataSift.create(this.username, this.apiKey);
+};
 module.exports = __;
