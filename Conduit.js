@@ -28,7 +28,6 @@
 
 "use strict"
 
-var Persistent = require('tenacious-http');
 var EventEmitter = require('events').EventEmitter;
 var Q = require('q');
 
@@ -40,101 +39,66 @@ __.SUBSCRIBE_WAIT = 750;
 __.INTERACTION_TIMEOUT = 300000;
 
 /**
- * creates an instance of the datasift driver
- * @param login
- * @param apiKey
- * @return {Object datasiftdriver}
+ * creates an instance
+ * @param client - tenacious-http client
+ * @return {Object}
  */
-__.create = function(login, apiKey){
+__.create = function(client) {
+
     var instance = new __();
-    if(login) {
-        instance.login = login;
-    } else {
-        throw new Error('login is a required param');
-    }
 
-    if(apiKey) {
-        instance.apiKey = apiKey;
-    } else {
-        throw new Error('apiKey is a required param');
-    }
-
-    var header = {
-        'User-Agent'        : 'DataSiftNodeConsumer/0.2.1',
-        'Host'              : 'http://stream.datasift.com/',
-        'Connection'        : 'Keep-Alive',
-        'Transfer-Encoding' : 'chunked',
-        'Authorization'     : login + ':' + apiKey
-    };
-    var init = function() {
-        this.client.write('\n');
-    };
     instance.subscribeListener = false;
     instance.attachedSubscribeWarningListener = false;
-    instance.client = Persistent.create('http://stream.datasift.com/', 80, header,init.bind(instance));
+    instance.client = client;
     instance.responseData = '';
     instance.attachedListeners = false;
     instance.streams = {};
+
     return instance;
 };
 
 __.prototype = Object.create(EventEmitter.prototype);
 
-__.prototype.connect = function() {
-    return this._start();
-};
 /**
- * subscribes to multiple streams.
- * @param hashes - stream hashes provided by datasift.  either a string of single hash or an object keyed on the datasift hash
- * @return {array of promises}
+ * subscribes to a single streams.
+ * @param streamHash - stream hash provided by datasift.
+ * @return {promise}
  */
-__.prototype.subscribe = function(hashes) {
+__.prototype.subscribe = function(streamHash) {
     var self = this;
 
-    if(!hashes){
-        return Q.reject('hashes is a required paramater');
-    }
-
-    if(typeof hashes === 'string') {
-        var h = hashes;
-        hashes = {};
-        hashes[h] = {};
-    }
-
-    var streamsToSubscribe = this._hashDifference(hashes, this.streams);
-    var streamsToUnsubscribe = this._hashDifference(this.streams, hashes);
-    var promises = [];
-
-    Object.keys(streamsToUnsubscribe).forEach(
-        function(hash){
-            self.unsubscribe(hash);
-        }
-    );
-
-    Object.keys(streamsToSubscribe).forEach(
-        function(hash) {
-            if(!self._validateHash(hash)) {
-                promises.push(Q.reject('invalid hash'));
-                return;
+    return this._start().then(
+        function() {
+            if(!self._validateHash(streamHash)) {
+                return Q.reject('invalid hash');
             }
+            return self._subscribeToStream(streamHash);
+        }
+    );
+};
 
-            promises.push(self._start().then(
-                function() {
-                    return self._subscribeToStream(hash, streamsToSubscribe[hash]);
-                }
-            ).fail(
-                function(err){
-                    //only shutdown if there are no pending subscribes AND there are no active streams
-                    if(Object.keys(self.streams).length === 0) {
-                        self.shutdown();
-                    }
-                    return Q.reject(err);
-                }
-            ));
+/**
+ * sets the streams subscribed by means of unsubscribing and subscribing to streams to reflect the state of streamHashes
+ * @param streamHashes - array of stream hashes
+ * @return {Array of promises}
+ */
+__.prototype.setSubscriptions = function(streamHashes) {
+    var self = this;
+    streamHashes = streamHashes || [];
+
+    var streamsToSubscribe = this._arrayDifference(streamHashes, Object.keys(this.streams));
+    var streamsToUnsubscribe = this._arrayDifference(Object.keys(this.streams), streamHashes);
+
+    streamsToUnsubscribe.forEach(
+        function(streamHash) {
+            self.unsubscribe(streamHash);
         }
     );
 
-    return Q.allResolved(promises);
+    return streamsToSubscribe.map(
+        function(streamHash) {
+            return self.subscribe(streamHash);
+        });
 };
 
 /**
@@ -150,12 +114,12 @@ __.prototype.unsubscribe = function(hash) {
 };
 
 /**
- * attempts to subscribe to a specific stream hash
+ * subscribe to a specific stream hash
  * @param hash
  * @return {promise} - return a stream state object
  * @private
  */
-__.prototype._subscribeToStream = function(hash, value) {
+__.prototype._subscribeToStream = function(hash) {
     var d = Q.defer();
     var subscribeMessage = JSON.stringify({'action' : 'subscribe', 'hash' : hash});
     var self = this;
@@ -178,10 +142,7 @@ __.prototype._subscribeToStream = function(hash, value) {
         return this.streams[hash].deferred.promise;
     }
 
-    if(value === undefined) {
-        value = {};
-    }
-    this.streams[hash] = value;
+    this.streams[hash] = {};
     this.streams[hash].deferred = d;
     this.streams[hash].state = 'pending';
     this.streams[hash].hash = hash;
@@ -191,7 +152,6 @@ __.prototype._subscribeToStream = function(hash, value) {
     Q.delay(__.SUBSCRIBE_WAIT).then(
         function() {
             self.streams[hash].state = 'subscribed';
-            //d.resolve(hash);
             d.resolve(self.streams[hash]);
         });
 
@@ -246,7 +206,7 @@ __.prototype._resubscribe = function(){
 };
 
 /**
- * shuts down the existing datasift stream
+ * shuts down the http connection.  if subscribe is called again, then a new underlying http connection will be created.
  * @return {promise}
  */
 __.prototype.shutdown = function () {
@@ -311,8 +271,6 @@ __.prototype._handleEvent = function (eventData) {
                     self._resubscribe();
                 }
             );
-        } else { //means shutdown was called.
-            this.client = undefined;
         }
     } else if (eventData.status === 'success' || eventData.status === 'warning' ) {
         this.emit(eventData.status,eventData.message, eventData);
@@ -321,6 +279,8 @@ __.prototype._handleEvent = function (eventData) {
     } else if (eventData.tick !== undefined) {
         this.emit('tick', eventData);
     } else if (eventData.data !== undefined && eventData.data.interaction !== undefined) {
+        //if there are no interactions emitted for the INTERACTION_TIMEOUT duration,
+        //then the connection is recycled, which means a new underlying http connection will be created.
         clearTimeout(this.interactionTimeout);
         this.interactionTimeout = setTimeout(function(){
             self._recycle();
@@ -356,7 +316,7 @@ __.prototype._recycle = function(){
 };
 
 /**
- * validates the format of the hash
+ * validates the format of a stream hash
  * required to be a 32 character hex string
  * @param hash
  * @return {Boolean}
@@ -367,23 +327,32 @@ __.prototype._validateHash = function (hash) {
 };
 
 /**
- * takes the difference between two hashes {hash1} - {hash2} = {resulting set}
- * @param hash1
- * @param hash2
- * @return {Object}
+ * takes the difference between two arrays [values1] - [values2] = [resulting array of values]
+ * @param array1
+ * @param array2
+ * @return {Array}
  * @private
  */
-__.prototype._hashDifference = function(hash1, hash2) {
-    hash1 = hash1 || {};
-    hash2 = hash2 || {};
+__.prototype._arrayDifference = function(array1, array2) {
+    var remainderSet = {};
+    array1 = array1 || [];
+    array2 = array2 || [];
 
-    var difference = {};
-    Object.keys(hash1).forEach( function(key) {
-        if(!hash2.hasOwnProperty(key)) {
-            difference[key] = hash1[key];
+    array1.forEach(
+        function(hash) {
+            remainderSet[hash] = 0;
         }
-    });
-    return difference;
+    );
+
+    array2.forEach(
+        function(hash) {
+            if(remainderSet.hasOwnProperty(hash)) {
+                delete remainderSet[hash];
+            }
+        }
+    );
+
+    return Object.keys(remainderSet);
 };
 
 module.exports = __;

@@ -61,7 +61,6 @@ exports["constructor"] = {
             'User-Agent'    : 'DataSiftNodeSDK/0.3.0',
             'Connection'    : 'Keep-Alive',
             'Content-Type'  : 'application/x-www-form-urlencoded; charset=UTF-8',
-            'Auth'          : 'ds-username:ds-api-key'
         });
 
         test.done();
@@ -183,12 +182,13 @@ exports["api post"] = {
     }
 };
 
-exports['createStream'] = {
+exports['createConduit'] = {
     'success' : function(test) {
         var dsc = new DataSiftClient('ds-username', 'ds-api-key');
-        var dsStream = dsc.createStream();
-        test.equal(dsStream.login, 'ds-username');
-        test.equal(dsStream.apiKey, 'ds-api-key');
+
+        var dsStream = dsc.createConduit();
+        test.ok(dsStream);
+
         test.done();
     }
 }

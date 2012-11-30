@@ -28,7 +28,8 @@
 
 var https = require('https');
 var qs = require('querystring');
-var DataSift = require('./DatasiftStream');
+var HttpStream = require('tenacious-http');
+var Conduit = require('./Conduit');
 var Q = require('q');
 
 ////////////////////////////////////////////////////////////////////////////
@@ -50,8 +51,7 @@ var __ = function (username, apiKey) {
     this.headers = {
         'User-Agent'        : 'DataSiftNodeSDK/0.3.0',
         'Connection'        : 'Keep-Alive',
-        'Content-Type'      : 'application/x-www-form-urlencoded; charset=UTF-8',
-        'Auth'              : username + ':' + apiKey
+        'Content-Type'      : 'application/x-www-form-urlencoded; charset=UTF-8'
     };
 };
 
@@ -70,7 +70,8 @@ __.prototype.doApiPost = function(endpoint, params) {
         host: 'api.datasift.com',
         path: '/' + endpoint,
         method: 'POST',
-        headers: this.headers
+        headers: this.headers,
+        auth: this.username + ':' + this.apiKey
     };
 
     options.headers["Content-Length"] = postBody.length;
@@ -125,7 +126,19 @@ __.prototype.doApiPost = function(endpoint, params) {
 //            }, 5000);
 }
 
-__.prototype.createStream = function() {
-    return DataSift.create(this.username, this.apiKey);
+__.prototype.createConduit = function() {
+
+    var options = {
+        host: 'stream.datasift.com',
+        headers: this.headers,
+        auth: this.username + ':' + this.apiKey
+    };
+
+    var client = HttpStream.create(options, function (client) {
+        client.write('\n');
+    });
+
+    return Conduit.create(client);
 };
+
 module.exports = __;
