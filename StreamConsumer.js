@@ -89,16 +89,16 @@ __.prototype.setSubscriptions = function(streamHashes) {
     var streamsToSubscribe = this._arrayDifference(streamHashes, Object.keys(this.streams));
     var streamsToUnsubscribe = this._arrayDifference(Object.keys(this.streams), streamHashes);
 
-    streamsToUnsubscribe.forEach(
+    var unsubscribedPromises = streamsToUnsubscribe.map(
         function(streamHash) {
-            self.unsubscribe(streamHash);
+            return self.unsubscribe(streamHash);
         }
     );
 
     return streamsToSubscribe.map(
         function(streamHash) {
             return self.subscribe(streamHash);
-        });
+        }).concat(unsubscribedPromises);
 };
 
 /**
@@ -109,8 +109,10 @@ __.prototype.setSubscriptions = function(streamHashes) {
 __.prototype.unsubscribe = function(hash) {
     var body = JSON.stringify({'action' : 'unsubscribe', 'hash' : hash});
     this.client.write(body, 'utf-8');
+    var unsubscribedState = this.streams[hash];
+    unsubscribedState.state = 'unsubscribed';
     delete this.streams[hash];
-    return Q.resolve();
+    return Q.resolve(unsubscribedState);
 };
 
 /**

@@ -593,10 +593,12 @@ exports['unsubscribe'] = {
 
         var ds = StreamConsumer.create(client);
 
-        ds.streams['abc123'] = 'test123';
+        ds.streams['abc123'] = {hash: 'abc123', state : 'subscribed'};
         ds.unsubscribe('abc123').then(
-            function() {
-                test.equal(Object.keys(ds.streams).length, 0);
+            function(unsub) {
+                test.equal(unsub.hash, 'abc123');
+                test.equal(unsub.state, 'unsubscribed');
+                //test.equal(Object.keys(ds.streams).length, 0);
                 test.done();
             }, function(err) {
                 test.ok(false);
@@ -899,15 +901,19 @@ exports['setSubscriptions'] = {
 
         ds.unsubscribe = function(hash) {
             test.equal(hash, 'abc123');
-            test.done();
-
+            return Q.resolve({state : 'unsubscribed'});
         };
 
-        test.expect(1);
+        test.expect(2);
 
         ds.setSubscriptions([]).forEach(
             function(promise) {
-                test.ok(false);
+                promise.then(
+                    function(state) {
+                        test.equal(state.state, 'unsubscribed');
+                        test.done();
+                    }
+                );
             }
         );
     },
