@@ -186,7 +186,7 @@ exports['createConduit'] = {
     'success' : function(test) {
         var dsc = new DataSiftClient('ds-username', 'ds-api-key');
 
-        var dsStream = dsc.createConduit();
+        var dsStream = dsc.createStreamConsumer();
         test.ok(dsStream);
 
         test.done();

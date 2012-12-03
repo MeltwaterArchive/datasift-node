@@ -29,7 +29,7 @@
 var https = require('https');
 var qs = require('querystring');
 var HttpStream = require('tenacious-http');
-var Conduit = require('./Conduit');
+var StreamConsumer = require('./StreamConsumer');
 var Q = require('q');
 
 ////////////////////////////////////////////////////////////////////////////
@@ -126,7 +126,11 @@ __.prototype.doApiPost = function(endpoint, params) {
 //            }, 5000);
 }
 
-__.prototype.createConduit = function() {
+/**
+ *
+ * @return {*}
+ */
+__.prototype.createStreamConsumer = function() {
 
     var options = {
         host: 'stream.datasift.com',
@@ -138,7 +142,7 @@ __.prototype.createConduit = function() {
         client.write('\n');
     });
 
-    return Conduit.create(client);
+    return StreamConsumer.create(client);
 };
 
 module.exports = __;

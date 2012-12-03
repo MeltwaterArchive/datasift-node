@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2012 LocalResponse Inc.
  *
@@ -29,13 +28,13 @@
 "use strict"
 
 var Q = require ('q');
-var Conduit = require('../Conduit');
+var StreamConsumer = require('../StreamConsumer');
 
 exports['create'] = {
 
     'success' : function(test) {
         var client = {};
-        var ds = Conduit.create(client);
+        var ds = StreamConsumer.create(client);
         test.equal(ds.client, client);
 
         test.done();
@@ -44,7 +43,7 @@ exports['create'] = {
 
 exports['subscribe'] = {
     'success' : function(test) {
-        var ds = Conduit.create();
+        var ds = StreamConsumer.create();
 
         ds._validateHash = function(hash) {
             return true;
@@ -67,7 +66,7 @@ exports['subscribe'] = {
     },
 
     'will handle bad hash format' : function(test) {
-        var ds = Conduit.create();
+        var ds = StreamConsumer.create();
 
         ds._validateHash = function(hash) {
             test.ok(true);
@@ -93,7 +92,7 @@ exports['subscribe'] = {
     },
 
     'will reject on a failure to start a connection' : function(test) {
-        var ds = Conduit.create();
+        var ds = StreamConsumer.create();
 
         ds._start = function() {
             test.ok(true);
@@ -114,7 +113,7 @@ exports['subscribe'] = {
     },
 
     'will reject on a failure to subscribe to a stream' : function(test) {
-        var ds = Conduit.create();
+        var ds = StreamConsumer.create();
 
         ds._validateHash = function(hash) {
             return true;
@@ -142,12 +141,12 @@ exports['subscribe'] = {
 
 exports['subscribeToStream'] = {
     setUp: function (cb) {
-        Conduit.SUBSCRIBE_WAIT = 50;
+        StreamConsumer.SUBSCRIBE_WAIT = 50;
         cb();
     },
 
     tearDown : function (cb) {
-        Conduit.SUBSCRIBE_WAIT = 50;
+        StreamConsumer.SUBSCRIBE_WAIT = 50;
         cb();
     },
 
@@ -158,7 +157,7 @@ exports['subscribeToStream'] = {
             }
         };
 
-        var ds = Conduit.create(client);
+        var ds = StreamConsumer.create(client);
 
         ds._subscribeToStream('abc123').then(
             function(p){
@@ -181,7 +180,7 @@ exports['subscribeToStream'] = {
             }
         };
 
-        var ds = Conduit.create(client);
+        var ds = StreamConsumer.create(client);
 
         ds._subscribeToStream('abc123').then(
             function(){
@@ -197,7 +196,7 @@ exports['subscribeToStream'] = {
     },
 
     'will return existing promise if attempting to subscribe already pending' : function(test) {
-        var ds = Conduit.create();
+        var ds = StreamConsumer.create();
         var mockedPromise = {}
         var mockedDeferred = {promise:mockedPromise};
         ds.streams['abc123'] = {deferred : mockedDeferred, state: 'pending'};
@@ -211,7 +210,7 @@ exports['subscribeToStream'] = {
             }
         };
 
-        var ds = Conduit.create(client);
+        var ds = StreamConsumer.create(client);
         var count = 0
         ds.on('newListener', function(){
             if(count > 0){
@@ -250,7 +249,7 @@ exports['start'] = {
                 return Q.resolve();
             }
         };
-        var ds = Conduit.create(client);
+        var ds = StreamConsumer.create(client);
         test.expect(5);
 
         ds._start().then(
@@ -286,7 +285,7 @@ exports['start'] = {
             }
         };
 
-        var ds = Conduit.create(client);
+        var ds = StreamConsumer.create(client);
 
         ds._onData = function(data, statusCode) {
             test.equal(data, 'my data');
@@ -324,7 +323,7 @@ exports['start'] = {
             }
         };
 
-        var ds = Conduit.create(client);
+        var ds = StreamConsumer.create(client);
 
         ds._onEnd = function( statusCode) {
             test.equal(statusCode, 401);
@@ -360,7 +359,7 @@ exports['start'] = {
             }
         };
 
-        var ds = Conduit.create(client);
+        var ds = StreamConsumer.create(client);
 
         ds._resubscribe = function() {
             test.ok(true);
@@ -378,7 +377,7 @@ exports['start'] = {
 
 exports['resubscribe'] = {
     'success' : function(test) {
-        var ds = Conduit.create();
+        var ds = StreamConsumer.create();
 
         ds.streams['123'] = '123';
         ds.streams['456'] = '456';
@@ -395,7 +394,7 @@ exports['resubscribe'] = {
     },
 
     'will handle subscribe rejects' : function(test) {
-        var ds = Conduit.create();
+        var ds = StreamConsumer.create();
 
         ds.streams['123'] = '123';
         ds.streams['456'] = '456';
@@ -416,13 +415,13 @@ exports['resubscribe'] = {
 exports['handleEvent'] = {
 
     setUp : function(cb){
-        this.ds = Conduit.create();
-        Conduit.INTERACTION_TIMEOUT = 30;
+        this.ds = StreamConsumer.create();
+        StreamConsumer.INTERACTION_TIMEOUT = 30;
         cb();
     },
     tearDown : function(cb){
         clearTimeout(this.ds.interactionTimeout);
-        Conduit.INTERACTION_TIMEOUT = 300000;
+        StreamConsumer.INTERACTION_TIMEOUT = 300000;
         cb();
     },
     'success' : function (test) {
@@ -444,7 +443,7 @@ exports['handleEvent'] = {
                 return Q.resolve();
             }
         }
-        var ds = Conduit.create(client);
+        var ds = StreamConsumer.create(client);
         var eventData = {};
 
         test.expect(3);
@@ -465,7 +464,7 @@ exports['handleEvent'] = {
     },
 
     'will emit warning if data json status is a warning' : function (test) {
-        var ds = Conduit.create();
+        var ds = StreamConsumer.create();
         var eventData = {};
         eventData.status = 'warning';
         test.expect(1);
@@ -478,7 +477,7 @@ exports['handleEvent'] = {
     },
 
     'will emit delete if data is defined but delete flag is set' : function (test) {
-        var ds = Conduit.create();
+        var ds = StreamConsumer.create();
         var eventData = {};
         var data = {};
         data.data = 'data'
@@ -494,7 +493,7 @@ exports['handleEvent'] = {
     },
 
     'will emit tick if json has a tick property' : function (test) {
-        var ds = Conduit.create();
+        var ds = StreamConsumer.create();
         var eventData = {};
         eventData.tick = true;
 
@@ -507,7 +506,7 @@ exports['handleEvent'] = {
     },
 
     'will emit unknownEvent on unrecognized events' : function (test) {
-        var ds = Conduit.create();
+        var ds = StreamConsumer.create();
         var eventData = {unknown : 123};
         test.expect(1);
         ds.on('unknownEvent', function (jsonReceived) {
@@ -520,7 +519,7 @@ exports['handleEvent'] = {
 
 
     'will clean up connection on disconnect from DataSift' : function (test) {
-        var ds = Conduit.create();
+        var ds = StreamConsumer.create();
         var eventData = {};
         ds.request = {};
         test.expect(1);
@@ -565,7 +564,7 @@ exports['shutdown'] = {
             }
         };
 
-        var ds = Conduit.create(client);
+        var ds = StreamConsumer.create(client);
 
         test.expect(3);
         ds.shutdown().then(
@@ -592,7 +591,7 @@ exports['unsubscribe'] = {
             }
         };
 
-        var ds = Conduit.create(client);
+        var ds = StreamConsumer.create(client);
 
         ds.streams['abc123'] = 'test123';
         ds.unsubscribe('abc123').then(
@@ -608,7 +607,7 @@ exports['unsubscribe'] = {
 }
 exports['onData'] = {
     'success' : function (test) {
-        var ds = Conduit.create();
+        var ds = StreamConsumer.create();
         var testData = [];
         ds._handleEvent = function (data) {
             testData.push(data);
@@ -623,7 +622,7 @@ exports['onData'] = {
 
     'will handle incorrectly formatted JSON objects' : function(test) {
 
-        var ds = Conduit.create();
+        var ds = StreamConsumer.create();
         var testData = [];
 
         ds._handleEvent = function (data) {
@@ -640,7 +639,7 @@ exports['onData'] = {
     },
 
     'will put partial data chunks together' : function(test) {
-        var ds = Conduit.create();
+        var ds = StreamConsumer.create();
         var testData = [];
 
         ds._handleEvent = function (data) {
@@ -666,7 +665,7 @@ exports['onData'] = {
 
 exports['onEnd'] = {
     'success' : function(test) {
-        var ds = Conduit.create();
+        var ds = StreamConsumer.create();
         ds.responseData = 'i have stuff';
 
         ds._onEnd();
@@ -689,7 +688,7 @@ exports['recycle'] = {
             }
         }
 
-        var ds = Conduit.create(client);
+        var ds = StreamConsumer.create(client);
 
         ds._resubscribe = function() {
             test.ok(true);
@@ -716,7 +715,7 @@ exports['recycle'] = {
                 return Q.reject();
             }
         }
-        var ds = Conduit.create(client);
+        var ds = StreamConsumer.create(client);
 
         ds.on('error', function(error){
             test.ok(true);
@@ -737,7 +736,7 @@ exports['recycle'] = {
 
 exports['validateHash'] = {
     'success' : function(test) {
-        var ds = Conduit.create();
+        var ds = StreamConsumer.create();
 
         test.ok(ds._validateHash('69ec6f20f05f513e3b144b90fecc2e3f'));
 
@@ -745,7 +744,7 @@ exports['validateHash'] = {
     },
 
     'failure' : function(test) {
-        var ds = Conduit.create();
+        var ds = StreamConsumer.create();
 
         test.ok(!ds._validateHash('invalidHash'));
         test.ok(!ds._validateHash(''));
@@ -761,7 +760,7 @@ exports['validateHash'] = {
 
 exports["hashArrayDifference"] = {
     "success" : function(test) {
-        var tc = new Conduit();
+        var tc = new StreamConsumer();
 
         var hashes1 = ['x','y','z'];
         var hashes2 = ['a','x','y'];
@@ -772,7 +771,7 @@ exports["hashArrayDifference"] = {
     },
 
     "will handle undefined object params" : function(test) {
-        var tc = new Conduit();
+        var tc = new StreamConsumer();
 
         var hashes1 = ['x','y','z'];
 
@@ -784,7 +783,7 @@ exports["hashArrayDifference"] = {
 
 exports['setSubscriptions'] = {
     'success' : function(test) {
-        var ds = Conduit.create();
+        var ds = StreamConsumer.create();
 
         test.expect(4);
         ds._start = function() {
@@ -814,7 +813,7 @@ exports['setSubscriptions'] = {
     },
 
     'will reject if client fails to connect' : function(test){
-        var ds = Conduit.create();
+        var ds = StreamConsumer.create();
         test.expect(2);
         ds._start = function() {
             test.ok(true);
@@ -838,7 +837,7 @@ exports['setSubscriptions'] = {
 
 
     'will reject if subscribe fails' : function(test) {
-        var ds = Conduit.create();
+        var ds = StreamConsumer.create();
         test.expect(4);
         ds._start = function() {
             test.ok(true);
@@ -871,7 +870,7 @@ exports['setSubscriptions'] = {
     },
 
     'will reject an invalid formatted hash' : function(test) {
-        var ds = Conduit.create();
+        var ds = StreamConsumer.create();
         test.expect(2);
 
         ds._start = function() {
@@ -895,7 +894,7 @@ exports['setSubscriptions'] = {
     },
 
     'will unsubscribe if the subscribe object is has removed it' : function(test) {
-        var ds = Conduit.create();
+        var ds = StreamConsumer.create();
         ds.streams['abc123'] = {};
 
         ds.unsubscribe = function(hash) {
@@ -914,7 +913,7 @@ exports['setSubscriptions'] = {
     },
 
     'will handle an dictionary of hashes' : function(test) {
-        var ds = Conduit.create();
+        var ds = StreamConsumer.create();
 
         test.expect(6);
         var set = {
@@ -954,7 +953,7 @@ exports['setSubscriptions'] = {
     },
 
     'will handle a dictionary of hashes with both valid and invalid hashes' : function(test) {
-        var ds = Conduit.create();
+        var ds = StreamConsumer.create();
 
         test.expect(13);
         var setOfValidHashes = {

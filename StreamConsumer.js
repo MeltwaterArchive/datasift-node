@@ -302,6 +302,7 @@ __.prototype._recycle = function(){
 
     return this.client.stop().then(
         function() {
+            self.client.pendingStop = false;
             return self.client.recover();
         }).then(
         function() {
