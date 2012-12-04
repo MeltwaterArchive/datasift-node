@@ -61,6 +61,7 @@ exports["constructor"] = {
             'User-Agent'    : 'DataSiftNodeSDK/0.3.0',
             'Connection'    : 'Keep-Alive',
             'Content-Type'  : 'application/x-www-form-urlencoded; charset=UTF-8',
+            'Auth' : 'ds-username:ds-api-key'
         });
 
         test.done();

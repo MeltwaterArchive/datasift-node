@@ -51,7 +51,8 @@ var __ = function (username, apiKey) {
     this.headers = {
         'User-Agent'        : 'DataSiftNodeSDK/0.3.0',
         'Connection'        : 'Keep-Alive',
-        'Content-Type'      : 'application/x-www-form-urlencoded; charset=UTF-8'
+        'Content-Type'      : 'application/x-www-form-urlencoded; charset=UTF-8',
+        'Auth'              : this.username + ':' + this.apiKey
     };
 };
 
@@ -131,7 +132,7 @@ __.prototype.doApiPost = function(endpoint, params) {
  * @return {*}
  */
 __.prototype.createStreamConsumer = function() {
-
+    this.headers['Transfer-Encoding'] = 'chunked';
     var options = {
         host: 'stream.datasift.com',
         headers: this.headers,
