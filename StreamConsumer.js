@@ -94,10 +94,16 @@ __.prototype.setSubscriptions = function(streamHashes) {
             return self.unsubscribe(streamHash);
         }
     );
-
+    var count = -1;
     return streamsToSubscribe.map(
         function(streamHash) {
-            return self.subscribe(streamHash);
+            count++;
+            return Q.delay(count*1000).then(
+                function(){
+                    return self.subscribe(streamHash);
+                }
+            );
+
         }).concat(unsubscribedPromises);
 };
 
