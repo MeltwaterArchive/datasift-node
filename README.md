@@ -97,8 +97,6 @@ See also the example.js file.
     A success event from DataSift.
 ###warning(message)
     Warnings about the state of the driver, bad status codes from the server, or incorrectly formatted JSON.
-###connect
-    The driver is connected to a DataSift stream.
 ###delete(data)
     A tweet was deleted on twitter and needs to be deleted by the client, if you are persisting the tweet interaction.
 ###error(error)
