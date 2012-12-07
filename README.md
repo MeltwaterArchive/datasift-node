@@ -12,7 +12,7 @@ Note that this module is promise based (via the Q library) and event based (via 
 - You have a DataSift account (username and API key) available from http://datasift.com
 
 ## Install
-- Using npm `npm install datasift`
+- Using npm `npm install datasift-node-sdk`
 - Add it to your project `require('datasift');`
 
 ## StreamConsumer Use
@@ -108,6 +108,19 @@ See also the example.js file.
     An event coming from DataSift which its status cannot be determined.
 ###debug(message)
     Information relating the transition in state of the driver.  Used for debugging purposes.
+
+
+##REST Api use
+    var DataSift = require('datasift');
+    var restAPI = new DataSift('YOUR_ACCOUNT', 'YOUR_API_KEY');
+
+    var endpoint = 'http://api.datasift.com/API_END_POINT'
+    var params = 'API_PARAMS';
+
+    restAPI.doApiPost(endpoint, params).then(
+        function(returnedValue) {
+            //handled returnedValue
+        });
 
 ##License
 
