@@ -822,10 +822,6 @@ exports['setSubscriptions'] = {
             return Q.reject();
         };
 
-//        ds.shutdown = function() {
-//            test.ok(true);
-//            return Q.resolve();
-//        };
         ds.setSubscriptions(['abc123'])[0].then(
             function(p) {
                 test.ok(false);
@@ -850,10 +846,6 @@ exports['setSubscriptions'] = {
             test.ok(true);
             return true;
         };
-//        ds.shutdown = function() {
-//            test.ok(true);
-//            return Q.resolve();
-//        };
 
         ds._subscribeToStream = function(hash) {
             test.ok(true);

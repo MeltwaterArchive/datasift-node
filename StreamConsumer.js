@@ -79,6 +79,8 @@ __.prototype.subscribe = function(streamHash) {
 
 /**
  * sets the streams subscribed by means of unsubscribing and subscribing to streams to reflect the state of streamHashes
+ * note that DataSift cannot handle a dozen or so asynchronous at once, so each subscribe message is
+ * spaced out by 1s
  * @param streamHashes - array of stream hashes
  * @return {Array of promises}
  */

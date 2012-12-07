@@ -183,7 +183,7 @@ exports["api post"] = {
     }
 };
 
-exports['createConduit'] = {
+exports['createStreamConsumer'] = {
     'success' : function(test) {
         var dsc = new DataSiftClient('ds-username', 'ds-api-key');
 

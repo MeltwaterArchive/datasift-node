@@ -128,8 +128,8 @@ __.prototype.doApiPost = function(endpoint, params) {
 }
 
 /**
- *
- * @return {*}
+ * creates an instance of a stream consumer
+ * @return {Object} stream consumer instance
  */
 __.prototype.createStreamConsumer = function() {
     this.headers['Transfer-Encoding'] = 'chunked';
