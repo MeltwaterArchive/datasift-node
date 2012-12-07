@@ -37,18 +37,17 @@ Factory method which returns a DataSift instance
 ###setSubscriptions(streamHashes)
 Starts listening to the specific streams hashes given, putting the driver into the state passed in.
 Multiple streams can be subscribed to per DataSift instance.
+Returns an array of promises.
 
     var streamHashes = (['YOUR_STREAM_HASH_1', 'YOUR_STREAM_HASH_2', 'YOUR_STREAM_HASH_N']);
 
-    ds.setSubscriptions(streamHashes).then(
-        function(resultingPromises) {
-            resultingPromises.forEach( function(promise) {
-            if(promise.isFulfilled()) {
-                //promise.valueOf().name subscribed
-            } else {
-                //failed with reason promise.valueOf.exception
-            }
-	    }});
+    ds.setSubscriptions(streamHashes).forEach(
+        function(promise) {
+            promise.then(
+                function(stream) {
+                    //stream.state === 'subscribed' or 'unsubscribed' depending on which action was taken
+                }
+	    });
 
 ###subscribe(streamHash)
 Starts listening to a single stream.  Multiple streams can be listened to at once.
