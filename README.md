@@ -9,33 +9,68 @@ Note: this module uses promises (via the Q library) and events, not callbacks.
 
 ## Install
 - Using npm `npm install datasift-node-sdk`
-- Add it to your project `require('datasift');`
 
-## Streaming API client
+## General usage
 
-The StreamConsumer is an EventEmitter that connects to the streaming API and emits events when data is received, automatically reconnecting as necessary.
+To create an instance of the client:
 
-###create(username, apiKey, hostname, port)
-Factory method which returns a DataSift instance
+    var DataSift = require('datasift');
+    var ds = new DataSift('YOUR_ACCOUNT', 'YOUR_API_KEY');
 
-    //Create a datasift instance via the factory method like:
-    var ds = new DataSift('YOUR_ACCOUNT', 'YOUR_API_KEY').createStreamConsumer();
+## Streaming API
 
-    //wire up instance for events...
-    ds.on('interaction', function(obj) {
-        //handle interaction
+To stream data:
+
+  1. Get a StreamConsumer from the client via the createStreamConsumer() factory method. A StreamConsumer is an EventEmitter that connects to the streaming API and emits events when data is received, automatically reconnecting as necessary. A single StreamConsumer can subscribe to multiple DataSift streams.
+  1. Add event listeners
+  1. Subscribe to streams using subscribe() or setSubscriptions()
+
+
+    // create a StreamConsumer via the factory method
+    var stream = ds.createStreamConsumer();
+
+    // add event listeners
+
+    stream.on('interaction', function(obj) {
+        // handle interaction
     });
 
-    ds.on('error', function(message) {
-        //handle error event
+    stream.on('error', function(message) {
+        // handle error event
     });
 
-    //... etc
+    // start listening to the stream:
+
+    ds.subscribe(STREAM_HASH).then(
+        function (state) {
+            //successfully subscribed
+        });
+
+###subscribe(streamHash)
+Starts listening to the stream with the given hash.  (Multiple streams can be subscribed to.)
+
+    ds.subscribe('YOUR_STREAM_HASH').then(
+        function(state) {
+            //successfully subscribed
+        });
+
+###unsubscribe(streamHash)
+Unsubscribes from the given stream.
+
+    ds.unsubscribe('YOUR_STREAM_HASH').then(
+        function() {
+            //successfully unsubscribed
+        }, function() {
+            //failed to unsubscribe
+        });
+
+###shutdown()
+Stop and disconnects to the DataSift stream.
+
+    ds.shutdown();
 
 ###setSubscriptions(streamHashes)
-Starts listening to the specific streams hashes given, putting the driver into the state passed in.
-Multiple streams can be subscribed to per DataSift instance.
-Returns an array of promises.
+Subscribes to all streams in the given array and unsubscribes from any currently-subscribed streams not in the array. Returns an array of promises, one per stream.
 
     var streamHashes = (['YOUR_STREAM_HASH_1', 'YOUR_STREAM_HASH_2', 'YOUR_STREAM_HASH_N']);
 
@@ -46,45 +81,6 @@ Returns an array of promises.
                     //stream.state === 'subscribed' or 'unsubscribed' depending on which action was taken
                 }
 	    });
-
-###subscribe(streamHash)
-Starts listening to a single stream.  Multiple streams can be listened to at once.
-
-    ds.subscribe('YOUR_STREAM_HASH').then(
-        function(state) {
-            //successfully subscribed
-        });
-###unsubscribe(streamHash)
-Unsubscribes to a DataSift stream
-
-    ds.unsubscribe('YOUR_STREAM_HASH').then(
-        function() {
-            //successfully unsubscribed
-        }, function() {
-            //failed to unsubscribe
-        });
-###shutdown()
-Stop and disconnects to the DataSift stream.
-
-    ds.shutdown();
-###Putting it all together
-See also the example.js file.
-
-    var DataSift = require('datasift');
-
-    // create a datasift instance via the factory method
-    var ds = new DataSift('YOUR_ACCOUNT', 'YOUR_API_KEY').createStreamConsumer();
-
-    ds.on('interaction', function (message) {
-        //process the message;
-    });
-
-    // start listening to the stream:
-
-    ds.subscribe(stream).then(
-        function(state) {
-            //successfully subscribed
-        });
 
 ## events emitted
 ###interaction(data)
@@ -99,7 +95,7 @@ See also the example.js file.
     A tweet was deleted on twitter and needs to be deleted by the client, if you are persisting the tweet interaction.
 ###error(error)
     Error coming from the DataSift stream.
-####unknownEvent(data)
+###unknownEvent(data)
     An event coming from DataSift which its status cannot be determined.
 ###debug(message)
     Information relating the transition in state of the driver.  Used for debugging purposes.
@@ -107,15 +103,15 @@ See also the example.js file.
 
 ##REST API client
 
-The doApiPost method allows for arbitrary API calls to DataSift.
+The doApiPost method allows for arbitrary REST API calls.
 
     var DataSift = require('datasift');
-    var restAPI = new DataSift('YOUR_ACCOUNT', 'YOUR_API_KEY');
+    var ds = new DataSift('YOUR_ACCOUNT', 'YOUR_API_KEY');
 
-    var endpoint = 'http://api.datasift.com/API_END_POINT'
+    var endpoint = 'https://api.datasift.com/API_END_POINT'
     var params = 'API_PARAMS';
 
-    restAPI.doApiPost(endpoint, params).then(
+    ds.doApiPost(endpoint, params).then(
         function(returnedValue) {
             //handled returnedValue
         });
