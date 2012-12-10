@@ -10,10 +10,10 @@
     ],
     "dependencies": {
         "q": "",
-        "tenacious-http": "",
-        "capsela-util": ""
+        "tenacious-http": ""
     },
     "devDependencies": {
-        "nock": ""
+        "nock": "",
+        "capsela-util": ""
     }
 }
