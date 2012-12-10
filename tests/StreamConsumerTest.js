@@ -776,6 +776,16 @@ exports["hashArrayDifference"] = {
 }
 
 exports['setSubscriptions'] = {
+    setUp : function(cb) {
+        StreamConsumer.SUBSCRIPTION_DELAY = 10;
+        cb();
+    },
+
+    tearDown : function(cb) {
+        StreamConsumer.SUBSCRIPTION_DELAY = 1000;
+        cb();
+    },
+
     'success' : function(test) {
         var ds = StreamConsumer.create();
 
