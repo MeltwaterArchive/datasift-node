@@ -1,12 +1,8 @@
-# DataSift stream consumer for NodeJS
+# DataSift SDK for NodeJS
 
-This library gives easy access to the real-time data streams and REST API calls from DataSift.
+Provides easy access to DataSift's real-time streaming and REST APIs.
 
-The StreamConsumer connects to the DataSift streaming API, and emits all data received, automatically reconnecting as necessary.
-
-The doApiPost method allows for arbitrary API calls to DataSift.
-
-Note that this module is promise based (via the Q library) and event based (via the EventEmitter).
+Note: this module uses promises (via the Q library) and events, not callbacks.
 
 ## Prerequisites
 - You have a DataSift account (username and API key) available from http://datasift.com
@@ -15,7 +11,9 @@ Note that this module is promise based (via the Q library) and event based (via 
 - Using npm `npm install datasift-node-sdk`
 - Add it to your project `require('datasift');`
 
-## StreamConsumer Use
+## Streaming API client
+
+The StreamConsumer is an EventEmitter that connects to the streaming API and emits events when data is received, automatically reconnecting as necessary.
 
 ###create(username, apiKey, hostname, port)
 Factory method which returns a DataSift instance
@@ -107,7 +105,10 @@ See also the example.js file.
     Information relating the transition in state of the driver.  Used for debugging purposes.
 
 
-##REST Api use
+##REST API client
+
+The doApiPost method allows for arbitrary API calls to DataSift.
+
     var DataSift = require('datasift');
     var restAPI = new DataSift('YOUR_ACCOUNT', 'YOUR_API_KEY');
 
