@@ -203,16 +203,19 @@ __.prototype._start = function() {
  */
 __.prototype._resubscribe = function(){
     var self = this;
-    Object.keys(this.streams).forEach(function(key){ //key = datasift hash
-        delete self.streams[key];
-        self._subscribeToStream(key).then(
-            function(){
-                self.emit('debug', 'reconnected to stream hash ' + key);
-            }, function(err) {
-                self.emit('debug', 'failed to reconnect to stream hash ' + key + " with error: " + err);
-            }
-        );
-    });
+    var streams = Object.keys(this.streams);
+    this.streams = {};
+    this.setSubscriptions(streams).forEach(
+        function(promise){
+            promise.then(
+                function(state) {
+                    self.emit('debug', 'reconnected to stream hash ' + state.hash);
+                }, function(err) {
+                    self.emit('debug', 'failed to reconnect to stream hash ' + ' with error: ' + err);
+                }
+            );
+        }
+    );
 };
 
 /**

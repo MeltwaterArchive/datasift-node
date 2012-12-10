@@ -376,39 +376,31 @@ exports['start'] = {
 }
 
 exports['resubscribe'] = {
-    'success' : function(test) {
+    'basics' : function(test) {
         var ds = StreamConsumer.create();
 
         ds.streams['123'] = '123';
         ds.streams['456'] = '456';
         ds.streams['abc'] = 'abc';
 
-        ds._subscribeToStream = function(hash) {
-            test.ok(!ds.streams.hasOwnProperty(hash));
-            test.ok(true);
-            return Q.resolve();
-        };
-        test.expect(6);
-        ds._resubscribe();
-        test.done();
-    },
-
-    'will handle subscribe rejects' : function(test) {
-        var ds = StreamConsumer.create();
-
-        ds.streams['123'] = '123';
-        ds.streams['456'] = '456';
-        ds.streams['abc'] = 'abc';
-
-        ds._subscribeToStream = function(hash) {
-            test.ok(!ds.streams.hasOwnProperty(hash));
-            test.ok(true);
-            return Q.reject();
+        ds.setSubscriptions = function(streams) {
+            test.deepEqual(streams, ['123', '456', 'abc']);
+            test.deepEqual(this.streams, {});
+            return [Q.resolve({hash : '123'}), Q.reject('an error'), Q.resolve({hash : 'abc'})];
         };
 
-        test.expect(6);
+        var count = 0;
+
+        ds.on('debug', function(state) {
+            test.ok(true);
+            count++;
+            if(count === 3) {
+                test.done();
+            }
+        });
+
+        test.expect(5);
         ds._resubscribe();
-        test.done();
     }
 }
 
