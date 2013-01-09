@@ -181,7 +181,7 @@ __.prototype._start = function() {
         });
 
         this.client.on('end', function(statusCode){
-            self.emit('debug','end event received with status code ' + statusCode);
+            self.emit('warning','end event received with status code ' + statusCode);
             self._onEnd(statusCode);
         });
 

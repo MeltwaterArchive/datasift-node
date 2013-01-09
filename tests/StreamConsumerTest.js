@@ -325,11 +325,15 @@ exports['start'] = {
 
         var ds = StreamConsumer.create(client);
 
+        ds.on('warning', function(){
+            test.ok(true);
+        });
+
         ds._onEnd = function( statusCode) {
             test.equal(statusCode, 401);
         };
 
-        test.expect(5);
+        test.expect(6);
         ds._start().then(
             function() {
                 ds.client.emit('end', 401);
