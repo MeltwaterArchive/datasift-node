@@ -325,11 +325,15 @@ exports['start'] = {
 
         var ds = StreamConsumer.create(client);
 
+        ds.on('warning', function(){
+            test.ok(true);
+        });
+
         ds._onEnd = function( statusCode) {
             test.equal(statusCode, 401);
         };
 
-        test.expect(5);
+        test.expect(6);
         ds._start().then(
             function() {
                 ds.client.emit('end', 401);
@@ -776,6 +780,16 @@ exports["hashArrayDifference"] = {
 }
 
 exports['setSubscriptions'] = {
+    setUp : function(cb) {
+        StreamConsumer.SUBSCRIPTION_DELAY = 10;
+        cb();
+    },
+
+    tearDown : function(cb) {
+        StreamConsumer.SUBSCRIPTION_DELAY = 1000;
+        cb();
+    },
+
     'success' : function(test) {
         var ds = StreamConsumer.create();
 
