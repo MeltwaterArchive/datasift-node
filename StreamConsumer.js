@@ -70,7 +70,7 @@ __.prototype.subscribe = function(streamHash) {
     return this._start().then(
         function() {
             if(!self._validateHash(streamHash)) {
-                return Q.reject('invalid hash');
+                return Q.reject('invalid hash: ', streamHash);
             }
             return self._subscribeToStream(streamHash);
         }
@@ -223,9 +223,11 @@ __.prototype._resubscribe = function(){
  * @return {promise}
  */
 __.prototype.shutdown = function () {
+
     this.attachedListeners = false;
     this.attachedSubscribeWarningListener = false;
     this.streams = {};
+    clearTimeout(this.interactionTimeout);
     this.client.write(JSON.stringify({'action' : 'stop'}));
     return this.client.stop();
 };
@@ -238,9 +240,9 @@ __.prototype.shutdown = function () {
  */
 __.prototype._onData = function(chunk, statusCode) {
     this.responseData += chunk;
-
     if(chunk.indexOf('\n') >= 0) {
         var data = this.responseData.split('\n');
+
         this.responseData = data.pop();
         for (var i = 0; i < data.length; i++) {
             if (data[i] !== undefined) {
@@ -276,6 +278,7 @@ __.prototype._onEnd = function(statusCode) {
  */
 __.prototype._handleEvent = function (eventData) {
     var self = this;
+
     if (eventData.status === 'failure') {
         if(eventData.message !== 'A stop message was received. You will now be disconnected') {
             this.emit('error', new Error(eventData.message));
@@ -292,6 +295,7 @@ __.prototype._handleEvent = function (eventData) {
     } else if (eventData.tick !== undefined) {
         this.emit('tick', eventData);
     } else if (eventData.data !== undefined && eventData.data.interaction !== undefined) {
+
         //if there are no interactions emitted for the INTERACTION_TIMEOUT duration,
         //then the connection is recycled, which means a new underlying http connection will be created.
         clearTimeout(this.interactionTimeout);
