@@ -358,7 +358,7 @@ exports['start'] = {
 
             emit : function(value, data) {
                 test.equal(value, 'recovered');
-                test.equal(data, 'not a server end');
+                test.equal(data, 'server end');
                 this.cb(data);
             }
         };
@@ -372,7 +372,7 @@ exports['start'] = {
         test.expect(5);
         ds._start().then(
             function() {
-                ds.client.emit('recovered', 'not a server end');
+                ds.client.emit('recovered', 'server end');
                 test.done();
             }
         ).done();
