@@ -187,9 +187,7 @@ __.prototype._start = function() {
 
         this.client.on('recovered', function(reason) {
             self.emit('debug', 'recovered from ' + reason);
-            if(reason !== 'server end') {//skip server ends because we do not want to double subscribe.
-                self._resubscribe();
-            }
+            self._resubscribe();
         });
         this.attachedListeners = true;
     }
