@@ -37,7 +37,7 @@ var __ = function() {
 
 __.SUBSCRIBE_WAIT = 750;
 __.INTERACTION_TIMEOUT = 300000;
-__.SUBSCRIPTION_DELAY = 10;
+__.SUBSCRIPTION_DELAY = 100;
 /**
  * creates an instance
  * @param client - tenacious-http client
