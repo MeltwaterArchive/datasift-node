@@ -100,11 +100,11 @@ __.prototype.setSubscriptions = function(streamHashes) {
     return streamsToSubscribe.map(
         function(streamHash) {
             count++;
-            return Q.delay(count*__.SUBSCRIPTION_DELAY).then(
-                function(){
+//            return Q.delay(count*__.SUBSCRIPTION_DELAY).then(
+//                function(){
                     return self.subscribe(streamHash);
-                }
-            );
+//                }
+//            );
 
         }).concat(unsubscribedPromises);
 };
@@ -135,18 +135,18 @@ __.prototype._subscribeToStream = function(hash) {
     var self = this;
 
     //only add listener if it has not been connected
-    if(!this.attachedSubscribeWarningListener) {
-        this.on('warning', function(message) {
-            if(!message.indexOf("The hash",-1)) {
-                var streamHash = message.split(' ')[2];
-                if(self.streams.hasOwnProperty(streamHash)) {
-                    self.streams[streamHash].deferred.reject(message);
-                    delete self.streams[streamHash];
-                }
-            }
-        });
-        this.attachedSubscribeWarningListener = true;
-    }
+//    if(!this.attachedSubscribeWarningListener) {
+//        this.on('warning', function(message) {
+//            if(!message.indexOf("The hash",-1)) {
+//                var streamHash = message.split(' ')[2];
+//                if(self.streams.hasOwnProperty(streamHash)) {
+//                    self.streams[streamHash].deferred.reject(message);
+//                    delete self.streams[streamHash];
+//                }
+//            }
+//        });
+//        this.attachedSubscribeWarningListener = true;
+//    }
 
     if(this.streams.hasOwnProperty(hash)) { //already waiting or subscribed
         return this.streams[hash].deferred.promise;
@@ -159,11 +159,11 @@ __.prototype._subscribeToStream = function(hash) {
 
     this.client.write(subscribeMessage,'utf-8');
 
-    Q.delay(__.SUBSCRIBE_WAIT).then(
-        function() {
+//    Q.delay(__.SUBSCRIBE_WAIT).then(
+//        function() {
             self.streams[hash].state = 'subscribed';
             d.resolve(self.streams[hash]);
-        });
+//        });
 
     return this.streams[hash].deferred.promise;
 };
