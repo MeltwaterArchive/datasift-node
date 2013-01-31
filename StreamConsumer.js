@@ -100,7 +100,7 @@ __.prototype.setSubscriptions = function(streamHashes) {
     return streamsToSubscribe.map(
         function(streamHash) {
             count++;
-            return Q.delay(count*1000).then(
+            return Q.delay(count * 10).then(
                 function(){
                     return self.subscribe(streamHash);
                 }
