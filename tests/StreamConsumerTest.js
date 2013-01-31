@@ -325,11 +325,15 @@ exports['start'] = {
 
         var ds = StreamConsumer.create(client);
 
+        ds.on('warning', function(){
+            test.ok(true);
+        });
+
         ds._onEnd = function( statusCode) {
             test.equal(statusCode, 401);
         };
 
-        test.expect(5);
+        test.expect(6);
         ds._start().then(
             function() {
                 ds.client.emit('end', 401);
@@ -354,7 +358,7 @@ exports['start'] = {
 
             emit : function(value, data) {
                 test.equal(value, 'recovered');
-                test.equal(data, 'not a server end');
+                test.equal(data, 'server end');
                 this.cb(data);
             }
         };
@@ -368,7 +372,7 @@ exports['start'] = {
         test.expect(5);
         ds._start().then(
             function() {
-                ds.client.emit('recovered', 'not a server end');
+                ds.client.emit('recovered', 'server end');
                 test.done();
             }
         ).done();
@@ -776,6 +780,16 @@ exports["hashArrayDifference"] = {
 }
 
 exports['setSubscriptions'] = {
+    setUp : function(cb) {
+        StreamConsumer.SUBSCRIPTION_DELAY = 10;
+        cb();
+    },
+
+    tearDown : function(cb) {
+        StreamConsumer.SUBSCRIPTION_DELAY = 1000;
+        cb();
+    },
+
     'success' : function(test) {
         var ds = StreamConsumer.create();
 
