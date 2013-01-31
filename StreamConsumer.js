@@ -37,7 +37,7 @@ var __ = function() {
 
 __.SUBSCRIBE_WAIT = 750;
 __.INTERACTION_TIMEOUT = 300000;
-__.SUBSCRIPTION_DELAY = 100;
+__.SUBSCRIPTION_DELAY = 500;
 /**
  * creates an instance
  * @param client - tenacious-http client
@@ -100,11 +100,11 @@ __.prototype.setSubscriptions = function(streamHashes) {
     return streamsToSubscribe.map(
         function(streamHash) {
             count++;
-//            return Q.delay(count*__.SUBSCRIPTION_DELAY).then(
-//                function(){
+            return Q.delay(count*__.SUBSCRIPTION_DELAY).then(
+                function(){
                     return self.subscribe(streamHash);
-//                }
-//            );
+                }
+            );
 
         }).concat(unsubscribedPromises);
 };
