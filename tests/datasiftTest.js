@@ -32,6 +32,8 @@ var nock = require('nock');
 var Q = require('q');
 var https = require('https');
 var EventEmitter = require('events').EventEmitter;
+var HttpStream = require('tenacious-http');
+var StreamConsumer = require('../StreamConsumer');
 
 exports["constructor"] = {
 
@@ -184,12 +186,55 @@ exports["api post"] = {
 };
 
 exports['createStreamConsumer'] = {
+
+    setUp: function(cb) {
+
+        MonkeyPatcher.setUp();
+        cb();
+    },
+
+    tearDown: function(cb) {
+
+        MonkeyPatcher.tearDown();
+        cb();
+    },
+
     'success' : function(test) {
+
+        test.expect(3);
+
         var dsc = new DataSiftClient('ds-username', 'ds-api-key');
+        var callback;
+
+        MonkeyPatcher.patch(HttpStream, 'create', function (options, cb) {
+
+            test.deepEqual(options, {
+                "host": "stream.datasift.com",
+                "headers": {
+                    "User-Agent": "DataSiftNodeSDK/0.3.0",
+                    "Connection": "Keep-Alive",
+                    "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+                    "Auth": "ds-username:ds-api-key",
+                    "Transfer-Encoding": "chunked"
+                },
+                "auth": "ds-username:ds-api-key",
+                "path": "/multi"
+            });
+
+            callback = cb;
+        });
 
         var dsStream = dsc.createStreamConsumer();
-        test.ok(dsStream);
+        test.ok(dsStream instanceof StreamConsumer);
+
+        var client = {
+            write: function (data) {
+                test.equal(data, '\n');
+            }
+        };
+
+        callback(client);
 
         test.done();
     }
-}
+};

@@ -128,15 +128,19 @@ __.prototype.doApiPost = function(endpoint, params) {
 }
 
 /**
- * creates an instance of a stream consumer
+ * Creates an instance of a stream consumer
+ *
  * @return {Object} stream consumer instance
  */
 __.prototype.createStreamConsumer = function() {
+
     this.headers['Transfer-Encoding'] = 'chunked';
+
     var options = {
         host: 'stream.datasift.com',
         headers: this.headers,
-        auth: this.username + ':' + this.apiKey
+        auth: this.username + ':' + this.apiKey,
+        path: '/multi'
     };
 
     var client = HttpStream.create(options, function (client) {
