@@ -343,32 +343,25 @@ __.prototype._validateHash = function (hash) {
 };
 
 /**
- * takes the difference between two arrays [values1] - [values2] = [resulting array of values]
+ * Takes the difference between two arrays [values1] - [values2] = [resulting array of values]
+ *
  * @param array1
  * @param array2
+ *
  * @return {Array}
  * @private
  */
 __.prototype._arrayDifference = function(array1, array2) {
-    var remainderSet = {};
-    array1 = array1 || [];
-    array2 = array2 || [];
 
-    array1.forEach(
-        function(hash) {
-            remainderSet[hash] = 0;
-        }
-    );
+    if (array1 == undefined) {
+        return [];
+    }
 
-    array2.forEach(
-        function(hash) {
-            if(remainderSet.hasOwnProperty(hash)) {
-                delete remainderSet[hash];
-            }
-        }
-    );
+    if (array2 == undefined) {
+        return array1;
+    }
 
-    return Object.keys(remainderSet);
+    return array1.filter(function(i) {return !(array2.indexOf(i) > -1);});
 };
 
 module.exports = __;

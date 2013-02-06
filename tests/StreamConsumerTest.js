@@ -757,6 +757,7 @@ exports['validateHash'] = {
 }
 
 exports["hashArrayDifference"] = {
+
     "success" : function(test) {
         var tc = new StreamConsumer();
 
@@ -769,11 +770,12 @@ exports["hashArrayDifference"] = {
     },
 
     "will handle undefined object params" : function(test) {
+
         var tc = new StreamConsumer();
 
         var hashes1 = ['x','y','z'];
 
-        test.deepEqual(tc._arrayDifference(undefined,hashes1), []);
+        test.deepEqual(tc._arrayDifference(undefined, hashes1), []);
         test.deepEqual(tc._arrayDifference(hashes1, undefined), ['x','y','z']);
         test.done();
     }
