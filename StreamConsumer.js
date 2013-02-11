@@ -25,11 +25,12 @@
  * Time: 5:19 PM
  */
 
+"use strict";
 
-"use strict"
-
+var HttpStream = require('tenacious-http');
 var EventEmitter = require('events').EventEmitter;
 var Q = require('q');
+var https = require('https');
 
 var __ = function() {
     EventEmitter.call(this);
@@ -38,18 +39,34 @@ var __ = function() {
 __.SUBSCRIBE_WAIT = 750;
 __.INTERACTION_TIMEOUT = 300000;
 __.SUBSCRIPTION_DELAY = 500;
+
 /**
  * creates an instance
  * @param client - tenacious-http client
  * @return {Object}
  */
-__.create = function(client) {
+__.create = function(username, apiKey, headers) {
 
     var instance = new __();
 
+    instance.client = HttpStream.create(function () {
+
+        var options = {
+            host: 'stream.datasift.com',
+            headers: headers,
+            auth: username + ':' + apiKey,
+            path: '/multi'
+        };
+
+        var req = https.request(options);
+
+        req.write('\n');
+
+        return req;
+    });
+
     instance.subscribeListener = false;
     instance.attachedSubscribeWarningListener = false;
-    instance.client = client;
     instance.responseData = '';
     instance.attachedListeners = false;
     instance.streams = {};
@@ -115,11 +132,15 @@ __.prototype.setSubscriptions = function(streamHashes) {
  * @return {promise}
  */
 __.prototype.unsubscribe = function(hash) {
+
     var body = JSON.stringify({'action' : 'unsubscribe', 'hash' : hash});
-    this.client.write(body, 'utf-8');
+
+    this.client.write(body, 'utf8');
+
     var unsubscribedState = this.streams[hash];
     unsubscribedState.state = 'unsubscribed';
     delete this.streams[hash];
+
     return Q.resolve(unsubscribedState);
 };
 
@@ -157,7 +178,7 @@ __.prototype._subscribeToStream = function(hash) {
     this.streams[hash].state = 'pending';
     this.streams[hash].hash = hash;
 
-    this.client.write(subscribeMessage,'utf-8');
+    this.client.write(subscribeMessage, 'utf8');
 
 //    Q.delay(__.SUBSCRIBE_WAIT).then(
 //        function() {
@@ -174,8 +195,11 @@ __.prototype._subscribeToStream = function(hash) {
  * @private
  */
 __.prototype._start = function() {
+
     var self = this;
-    if(!this.attachedListeners){
+
+    if(!this.attachedListeners) {
+
         this.client.on('data', function(chunk, statusCode) {
             self._onData(chunk, statusCode);
         });
@@ -189,6 +213,7 @@ __.prototype._start = function() {
             self.emit('debug', 'recovered from ' + reason);
             self._resubscribe();
         });
+
         this.attachedListeners = true;
     }
 
@@ -199,7 +224,8 @@ __.prototype._start = function() {
  * sends subscribe messages to datasift based on streams already subscribed to by this instance
  * @private
  */
-__.prototype._resubscribe = function(){
+__.prototype._resubscribe = function () {
+
     var self = this;
     var streams = Object.keys(this.streams);
     this.streams = {};
@@ -275,6 +301,7 @@ __.prototype._onEnd = function(statusCode) {
  * @private
  */
 __.prototype._handleEvent = function (eventData) {
+
     var self = this;
 
     if (eventData.status === 'failure') {
@@ -311,7 +338,8 @@ __.prototype._handleEvent = function (eventData) {
  * @return {promise}
  * @private
  */
-__.prototype._recycle = function(){
+__.prototype._recycle = function() {
+
     var self = this;
     this.emit('debug', 'recycling connection');
 

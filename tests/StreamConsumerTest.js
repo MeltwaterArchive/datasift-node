@@ -29,17 +29,43 @@
 
 var Q = require ('q');
 var StreamConsumer = require('../StreamConsumer');
+var HttpStream = require('tenacious-http');
+var MonkeyPatcher = require('monkey-patcher').MonkeyPatcher;
+var EventEmitter = require('events').EventEmitter;
+var https = require('https');
 
 exports['create'] = {
 
+    setUp: function(cb) {
+
+        MonkeyPatcher.setUp();
+        cb();
+    },
+
+    tearDown: function(cb) {
+
+        MonkeyPatcher.tearDown();
+        cb();
+    },
+
     'success' : function(test) {
+
+        var callback;
         var client = {};
-        var ds = StreamConsumer.create(client);
+
+        MonkeyPatcher.patch(HttpStream, 'create', function (cb) {
+            callback = cb;
+            return client;
+        });
+
+        var headers = {};
+        var ds = StreamConsumer.create('username', 'api-key', headers);
+
         test.equal(ds.client, client);
 
         test.done();
     }
-}
+};
 
 exports['subscribe'] = {
     'success' : function(test) {
@@ -66,6 +92,7 @@ exports['subscribe'] = {
     },
 
     'will handle bad hash format' : function(test) {
+
         var ds = StreamConsumer.create();
 
         ds._validateHash = function(hash) {
@@ -137,9 +164,10 @@ exports['subscribe'] = {
             }
         ).done();
     }
-}
+};
 
 exports['subscribeToStream'] = {
+
     setUp: function (cb) {
         StreamConsumer.SUBSCRIBE_WAIT = 50;
         cb();
@@ -235,35 +263,58 @@ exports['subscribeToStream'] = {
 //            }
 //        ).done();
 //    }
-}
+};
 
 exports['start'] = {
-    'success' : function(test) {
-        var client = {
-            on : function(event, cb) {
-                test.ok(true);
-            },
 
-            start : function() {
-                test.ok(true);
-                return Q.resolve();
-            }
+    setUp: function(cb) {
+
+        MonkeyPatcher.setUp();
+        cb();
+    },
+
+    tearDown: function(cb) {
+
+        MonkeyPatcher.tearDown();
+        cb();
+    },
+
+    'success' : function(test) {
+
+        test.expect(2);
+
+        var headers = {};
+        var ds = StreamConsumer.create('username', 'api-key', headers);
+
+        var req = new EventEmitter();
+        var res = new EventEmitter();
+
+        res.statusCode = 200;
+
+        res.setEncoding = function (enc) {
+            test.equal(enc, 'utf8');
         };
-        var ds = StreamConsumer.create(client);
-        test.expect(5);
+
+        req.write = function (data) {
+            test.equal(data, '\n');
+        };
+
+        MonkeyPatcher.patch(https, 'request', function (options) {
+            return req;
+        });
 
         ds._start().then(
             function() {
-                test.ok(true);
-                test.done();
-            }, function(err) {
-                test.ok(false);
                 test.done();
             }
         ).done();
+
+        req.emit('response', res);
     },
 
     'will call onData when a data event is emitted by the client' : function(test) {
+
+        test.expect(6);
 
         var client = {
             on : function(event, cb) {
@@ -285,15 +336,17 @@ exports['start'] = {
             }
         };
 
-        var ds = StreamConsumer.create(client);
+        MonkeyPatcher.patch(HttpStream, 'create', function () {
+            return client;
+        });
+
+        var ds = StreamConsumer.create();
 
         ds._onData = function(data, statusCode) {
             test.equal(data, 'my data');
             test.equal(statusCode, 200);
-
         };
 
-        test.expect(6);
         ds._start().then(
             function() {
                 ds.client.emit('data', 'my data', 200);
@@ -303,6 +356,9 @@ exports['start'] = {
     },
 
     'will call onEnd when an end event is emitted by the client' : function(test) {
+
+        test.expect(6);
+
         var client = {
             on : function(event, cb) {
                 if(event === 'end'){
@@ -323,7 +379,11 @@ exports['start'] = {
             }
         };
 
-        var ds = StreamConsumer.create(client);
+        MonkeyPatcher.patch(HttpStream, 'create', function () {
+            return client;
+        });
+
+        var ds = StreamConsumer.create();
 
         ds.on('warning', function(){
             test.ok(true);
@@ -333,7 +393,6 @@ exports['start'] = {
             test.equal(statusCode, 401);
         };
 
-        test.expect(6);
         ds._start().then(
             function() {
                 ds.client.emit('end', 401);
@@ -343,6 +402,9 @@ exports['start'] = {
     },
 
     'will call resubscribe when a recovered event is emitted by the client' : function(test) {
+
+        test.expect(5);
+
         var client = {
             on : function(event, cb) {
                 if(event === 'recovered'){
@@ -363,13 +425,16 @@ exports['start'] = {
             }
         };
 
-        var ds = StreamConsumer.create(client);
+        MonkeyPatcher.patch(HttpStream, 'create', function () {
+            return client;
+        });
+
+        var ds = StreamConsumer.create();
 
         ds._resubscribe = function() {
             test.ok(true);
         };
 
-        test.expect(5);
         ds._start().then(
             function() {
                 ds.client.emit('recovered', 'server end');
@@ -377,7 +442,7 @@ exports['start'] = {
             }
         ).done();
     }
-}
+};
 
 exports['resubscribe'] = {
     'basics' : function(test) {
@@ -406,20 +471,24 @@ exports['resubscribe'] = {
         test.expect(5);
         ds._resubscribe();
     }
-}
+};
 
 exports['handleEvent'] = {
 
     setUp : function(cb){
         this.ds = StreamConsumer.create();
         StreamConsumer.INTERACTION_TIMEOUT = 30;
+        MonkeyPatcher.setUp();
         cb();
     },
+
     tearDown : function(cb){
         clearTimeout(this.ds.interactionTimeout);
         StreamConsumer.INTERACTION_TIMEOUT = 300000;
+        MonkeyPatcher.tearDown();
         cb();
     },
+
     'success' : function (test) {
         var interactionData = {'test' : 'abc', 'name' : 'jon', 'number' : 1};
         var eventData = { 'hash': '123' , 'data' : {'interaction': interactionData}};
@@ -433,16 +502,22 @@ exports['handleEvent'] = {
     },
 
     'will emit error if the status is error' : function (test) {
+
+        test.expect(3);
+
         var client = {
             recover : function(){
                 test.ok(true);
                 return Q.resolve();
             }
-        }
-        var ds = StreamConsumer.create(client);
-        var eventData = {};
+        };
 
-        test.expect(3);
+        MonkeyPatcher.patch(HttpStream, 'create', function () {
+            return client;
+        });
+
+        var ds = StreamConsumer.create();
+        var eventData = {};
 
         ds._resubscribe = function() {
             test.ok(true);
@@ -513,43 +588,44 @@ exports['handleEvent'] = {
         ds._handleEvent(eventData);
     },
 
+    'will call recycle if no interactions are processed over a long period of time' : function (test) {
 
-    'will clean up connection on disconnect from DataSift' : function (test) {
-        var ds = StreamConsumer.create();
-        var eventData = {};
-        ds.request = {};
-        test.expect(1);
-
-        eventData.status = 'failure';
-        eventData.message = 'A stop message was received. You will now be disconnected';
-
-        ds._handleEvent(eventData);
-        test.equal(ds.client, undefined);
-        test.done();
-    },
-
-    'will call recycle if no interactions are processed over a long period of time' : function(test){
+        test.expect(2);
 
         var interactionData = {'test' : 'abc', 'name' : 'jon', 'number' : 1};
         var eventData = { 'hash': '123' , 'data' : {'interaction': interactionData}};
-        var self = this;
 
-        test.expect(2);
-        this.ds.on('interaction', function(data) {
+        this.ds.on('interaction', function (data) {
             test.ok(true);
         });
 
-        this.ds._recycle = function(){
+        this.ds._recycle = function () {
             test.ok(true);
             test.done();
         };
 
         this.ds._handleEvent(eventData);
     }
-}
+};
 
 exports['shutdown'] = {
+
+    setUp: function(cb) {
+
+        MonkeyPatcher.setUp();
+        cb();
+    },
+
+    tearDown: function(cb) {
+
+        MonkeyPatcher.tearDown();
+        cb();
+    },
+
     'success' : function(test) {
+
+        test.expect(3);
+
         var client = {
             write : function(contents) {
                 test.equal(contents, JSON.stringify({action: 'stop'}));
@@ -560,9 +636,12 @@ exports['shutdown'] = {
             }
         };
 
-        var ds = StreamConsumer.create(client);
+        MonkeyPatcher.patch(HttpStream, 'create', function () {
+            return client;
+        });
 
-        test.expect(3);
+        var ds = StreamConsumer.create();
+
         ds.shutdown().then(
             function(){
                 test.ok(true);
@@ -573,7 +652,7 @@ exports['shutdown'] = {
             }
         ).done();
     }
-}
+};
 
 exports['unsubscribe'] = {
     'success' : function(test) {
@@ -602,7 +681,8 @@ exports['unsubscribe'] = {
             }
         ).done();
     }
-}
+};
+
 exports['onData'] = {
     'success' : function (test) {
         var ds = StreamConsumer.create();
@@ -659,7 +739,7 @@ exports['onData'] = {
         test.done();
 
     }
-}
+};
 
 exports['onEnd'] = {
     'success' : function(test) {
@@ -670,10 +750,24 @@ exports['onEnd'] = {
         test.equal(ds.responseData, '');
         test.done();
     }
-}
+};
 
 exports['recycle'] = {
+
+    setUp: function(cb) {
+
+        MonkeyPatcher.setUp();
+        cb();
+    },
+
+    tearDown: function(cb) {
+
+        MonkeyPatcher.tearDown();
+        cb();
+    },
+
     'success' : function(test) {
+
         var client = {
             stop : function () {
                 test.ok(true);
@@ -684,9 +778,13 @@ exports['recycle'] = {
                 test.ok(true);
                 return Q.resolve();
             }
-        }
+        };
 
-        var ds = StreamConsumer.create(client);
+        MonkeyPatcher.patch(HttpStream, 'create', function () {
+            return client;
+        });
+
+        var ds = StreamConsumer.create();
 
         ds._resubscribe = function() {
             test.ok(true);
@@ -707,13 +805,19 @@ exports['recycle'] = {
     },
 
     'will emit error on failed connection recycle' : function(test) {
+
         var client = {
             stop : function() {
                 test.ok(true);
                 return Q.reject();
             }
-        }
-        var ds = StreamConsumer.create(client);
+        };
+
+        MonkeyPatcher.patch(HttpStream, 'create', function () {
+            return client;
+        });
+
+        var ds = StreamConsumer.create();
 
         ds.on('error', function(error){
             test.ok(true);
@@ -730,7 +834,7 @@ exports['recycle'] = {
             }
         ).done();
     }
-}
+};
 
 exports['validateHash'] = {
     'success' : function(test) {
@@ -754,7 +858,7 @@ exports['validateHash'] = {
         test.done();
 
     }
-}
+};
 
 exports["hashArrayDifference"] = {
 
@@ -779,7 +883,7 @@ exports["hashArrayDifference"] = {
         test.deepEqual(tc._arrayDifference(hashes1, undefined), ['x','y','z']);
         test.done();
     }
-}
+};
 
 exports['setSubscriptions'] = {
     setUp : function(cb) {
@@ -1004,4 +1108,4 @@ exports['setSubscriptions'] = {
             }
         );
     }
-}
+};

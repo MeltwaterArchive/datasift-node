@@ -28,7 +28,6 @@
 
 var https = require('https');
 var qs = require('querystring');
-var HttpStream = require('tenacious-http');
 var StreamConsumer = require('./StreamConsumer');
 var Q = require('q');
 
@@ -51,8 +50,8 @@ var __ = function (username, apiKey) {
     this.headers = {
         'User-Agent'        : 'DataSiftNodeSDK/0.3.0',
         'Connection'        : 'Keep-Alive',
-        'Content-Type'      : 'application/x-www-form-urlencoded; charset=UTF-8',
-        'Auth'              : this.username + ':' + this.apiKey
+        'Transfer-Encoding' : 'chunked',
+        'Content-Type'      : 'application/x-www-form-urlencoded; charset=UTF-8'
     };
 };
 
@@ -125,29 +124,16 @@ __.prototype.doApiPost = function(endpoint, params) {
 //                clearTimeout(self.connectTimeout);
 //                self.connectTimeout = null;
 //            }, 5000);
-}
+};
 
+////////////////////////////////////////////////////////////////////////////
 /**
  * Creates an instance of a stream consumer
  *
  * @return {Object} stream consumer instance
  */
 __.prototype.createStreamConsumer = function() {
-
-    this.headers['Transfer-Encoding'] = 'chunked';
-
-    var options = {
-        host: 'stream.datasift.com',
-        headers: this.headers,
-        auth: this.username + ':' + this.apiKey,
-        path: '/multi'
-    };
-
-    var client = HttpStream.create(options, function (client) {
-        client.write('\n');
-    });
-
-    return StreamConsumer.create(client);
+    return StreamConsumer.create(this.username, this.apiKey, this.headers);
 };
 
 module.exports = __;

@@ -27,7 +27,7 @@
 "use strict";
 
 var DataSiftClient = require('../datasift');
-var MonkeyPatcher = require('capsela-util').MonkeyPatcher;
+var MonkeyPatcher = require('monkey-patcher').MonkeyPatcher;
 var nock = require('nock');
 var Q = require('q');
 var https = require('https');
@@ -62,8 +62,8 @@ exports["constructor"] = {
         test.deepEqual(dsc.headers, {
             'User-Agent'    : 'DataSiftNodeSDK/0.3.0',
             'Connection'    : 'Keep-Alive',
-            'Content-Type'  : 'application/x-www-form-urlencoded; charset=UTF-8',
-            'Auth' : 'ds-username:ds-api-key'
+            'Transfer-Encoding' : 'chunked',
+            'Content-Type'  : 'application/x-www-form-urlencoded; charset=UTF-8'
         });
 
         test.done();
@@ -201,39 +201,20 @@ exports['createStreamConsumer'] = {
 
     'success' : function(test) {
 
-        test.expect(3);
+        test.expect(4);
 
         var dsc = new DataSiftClient('ds-username', 'ds-api-key');
-        var callback;
+        var sc = {};
 
-        MonkeyPatcher.patch(HttpStream, 'create', function (options, cb) {
+        MonkeyPatcher.patch(StreamConsumer, 'create', function (username, apiKey, headers) {
 
-            test.deepEqual(options, {
-                "host": "stream.datasift.com",
-                "headers": {
-                    "User-Agent": "DataSiftNodeSDK/0.3.0",
-                    "Connection": "Keep-Alive",
-                    "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-                    "Auth": "ds-username:ds-api-key",
-                    "Transfer-Encoding": "chunked"
-                },
-                "auth": "ds-username:ds-api-key",
-                "path": "/multi"
-            });
-
-            callback = cb;
+            test.equal(username, 'ds-username');
+            test.equal(apiKey, 'ds-api-key');
+            test.equal(headers, dsc.headers);
+            return sc;
         });
 
-        var dsStream = dsc.createStreamConsumer();
-        test.ok(dsStream instanceof StreamConsumer);
-
-        var client = {
-            write: function (data) {
-                test.equal(data, '\n');
-            }
-        };
-
-        callback(client);
+        test.equal(dsc.createStreamConsumer(), sc);
 
         test.done();
     }
