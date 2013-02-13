@@ -45,25 +45,15 @@ __.SUBSCRIPTION_DELAY = 500;
  * @param client - tenacious-http client
  * @return {Object}
  */
-__.create = function(username, apiKey, headers) {
+__.create = function(headers) {
 
     var instance = new __();
 
-    instance.client = HttpStream.create(function () {
-
-        var options = {
-            host: 'stream.datasift.com',
-            headers: headers,
-            auth: username + ':' + apiKey,
-            path: '/multi'
-        };
-
-        var req = https.request(options);
-
-        req.write('\n');
-
-        return req;
-    });
+    instance.client = HttpStream.create(
+        function () {
+            // don't use bind so we can patch _connect in testing
+            return instance._connect(headers);
+        });
 
     instance.subscribeListener = false;
     instance.attachedSubscribeWarningListener = false;
@@ -118,7 +108,7 @@ __.prototype.setSubscriptions = function(streamHashes) {
         function(streamHash) {
             count++;
             return Q.delay(count*__.SUBSCRIPTION_DELAY).then(
-                function(){
+                function () {
                     return self.subscribe(streamHash);
                 }
             );
@@ -180,13 +170,7 @@ __.prototype._subscribeToStream = function(hash) {
 
     this.client.write(subscribeMessage, 'utf8');
 
-//    Q.delay(__.SUBSCRIBE_WAIT).then(
-//        function() {
-            self.streams[hash].state = 'subscribed';
-            d.resolve(self.streams[hash]);
-//        });
-
-    return this.streams[hash].deferred.promise;
+    return d.promise;
 };
 
 /**
@@ -211,7 +195,7 @@ __.prototype._start = function() {
 
         this.client.on('recovered', function(reason) {
             self.emit('debug', 'recovered from ' + reason);
-            self._resubscribe();
+//            self._resubscribe();
         });
 
         this.attachedListeners = true;
@@ -240,6 +224,37 @@ __.prototype._resubscribe = function () {
             );
         }
     );
+};
+
+/**
+ * Initiates the streaming http connection with datasift, returning a request object.
+ *
+ * @param username
+ * @param apiKey
+ * @param headers   the http request headers
+ *
+ * @return {ServerRequest}
+ */
+__.prototype._connect = function (headers) {
+
+    var hashList = Object.keys(this.streams);
+    var path = '/multi?statuses=true';
+
+    if (hashList.length > 0) {
+        path += "&hashes=" + hashList.join();
+    }
+
+    var options = {
+        host: 'stream.datasift.com',
+        headers: headers,
+        path: path
+    };
+
+    var req = https.request(options);
+
+    req.write('\n');
+
+    return req;
 };
 
 /**
@@ -313,7 +328,19 @@ __.prototype._handleEvent = function (eventData) {
                 }
             );
         }
-    } else if (eventData.status === 'success' || eventData.status === 'warning' ) {
+    } else if (eventData.status === 'success') {
+        var matches = eventData.message.match(/successfully subscribed to hash (\S+)/i);
+        if (matches) {
+            var stream = this.streams[matches[1]];
+            if (stream) {
+                stream.state = 'subscribed';
+                stream.deferred.resolve(stream);
+            }
+        }
+        else {
+            this.emit(eventData.status,eventData.message, eventData);
+        }
+    } else if (eventData.status === 'warning' ) {
         this.emit(eventData.status,eventData.message, eventData);
     } else if (eventData.data !== undefined && eventData.data.deleted === true){
         this.emit('delete', eventData);
@@ -347,7 +374,8 @@ __.prototype._recycle = function() {
         function() {
             self.client.pendingStop = false;
             return self.client.recover();
-        }).then(
+        }
+    ).then(
         function() {
             return self._resubscribe();
         }

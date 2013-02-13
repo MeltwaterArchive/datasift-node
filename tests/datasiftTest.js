@@ -63,7 +63,8 @@ exports["constructor"] = {
             'User-Agent'    : 'DataSiftNodeSDK/0.3.0',
             'Connection'    : 'Keep-Alive',
             'Transfer-Encoding' : 'chunked',
-            'Content-Type'  : 'application/x-www-form-urlencoded; charset=UTF-8'
+            'Content-Type'  : 'application/x-www-form-urlencoded; charset=UTF-8',
+            Auth: 'ds-username:ds-api-key'
         });
 
         test.done();
@@ -201,15 +202,12 @@ exports['createStreamConsumer'] = {
 
     'success' : function(test) {
 
-        test.expect(4);
+        test.expect(2);
 
         var dsc = new DataSiftClient('ds-username', 'ds-api-key');
         var sc = {};
 
-        MonkeyPatcher.patch(StreamConsumer, 'create', function (username, apiKey, headers) {
-
-            test.equal(username, 'ds-username');
-            test.equal(apiKey, 'ds-api-key');
+        MonkeyPatcher.patch(StreamConsumer, 'create', function (headers) {
             test.equal(headers, dsc.headers);
             return sc;
         });

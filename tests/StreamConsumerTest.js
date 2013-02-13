@@ -48,7 +48,9 @@ exports['create'] = {
         cb();
     },
 
-    'success' : function(test) {
+    'sets up connection callback' : function(test) {
+
+        test.expect(2);
 
         var callback;
         var client = {};
@@ -59,9 +61,97 @@ exports['create'] = {
         });
 
         var headers = {};
-        var ds = StreamConsumer.create('username', 'api-key', headers);
+        var ds = StreamConsumer.create(headers);
 
         test.equal(ds.client, client);
+
+        ds._connect = function (httpHeaders) {
+            test.equal(httpHeaders, headers);
+        };
+
+        callback();
+
+        test.done();
+    }
+};
+
+exports['connect'] = {
+
+    setUp: function(cb) {
+
+        MonkeyPatcher.setUp();
+        cb();
+    },
+
+    tearDown: function(cb) {
+
+        MonkeyPatcher.tearDown();
+        cb();
+    },
+
+    "success with no streams": function (test) {
+
+        var headers = {'connection': 'keep-alive'};
+        var ds = StreamConsumer.create(headers);
+
+        ds.hashes = {};
+
+        var req = new EventEmitter();
+
+        req.write = function (data) {
+         test.equal(data, '\n');
+        };
+
+        MonkeyPatcher.patch(https, 'request', function (options) {
+
+            test.deepEqual(options, {
+             host: 'stream.datasift.com',
+             headers: {
+                 'connection': 'keep-alive'
+             },
+             path: '/multi?statuses=true'
+            });
+
+            return req;
+        });
+
+        test.equal(ds._connect(headers), req);
+
+        test.done();
+    },
+
+    "success with multiple streams": function (test) {
+
+        var headers = {'connection': 'keep-alive'};
+        var ds = StreamConsumer.create(headers);
+
+        ds.streams = {
+            'testhash1': 1,
+            'testhash2': 1,
+            'testhash3': 1,
+            'testhash4': 1
+        };
+
+        var req = new EventEmitter();
+
+        req.write = function (data) {
+            test.equal(data, '\n');
+        };
+
+        MonkeyPatcher.patch(https, 'request', function (options) {
+
+            test.deepEqual(options, {
+                host: 'stream.datasift.com',
+                headers: {
+                    'connection': 'keep-alive'
+                },
+                path: '/multi?statuses=true&hashes=testhash1,testhash2,testhash3,testhash4'
+            });
+
+            return req;
+        });
+
+        test.equal(ds._connect(headers), req);
 
         test.done();
     }
@@ -119,6 +209,9 @@ exports['subscribe'] = {
     },
 
     'will reject on a failure to start a connection' : function(test) {
+
+        test.expect(1);
+
         var ds = StreamConsumer.create();
 
         ds._start = function() {
@@ -126,14 +219,8 @@ exports['subscribe'] = {
             return Q.reject();
         };
 
-        test.expect(2);
-
-        ds.subscribe('hash123').then(
+        ds.subscribe('hash123').fail(
             function(hash) {
-                test.ok(false);
-                test.done();
-            }, function(err) {
-                test.ok(true);
                 test.done();
             }
         ).done();
@@ -154,12 +241,8 @@ exports['subscribe'] = {
             return Q.reject();
         };
 
-        ds.subscribe('hash123').then(
-            function(hash) {
-                test.ok(false);
-                test.done();
-            }, function(err) {
-                test.ok(true);
+        ds.subscribe('hash123').fail(
+            function () {
                 test.done();
             }
         ).done();
@@ -178,7 +261,8 @@ exports['subscribeToStream'] = {
         cb();
     },
 
-    'will subscribe to a stream' : function (test) {
+    'will wait for status message' : function (test) {
+
         var client = {
             write : function (body, encoding){
                 test.equal(body,'{"action":"subscribe","hash":"abc123"}' );
@@ -193,12 +277,14 @@ exports['subscribeToStream'] = {
                 test.equal(p.hash, 'abc123');
                 test.ok(ds.streams['abc123'].state, 'subscribed');
                 test.done();
-            }, function(err) {
-                test.ok(false);
-                test.done();
             }
         ).done();
 
+        ds._handleEvent({
+            "status":"success",
+            "message":"Successfully subscribed to hash abc123",
+            "hash":"abc123"
+        });
     },
 
 //    'will reject on non-existent stream' : function(test) {
@@ -230,39 +316,7 @@ exports['subscribeToStream'] = {
         ds.streams['abc123'] = {deferred : mockedDeferred, state: 'pending'};
         test.equal(mockedPromise, ds._subscribeToStream('abc123'));
         test.done();
-    },
-
-//    'will not subscribe to warning twice' : function(test) {
-//        var client = {
-//            write : function (body, encoding){
-//            }
-//        };
-//
-//        var ds = StreamConsumer.create(client);
-//        var count = 0
-//        ds.on('newListener', function(){
-//            if(count > 0){
-//                test.ok(false);
-//                test.done();
-//            }
-//            count++;
-//        });
-//
-//
-//        ds._subscribeToStream('abc123').then(
-//            function(p){
-//                ds._subscribeToStream('123').then(
-//                    function() {
-//                        test.equal(count,1);
-//                        test.done();
-//                    }
-//                )
-//            }, function(err) {
-//                test.ok(false);
-//                test.done();
-//            }
-//        ).done();
-//    }
+    }
 };
 
 exports['start'] = {
@@ -279,37 +333,21 @@ exports['start'] = {
         cb();
     },
 
-    'success' : function(test) {
+    'calls client start' : function(test) {
 
-        test.expect(2);
+        test.expect(1);
 
-        var headers = {};
-        var ds = StreamConsumer.create('username', 'api-key', headers);
+        var ds = StreamConsumer.create('username', 'api-key', {});
 
-        var req = new EventEmitter();
-        var res = new EventEmitter();
+        ds.client = new EventEmitter();
 
-        res.statusCode = 200;
-
-        res.setEncoding = function (enc) {
-            test.equal(enc, 'utf8');
+        ds.client.start = function () {
+            test.ok(true);
         };
 
-        req.write = function (data) {
-            test.equal(data, '\n');
-        };
+        ds._start();
 
-        MonkeyPatcher.patch(https, 'request', function (options) {
-            return req;
-        });
-
-        ds._start().then(
-            function() {
-                test.done();
-            }
-        ).done();
-
-        req.emit('response', res);
+        test.done();
     },
 
     'will call onData when a data event is emitted by the client' : function(test) {
@@ -401,47 +439,47 @@ exports['start'] = {
         ).done();
     },
 
-    'will call resubscribe when a recovered event is emitted by the client' : function(test) {
-
-        test.expect(5);
-
-        var client = {
-            on : function(event, cb) {
-                if(event === 'recovered'){
-                    test.ok(true);
-                    this.cb = cb;
-                }
-            },
-
-            start : function() {
-                test.ok(true);
-                return Q.resolve();
-            },
-
-            emit : function(value, data) {
-                test.equal(value, 'recovered');
-                test.equal(data, 'server end');
-                this.cb(data);
-            }
-        };
-
-        MonkeyPatcher.patch(HttpStream, 'create', function () {
-            return client;
-        });
-
-        var ds = StreamConsumer.create();
-
-        ds._resubscribe = function() {
-            test.ok(true);
-        };
-
-        ds._start().then(
-            function() {
-                ds.client.emit('recovered', 'server end');
-                test.done();
-            }
-        ).done();
-    }
+//    'will call resubscribe when a recovered event is emitted by the client' : function(test) {
+//
+//        test.expect(5);
+//
+//        var client = {
+//            on : function(event, cb) {
+//                if(event === 'recovered'){
+//                    test.ok(true);
+//                    this.cb = cb;
+//                }
+//            },
+//
+//            start : function() {
+//                test.ok(true);
+//                return Q.resolve();
+//            },
+//
+//            emit : function(value, data) {
+//                test.equal(value, 'recovered');
+//                test.equal(data, 'server end');
+//                this.cb(data);
+//            }
+//        };
+//
+//        MonkeyPatcher.patch(HttpStream, 'create', function () {
+//            return client;
+//        });
+//
+//        var ds = StreamConsumer.create();
+//
+//        ds._resubscribe = function() {
+//            test.ok(true);
+//        };
+//
+//        ds._start().then(
+//            function() {
+//                ds.client.emit('recovered', 'server end');
+//                test.done();
+//            }
+//        ).done();
+//    }
 };
 
 exports['resubscribe'] = {

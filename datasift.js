@@ -51,7 +51,8 @@ var __ = function (username, apiKey) {
         'User-Agent'        : 'DataSiftNodeSDK/0.3.0',
         'Connection'        : 'Keep-Alive',
         'Transfer-Encoding' : 'chunked',
-        'Content-Type'      : 'application/x-www-form-urlencoded; charset=UTF-8'
+        'Content-Type'      : 'application/x-www-form-urlencoded; charset=UTF-8',
+        'Auth'              : username + ':' + apiKey
     };
 };
 
@@ -133,7 +134,7 @@ __.prototype.doApiPost = function(endpoint, params) {
  * @return {Object} stream consumer instance
  */
 __.prototype.createStreamConsumer = function() {
-    return StreamConsumer.create(this.username, this.apiKey, this.headers);
+    return StreamConsumer.create(this.headers);
 };
 
 module.exports = __;
