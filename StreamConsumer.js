@@ -36,9 +36,7 @@ var __ = function() {
     EventEmitter.call(this);
 };
 
-__.SUBSCRIBE_WAIT = 750;
 __.INTERACTION_TIMEOUT = 300000;
-__.SUBSCRIPTION_DELAY = 500;
 
 /**
  * creates an instance
@@ -76,6 +74,7 @@ __.prototype.subscribe = function(streamHash) {
 
     return this._start().then(
         function() {
+
             if(!self._validateHash(streamHash)) {
                 return Q.reject('invalid hash: ', streamHash);
             }
@@ -85,13 +84,13 @@ __.prototype.subscribe = function(streamHash) {
 };
 
 /**
- * sets the streams subscribed by means of unsubscribing and subscribing to streams to reflect the state of streamHashes
- * note that DataSift cannot handle a dozen or so asynchronous at once, so each subscribe message is
- * spaced out by 1s
+ * Updates active subscriptions by unsubscribing and subscribing to streams to reflect the state of streamHashes
+ *
  * @param streamHashes - array of stream hashes
  * @return {Array of promises}
  */
 __.prototype.setSubscriptions = function(streamHashes) {
+
     var self = this;
     streamHashes = streamHashes || [];
 
@@ -103,16 +102,10 @@ __.prototype.setSubscriptions = function(streamHashes) {
             return self.unsubscribe(streamHash);
         }
     );
-    var count = -1;
+
     return streamsToSubscribe.map(
         function(streamHash) {
-            count++;
-            return Q.delay(count*__.SUBSCRIPTION_DELAY).then(
-                function () {
-                    return self.subscribe(streamHash);
-                }
-            );
-
+            return self.subscribe(streamHash);
         }).concat(unsubscribedPromises);
 };
 
@@ -127,48 +120,34 @@ __.prototype.unsubscribe = function(hash) {
 
     this.client.write(body, 'utf8');
 
-    var unsubscribedState = this.streams[hash];
-    unsubscribedState.state = 'unsubscribed';
+    var stream = this.streams[hash];
+    stream.state = 'unsubscribed';
     delete this.streams[hash];
 
-    return Q.resolve(unsubscribedState);
+    return Q.resolve(stream);
 };
 
 /**
  * subscribe to a specific stream hash
  * @param hash
- * @return {promise} - return a stream state object
+ * @return {promise} - promise for a stream state object
  * @private
  */
 __.prototype._subscribeToStream = function(hash) {
-    var d = Q.defer();
-    var subscribeMessage = JSON.stringify({'action' : 'subscribe', 'hash' : hash});
-    var self = this;
-
-    //only add listener if it has not been connected
-//    if(!this.attachedSubscribeWarningListener) {
-//        this.on('warning', function(message) {
-//            if(!message.indexOf("The hash",-1)) {
-//                var streamHash = message.split(' ')[2];
-//                if(self.streams.hasOwnProperty(streamHash)) {
-//                    self.streams[streamHash].deferred.reject(message);
-//                    delete self.streams[streamHash];
-//                }
-//            }
-//        });
-//        this.attachedSubscribeWarningListener = true;
-//    }
 
     if(this.streams.hasOwnProperty(hash)) { //already waiting or subscribed
         return this.streams[hash].deferred.promise;
     }
 
-    this.streams[hash] = {};
-    this.streams[hash].deferred = d;
-    this.streams[hash].state = 'pending';
-    this.streams[hash].hash = hash;
+    var d = Q.defer();
 
-    this.client.write(subscribeMessage, 'utf8');
+    this.streams[hash] = {
+        deferred: d,
+        state: 'pending',
+        hash: hash
+    };
+
+    this.client.write(JSON.stringify({'action' : 'subscribe', 'hash' : hash}), 'utf8');
 
     return d.promise;
 };
@@ -195,35 +174,12 @@ __.prototype._start = function() {
 
         this.client.on('recovered', function(reason) {
             self.emit('debug', 'recovered from ' + reason);
-//            self._resubscribe();
         });
 
         this.attachedListeners = true;
     }
 
     return this.client.start();
-};
-
-/**
- * sends subscribe messages to datasift based on streams already subscribed to by this instance
- * @private
- */
-__.prototype._resubscribe = function () {
-
-    var self = this;
-    var streams = Object.keys(this.streams);
-    this.streams = {};
-    this.setSubscriptions(streams).forEach(
-        function(promise){
-            promise.then(
-                function(state) {
-                    self.emit('debug', 'reconnected to stream hash ' + state.hash);
-                }, function(err) {
-                    self.emit('debug', 'failed to reconnect to stream hash ' + ' with error: ' + err);
-                }
-            );
-        }
-    );
 };
 
 /**
@@ -249,6 +205,8 @@ __.prototype._connect = function (headers) {
         headers: headers,
         path: path
     };
+
+//    console.log("connecting to " + options.path);
 
     var req = https.request(options);
 
@@ -321,14 +279,15 @@ __.prototype._handleEvent = function (eventData) {
 
     if (eventData.status === 'failure') {
         if(eventData.message !== 'A stop message was received. You will now be disconnected') {
-            this.emit('error', new Error(eventData.message));
             this.client.recover().then(
                 function() {
                     self._resubscribe();
                 }
             );
         }
-    } else if (eventData.status === 'success') {
+        this.emit('error', new Error(eventData.message));
+    }
+    else if (eventData.status === 'success') {
         var matches = eventData.message.match(/successfully subscribed to hash (\S+)/i);
         if (matches) {
             var stream = this.streams[matches[1]];
@@ -337,16 +296,19 @@ __.prototype._handleEvent = function (eventData) {
                 stream.deferred.resolve(stream);
             }
         }
-        else {
-            this.emit(eventData.status,eventData.message, eventData);
-        }
-    } else if (eventData.status === 'warning' ) {
+
         this.emit(eventData.status,eventData.message, eventData);
-    } else if (eventData.data !== undefined && eventData.data.deleted === true){
+    }
+    else if (eventData.status === 'warning' ) {
+        this.emit(eventData.status,eventData.message, eventData);
+    }
+    else if (eventData.data !== undefined && eventData.data.deleted === true){
         this.emit('delete', eventData);
-    } else if (eventData.tick !== undefined) {
+    }
+    else if (eventData.tick !== undefined) {
         this.emit('tick', eventData);
-    } else if (eventData.data !== undefined && eventData.data.interaction !== undefined) {
+    }
+    else if (eventData.data !== undefined && eventData.data.interaction !== undefined) {
 
         //if there are no interactions emitted for the INTERACTION_TIMEOUT duration,
         //then the connection is recycled, which means a new underlying http connection will be created.
@@ -355,7 +317,8 @@ __.prototype._handleEvent = function (eventData) {
             self._recycle();
         }, __.INTERACTION_TIMEOUT);
         this.emit('interaction', eventData);
-    } else {
+    }
+    else {
         this.emit('unknownEvent', eventData);
     }
 };
@@ -374,10 +337,6 @@ __.prototype._recycle = function() {
         function() {
             self.client.pendingStop = false;
             return self.client.recover();
-        }
-    ).then(
-        function() {
-            return self._resubscribe();
         }
     ).fail(
         function(err) {

@@ -251,13 +251,15 @@ exports['subscribe'] = {
 
 exports['subscribeToStream'] = {
 
-    setUp: function (cb) {
-        StreamConsumer.SUBSCRIBE_WAIT = 50;
+    setUp: function(cb) {
+
+        MonkeyPatcher.setUp();
         cb();
     },
 
-    tearDown : function (cb) {
-        StreamConsumer.SUBSCRIBE_WAIT = 50;
+    tearDown: function(cb) {
+
+        MonkeyPatcher.tearDown();
         cb();
     },
 
@@ -269,7 +271,11 @@ exports['subscribeToStream'] = {
             }
         };
 
-        var ds = StreamConsumer.create(client);
+        MonkeyPatcher.patch(HttpStream, 'create', function (cb) {
+            return client;
+        });
+
+        var ds = StreamConsumer.create();
 
         ds._subscribeToStream('abc123').then(
             function(p){
@@ -437,77 +443,6 @@ exports['start'] = {
                 test.done();
             }
         ).done();
-    },
-
-//    'will call resubscribe when a recovered event is emitted by the client' : function(test) {
-//
-//        test.expect(5);
-//
-//        var client = {
-//            on : function(event, cb) {
-//                if(event === 'recovered'){
-//                    test.ok(true);
-//                    this.cb = cb;
-//                }
-//            },
-//
-//            start : function() {
-//                test.ok(true);
-//                return Q.resolve();
-//            },
-//
-//            emit : function(value, data) {
-//                test.equal(value, 'recovered');
-//                test.equal(data, 'server end');
-//                this.cb(data);
-//            }
-//        };
-//
-//        MonkeyPatcher.patch(HttpStream, 'create', function () {
-//            return client;
-//        });
-//
-//        var ds = StreamConsumer.create();
-//
-//        ds._resubscribe = function() {
-//            test.ok(true);
-//        };
-//
-//        ds._start().then(
-//            function() {
-//                ds.client.emit('recovered', 'server end');
-//                test.done();
-//            }
-//        ).done();
-//    }
-};
-
-exports['resubscribe'] = {
-    'basics' : function(test) {
-        var ds = StreamConsumer.create();
-
-        ds.streams['123'] = '123';
-        ds.streams['456'] = '456';
-        ds.streams['abc'] = 'abc';
-
-        ds.setSubscriptions = function(streams) {
-            test.deepEqual(streams, ['123', '456', 'abc']);
-            test.deepEqual(this.streams, {});
-            return [Q.resolve({hash : '123'}), Q.reject('an error'), Q.resolve({hash : 'abc'})];
-        };
-
-        var count = 0;
-
-        ds.on('debug', function(state) {
-            test.ok(true);
-            count++;
-            if(count === 3) {
-                test.done();
-            }
-        });
-
-        test.expect(5);
-        ds._resubscribe();
     }
 };
 
@@ -693,7 +628,21 @@ exports['shutdown'] = {
 };
 
 exports['unsubscribe'] = {
+
+    setUp: function(cb) {
+
+        MonkeyPatcher.setUp();
+        cb();
+    },
+
+    tearDown: function(cb) {
+
+        MonkeyPatcher.tearDown();
+        cb();
+    },
+
     'success' : function(test) {
+
         var client = {
             write : function(contents) {
                 test.equal(contents, JSON.stringify({'action' : 'unsubscribe', 'hash' : 'abc123'}));
@@ -703,6 +652,10 @@ exports['unsubscribe'] = {
                 return Q.resolve();
             }
         };
+
+        MonkeyPatcher.patch(HttpStream, 'create', function () {
+            return client;
+        });
 
         var ds = StreamConsumer.create(client);
 
@@ -806,6 +759,8 @@ exports['recycle'] = {
 
     'success' : function(test) {
 
+        test.expect(2);
+
         var client = {
             stop : function () {
                 test.ok(true);
@@ -824,19 +779,8 @@ exports['recycle'] = {
 
         var ds = StreamConsumer.create();
 
-        ds._resubscribe = function() {
-            test.ok(true);
-            return Q.resolve();
-        };
-
-        test.expect(4);
         ds._recycle().then(
             function() {
-                test.ok(true);
-                test.done();
-            }, function(err) {
-                console.log(err);
-                test.ok(false);
                 test.done();
             }
         ).done();
