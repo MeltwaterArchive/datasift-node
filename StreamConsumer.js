@@ -65,25 +65,6 @@ __.create = function(headers) {
 __.prototype = Object.create(EventEmitter.prototype);
 
 /**
- * subscribes to a single streams.
- * @param streamHash - stream hash provided by datasift.
- * @return {promise}
- */
-__.prototype.subscribe = function(streamHash) {
-    var self = this;
-
-    return this._start().then(
-        function() {
-
-            if(!self._validateHash(streamHash)) {
-                return Q.reject('invalid hash: ', streamHash);
-            }
-            return self._subscribeToStream(streamHash);
-        }
-    );
-};
-
-/**
  * Updates active subscriptions by unsubscribing and subscribing to streams to reflect the state of streamHashes
  *
  * @param streamHashes - array of stream hashes
@@ -103,10 +84,35 @@ __.prototype.setSubscriptions = function(streamHashes) {
         }
     );
 
-    return streamsToSubscribe.map(
+    var result = streamsToSubscribe.map(
         function(streamHash) {
             return self.subscribe(streamHash);
         }).concat(unsubscribedPromises);
+
+    if (this.client.started() == false) {
+        this._start();
+    }
+
+    return result;
+};
+
+/**
+ * subscribes to a single streams.
+ * @param streamHash - stream hash provided by datasift.
+ * @return {promise}
+ */
+__.prototype.subscribe = function(streamHash) {
+    var self = this;
+
+    return this._start().then(
+        function() {
+
+            if(!self._validateHash(streamHash)) {
+                return Q.reject('invalid hash: ', streamHash);
+            }
+            return self._subscribeToStream(streamHash);
+        }
+    );
 };
 
 /**
@@ -118,7 +124,9 @@ __.prototype.unsubscribe = function(hash) {
 
     var body = JSON.stringify({'action' : 'unsubscribe', 'hash' : hash});
 
-    this.client.write(body, 'utf8');
+    if (this.client.started()) {
+        this.client.write(body, 'utf8');
+    }
 
     var stream = this.streams[hash];
     stream.state = 'unsubscribed';
@@ -147,7 +155,9 @@ __.prototype._subscribeToStream = function(hash) {
         hash: hash
     };
 
-    this.client.write(JSON.stringify({'action' : 'subscribe', 'hash' : hash}), 'utf8');
+    if (this.client.started()) {
+        this.client.write(JSON.stringify({'action' : 'subscribe', 'hash' : hash}), 'utf8');
+    }
 
     return d.promise;
 };
@@ -157,22 +167,22 @@ __.prototype._subscribeToStream = function(hash) {
  * @return {promise}
  * @private
  */
-__.prototype._start = function() {
+__.prototype._start = function () {
 
     var self = this;
 
     if(!this.attachedListeners) {
 
-        this.client.on('data', function(chunk, statusCode) {
+        this.client.on('data', function (chunk, statusCode) {
             self._onData(chunk, statusCode);
         });
 
-        this.client.on('end', function(statusCode){
+        this.client.on('end', function (statusCode){
             self.emit('warning','end event received with status code ' + statusCode);
             self._onEnd(statusCode);
         });
 
-        this.client.on('recovered', function(reason) {
+        this.client.on('recovered', function (reason) {
             self.emit('debug', 'recovered from ' + reason);
         });
 
@@ -206,8 +216,6 @@ __.prototype._connect = function (headers) {
         path: path
     };
 
-//    console.log("connecting to " + options.path);
-
     var req = https.request(options);
 
     req.write('\n');
@@ -222,7 +230,6 @@ __.prototype._connect = function (headers) {
 __.prototype.shutdown = function () {
 
     this.attachedListeners = false;
-    this.attachedSubscribeWarningListener = false;
     this.streams = {};
     clearTimeout(this.interactionTimeout);
     this.client.write(JSON.stringify({'action' : 'stop'}));
@@ -276,6 +283,7 @@ __.prototype._onEnd = function(statusCode) {
 __.prototype._handleEvent = function (eventData) {
 
     var self = this;
+    var matches, stream;
 
     if (eventData.status === 'failure') {
         if(eventData.message !== 'A stop message was received. You will now be disconnected') {
@@ -288,9 +296,10 @@ __.prototype._handleEvent = function (eventData) {
         this.emit('error', new Error(eventData.message));
     }
     else if (eventData.status === 'success') {
-        var matches = eventData.message.match(/successfully subscribed to hash (\S+)/i);
+
+        matches = eventData.message.match(/successfully subscribed to hash (\S+)/i);
         if (matches) {
-            var stream = this.streams[matches[1]];
+            stream = this.streams[matches[1]];
             if (stream) {
                 stream.state = 'subscribed';
                 stream.deferred.resolve(stream);
@@ -300,7 +309,17 @@ __.prototype._handleEvent = function (eventData) {
         this.emit(eventData.status,eventData.message, eventData);
     }
     else if (eventData.status === 'warning' ) {
-        this.emit(eventData.status,eventData.message, eventData);
+
+        matches = eventData.message.match(/The hash (\S+) doesn't exist/i);
+        if (matches) {
+            stream = this.streams[matches[1]];
+            if (stream) {
+                stream.deferred.reject(eventData.message);
+                delete this.streams[matches[1]];
+            }
+        }
+
+        this.emit(eventData.status, eventData.message, eventData);
     }
     else if (eventData.data !== undefined && eventData.data.deleted === true){
         this.emit('delete', eventData);

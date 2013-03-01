@@ -266,6 +266,10 @@ exports['subscribeToStream'] = {
     'will wait for status message' : function (test) {
 
         var client = {
+            started: function () {
+                return true;
+            },
+
             write : function (body, encoding){
                 test.equal(body,'{"action":"subscribe","hash":"abc123"}' );
             }
@@ -293,27 +297,60 @@ exports['subscribeToStream'] = {
         });
     },
 
-//    'will reject on non-existent stream' : function(test) {
-//        var client = {
-//            write : function (body, encoding){
-//                test.equal(body,'{"action":"subscribe","hash":"abc123"}' );
-//            }
-//        };
-//
-//        var ds = StreamConsumer.create(client);
-//
-//        ds._subscribeToStream('abc123').then(
-//            function(){
-//                test.ok(false);
-//                test.done();
-//            }, function(err){
-//                test.ok(!ds.streams.hasOwnProperty('abc123'));
-//                test.equal(err,"The hash abc123 doesn't exist");
-//                test.done();
-//            }
-//        )
-//        ds.emit('warning', "The hash abc123 doesn't exist");
-//    },
+    "won't write if not started" : function (test) {
+
+        var client = {
+            started: function () {
+                return false;
+            },
+
+            write : function (body, encoding){
+                test.fail();
+            }
+        };
+
+        var ds = StreamConsumer.create();
+
+        ds._subscribeToStream('abc123').then(
+            function(p){
+                test.equal(p.state, 'subscribed');
+                test.equal(p.hash, 'abc123');
+                test.ok(ds.streams['abc123'].state, 'subscribed');
+                test.done();
+            }
+        ).done();
+
+        ds._handleEvent({
+            "status":"success",
+            "message":"Successfully subscribed to hash abc123",
+            "hash":"abc123"
+        });
+    },
+
+    'will reject on non-existent stream' : function(test) {
+
+        var client = {
+            write : function (body, encoding){
+                test.equal(body,'{"action":"subscribe","hash":"abc123"}' );
+            }
+        };
+
+        var ds = StreamConsumer.create(client);
+
+        ds._subscribeToStream('abc123').fail(
+            function(err){
+                test.ok(!ds.streams.hasOwnProperty('abc123'));
+                test.equal(err, "The hash abc123 doesn't exist");
+                test.done();
+            }
+        );
+
+        ds._handleEvent({
+            "status":"warning",
+            "message":"The hash abc123 doesn't exist",
+            "hash":"abc123"
+        });
+    },
 
     'will return existing promise if attempting to subscribe already pending' : function(test) {
         var ds = StreamConsumer.create();
@@ -509,15 +546,18 @@ exports['handleEvent'] = {
 
     'will emit warning if data json status is a warning' : function (test) {
         var ds = StreamConsumer.create();
-        var eventData = {};
-        eventData.status = 'warning';
+
+        var eventData = {
+            status: 'warning',
+            message: 'oh no!'
+        };
+
         test.expect(1);
         ds.on('warning', function (err) {
-            test.ok(true);
+            test.equal(err, 'oh no!');
             test.done();
         });
         ds._handleEvent(eventData);
-
     },
 
     'will emit delete if data is defined but delete flag is set' : function (test) {
@@ -641,15 +681,41 @@ exports['unsubscribe'] = {
         cb();
     },
 
+    "won't write if not started" : function(test) {
+
+        var client = {
+            started: function () {
+                return false;
+            },
+            write : function(contents) {
+                test.fail();
+            }
+        };
+
+        MonkeyPatcher.patch(HttpStream, 'create', function () {
+            return client;
+        });
+
+        var ds = StreamConsumer.create(client);
+
+        ds.streams['abc123'] = {hash: 'abc123', state : 'subscribed'};
+        ds.unsubscribe('abc123').then(
+            function(unsub) {
+                test.equal(unsub.hash, 'abc123');
+                test.equal(unsub.state, 'unsubscribed');
+                test.done();
+            }
+        ).done();
+    },
+
     'success' : function(test) {
 
         var client = {
+            started: function () {
+                return true;
+            },
             write : function(contents) {
                 test.equal(contents, JSON.stringify({'action' : 'unsubscribe', 'hash' : 'abc123'}));
-            },
-            stop : function() {
-                test.ok(true);
-                return Q.resolve();
             }
         };
 
@@ -675,6 +741,7 @@ exports['unsubscribe'] = {
 };
 
 exports['onData'] = {
+
     'success' : function (test) {
         var ds = StreamConsumer.create();
         var testData = [];
@@ -704,7 +771,6 @@ exports['onData'] = {
         test.deepEqual(testData,expectedData);
         test.equal(ds.responseData, '{"d":');
         test.done();
-
     },
 
     'will put partial data chunks together' : function(test) {
@@ -868,6 +934,7 @@ exports["hashArrayDifference"] = {
 };
 
 exports['setSubscriptions'] = {
+
     setUp : function(cb) {
         StreamConsumer.SUBSCRIPTION_DELAY = 10;
         cb();
@@ -878,10 +945,58 @@ exports['setSubscriptions'] = {
         cb();
     },
 
-    'success' : function(test) {
+    'starts after subscribe if not already started': function (test) {
+
+        test.expect(5);
+
         var ds = StreamConsumer.create();
+        var hashes = ['abc123', 'aac8a9'];
+        var startPromises = [];
+
+        ds.client = {
+            started: function () {
+                return false;
+            }
+        };
+
+        ds._start = function () {
+            test.ok(true);
+        };
+
+        var subCount = 0;
+
+        ds.subscribe = function(hash){
+            test.equal(hash, hashes[subCount++]);
+            var p = Q.resolve(hash);
+            startPromises.push(p);
+            return p;
+        };
+
+        ds.setSubscriptions(hashes).forEach(
+            function (p) {
+                test.equal(p, startPromises.shift());
+            }
+        );
+
+        test.done();
+    },
+
+    'success' : function(test) {
 
         test.expect(4);
+
+        var ds = StreamConsumer.create();
+
+        ds.client = {
+            start: function () {
+                test.fail()
+            },
+
+            started: function () {
+                return true;
+            }
+        };
+
         ds._start = function() {
             test.ok(true);
             return Q.resolve();
@@ -901,16 +1016,25 @@ exports['setSubscriptions'] = {
             function(h) {
                 test.equal(h,'abc123');
                 test.done();
-            }, function(err) {
-                test.ok(false);
-                test.done();
             }
         ).done();
     },
 
     'will reject if client fails to connect' : function(test){
-        var ds = StreamConsumer.create();
         test.expect(2);
+
+        var ds = StreamConsumer.create();
+
+        ds.client = {
+            start: function () {
+                test.fail()
+            },
+
+            started: function () {
+                return true;
+            }
+        };
+
         ds._start = function() {
             test.ok(true);
             return Q.reject();
@@ -929,8 +1053,21 @@ exports['setSubscriptions'] = {
 
 
     'will reject if subscribe fails' : function(test) {
-        var ds = StreamConsumer.create();
+
         test.expect(4);
+
+        var ds = StreamConsumer.create();
+
+        ds.client = {
+            start: function () {
+                test.fail()
+            },
+
+            started: function () {
+                return true;
+            }
+        };
+
         ds._start = function() {
             test.ok(true);
             return Q.resolve();
@@ -958,8 +1095,20 @@ exports['setSubscriptions'] = {
     },
 
     'will reject an invalid formatted hash' : function(test) {
+
+        test.expect(1);
+
         var ds = StreamConsumer.create();
-        test.expect(2);
+
+        ds.client = {
+            start: function () {
+                test.fail()
+            },
+
+            started: function () {
+                return true;
+            }
+        };
 
         ds._start = function() {
             return Q.resolve();
@@ -970,27 +1119,35 @@ exports['setSubscriptions'] = {
             return false;
         };
 
-        ds.setSubscriptions(['1'])[0].then(
-            function(p) {
-                test.ok(false);
-                test.done();
-            }, function(err) {
-                test.ok(true);
+        ds.setSubscriptions(['1'])[0].fail(
+            function(err) {
                 test.done();
             }
         ).done();
     },
 
     'will unsubscribe if the subscribe object is has removed it' : function(test) {
+
+        test.expect(2);
+
         var ds = StreamConsumer.create();
+
+        ds.client = {
+            start: function () {
+                test.fail()
+            },
+
+            started: function () {
+                return true;
+            }
+        };
+
         ds.streams['abc123'] = {};
 
         ds.unsubscribe = function(hash) {
             test.equal(hash, 'abc123');
             return Q.resolve({state : 'unsubscribed'});
         };
-
-        test.expect(2);
 
         ds.setSubscriptions([]).forEach(
             function(promise) {
@@ -1005,9 +1162,21 @@ exports['setSubscriptions'] = {
     },
 
     'will handle an dictionary of hashes' : function(test) {
-        var ds = StreamConsumer.create();
 
         test.expect(6);
+
+        var ds = StreamConsumer.create();
+
+        ds.client = {
+            start: function () {
+                test.fail()
+            },
+
+            started: function () {
+                return true;
+            }
+        };
+
         var set = {
             'key1' : undefined,
             'key2' : undefined
@@ -1045,9 +1214,21 @@ exports['setSubscriptions'] = {
     },
 
     'will handle a dictionary of hashes with both valid and invalid hashes' : function(test) {
-        var ds = StreamConsumer.create();
 
         test.expect(13);
+
+        var ds = StreamConsumer.create();
+
+        ds.client = {
+            start: function () {
+                test.fail()
+            },
+
+            started: function () {
+                return true;
+            }
+        };
+
         var setOfValidHashes = {
             'key3' : undefined,
             'key4' : undefined
