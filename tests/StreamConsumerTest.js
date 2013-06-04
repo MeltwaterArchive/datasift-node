@@ -603,21 +603,26 @@ exports['handleEvent'] = {
 
     'will call recycle if no interactions are processed over a long period of time' : function (test) {
 
-        test.expect(2);
+        test.expect(1);
 
         var interactionData = {'test' : 'abc', 'name' : 'jon', 'number' : 1};
         var eventData = { 'hash': '123' , 'data' : {'interaction': interactionData}};
 
-        this.ds.on('interaction', function (data) {
+        this.ds._restartInteractionTimeout = function(){
             test.ok(true);
-        });
-
-        this.ds._recycle = function () {
-            test.ok(true);
-            test.done();
         };
 
+//        this.ds.on('interaction', function (data) {
+//            test.ok(true);
+//        });
+//
+//        this.ds._recycle = function () {
+//            test.ok(true);
+//            test.done();
+//        };
+
         this.ds._handleEvent(eventData);
+        test.done();
     }
 };
 
@@ -947,7 +952,7 @@ exports['setSubscriptions'] = {
 
     'starts after subscribe if not already started': function (test) {
 
-        test.expect(5);
+        test.expect(6);
 
         var ds = StreamConsumer.create();
         var hashes = ['abc123', 'aac8a9'];
@@ -957,6 +962,10 @@ exports['setSubscriptions'] = {
             started: function () {
                 return false;
             }
+        };
+
+        ds._restartInteractionTimeout = function(){
+            test.ok(true);
         };
 
         ds._start = function () {
@@ -983,7 +992,7 @@ exports['setSubscriptions'] = {
 
     'success' : function(test) {
 
-        test.expect(4);
+        test.expect(5);
 
         var ds = StreamConsumer.create();
 
@@ -1000,6 +1009,10 @@ exports['setSubscriptions'] = {
         ds._start = function() {
             test.ok(true);
             return Q.resolve();
+        };
+
+        ds._restartInteractionTimeout = function(){
+            test.ok(true);
         };
 
         ds._subscribeToStream = function(hash){
@@ -1021,7 +1034,7 @@ exports['setSubscriptions'] = {
     },
 
     'will reject if client fails to connect' : function(test){
-        test.expect(2);
+        test.expect(3);
 
         var ds = StreamConsumer.create();
 
@@ -1033,6 +1046,10 @@ exports['setSubscriptions'] = {
             started: function () {
                 return true;
             }
+        };
+
+        ds._restartInteractionTimeout = function(){
+            test.ok(true);
         };
 
         ds._start = function() {
@@ -1054,7 +1071,7 @@ exports['setSubscriptions'] = {
 
     'will reject if subscribe fails' : function(test) {
 
-        test.expect(4);
+        test.expect(5);
 
         var ds = StreamConsumer.create();
 
@@ -1071,6 +1088,10 @@ exports['setSubscriptions'] = {
         ds._start = function() {
             test.ok(true);
             return Q.resolve();
+        };
+
+        ds._restartInteractionTimeout = function(){
+            test.ok(true);
         };
 
         ds._validateHash = function(hash) {
@@ -1096,7 +1117,7 @@ exports['setSubscriptions'] = {
 
     'will reject an invalid formatted hash' : function(test) {
 
-        test.expect(1);
+        test.expect(2);
 
         var ds = StreamConsumer.create();
 
@@ -1114,6 +1135,10 @@ exports['setSubscriptions'] = {
             return Q.resolve();
         };
 
+        ds._restartInteractionTimeout = function(){
+            test.ok(true);
+        };
+
         ds._validateHash = function(hash) {
             test.ok(true);
             return false;
@@ -1128,7 +1153,7 @@ exports['setSubscriptions'] = {
 
     'will unsubscribe if the subscribe object is has removed it' : function(test) {
 
-        test.expect(2);
+        test.expect(3);
 
         var ds = StreamConsumer.create();
 
@@ -1149,6 +1174,10 @@ exports['setSubscriptions'] = {
             return Q.resolve({state : 'unsubscribed'});
         };
 
+        ds._restartInteractionTimeout = function(){
+            test.ok(true);
+        };
+
         ds.setSubscriptions([]).forEach(
             function(promise) {
                 promise.then(
@@ -1163,7 +1192,7 @@ exports['setSubscriptions'] = {
 
     'will handle an dictionary of hashes' : function(test) {
 
-        test.expect(6);
+        test.expect(7);
 
         var ds = StreamConsumer.create();
 
@@ -1186,6 +1215,10 @@ exports['setSubscriptions'] = {
         ds._start = function() {
             test.ok(true);
             return Q.resolve();
+        };
+
+        ds._restartInteractionTimeout = function(){
+            test.ok(true);
         };
 
         ds._subscribeToStream = function(hash){
@@ -1215,7 +1248,7 @@ exports['setSubscriptions'] = {
 
     'will handle a dictionary of hashes with both valid and invalid hashes' : function(test) {
 
-        test.expect(13);
+        test.expect(14);
 
         var ds = StreamConsumer.create();
 
@@ -1232,6 +1265,10 @@ exports['setSubscriptions'] = {
         var setOfValidHashes = {
             'key3' : undefined,
             'key4' : undefined
+        };
+
+        ds._restartInteractionTimeout = function(){
+            test.ok(true);
         };
 
         var hashes = ['key1', 'key2', 'key3', 'key4'];
@@ -1270,5 +1307,30 @@ exports['setSubscriptions'] = {
                 ).done();
             }
         );
+    }
+};
+
+exports['restartInteractionTimeout'] = {
+
+    setUp : function(cb) {
+        StreamConsumer.INTERACTION_TIMEOUT = 10;
+        cb();
+    },
+
+    tearDown : function(cb) {
+        StreamConsumer.INTERACTION_TIMEOUT = 30000;
+        cb();
+    },
+
+    'success' : function(test) {
+        var ds = StreamConsumer.create();
+
+        test.expect(1);
+
+        ds._recycle = function() {
+            test.ok(true);
+            test.done();
+        };
+        ds._restartInteractionTimeout();
     }
 };

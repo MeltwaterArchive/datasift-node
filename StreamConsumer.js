@@ -75,6 +75,8 @@ __.prototype.setSubscriptions = function(streamHashes) {
     var self = this;
     streamHashes = streamHashes || [];
 
+    this._restartInteractionTimeout();
+
     var streamsToSubscribe = this._arrayDifference(streamHashes, Object.keys(this.streams));
     var streamsToUnsubscribe = this._arrayDifference(Object.keys(this.streams), streamHashes);
 
@@ -331,10 +333,7 @@ __.prototype._handleEvent = function (eventData) {
 
         //if there are no interactions emitted for the INTERACTION_TIMEOUT duration,
         //then the connection is recycled, which means a new underlying http connection will be created.
-        clearTimeout(this.interactionTimeout);
-        this.interactionTimeout = setTimeout(function(){
-            self._recycle();
-        }, __.INTERACTION_TIMEOUT);
+        this._restartInteractionTimeout();
         this.emit('interaction', eventData);
     }
     else {
@@ -396,6 +395,18 @@ __.prototype._arrayDifference = function(array1, array2) {
     }
 
     return array1.filter(function(i) {return !(array2.indexOf(i) > -1);});
+};
+
+/**
+ * resets the interaction timeout
+ * @private
+ */
+__.prototype._restartInteractionTimeout = function() {
+    var self = this;
+    clearTimeout(this.interactionTimeout);
+    this.interactionTimeout = setTimeout(function(){
+        self._recycle();
+    }, __.INTERACTION_TIMEOUT);
 };
 
 module.exports = __;
