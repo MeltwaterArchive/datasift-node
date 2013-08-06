@@ -1,19 +1,33 @@
 {
-    "name": "datasift",
-    "version": "0.3.0",
-    "description": "DataSift streaming API consumer",
-    "main": "datasift.js",
-    "keywords": [
-        "datasift",
-        "twitter",
-        "streaming"
-    ],
-    "dependencies": {
-        "q": "",
-        "tenacious-http": ""
-    },
-    "devDependencies": {
-        "nock": "",
-        "monkey-patcher": ""
-    }
+  "name": "datasift-sdk",
+  "version": "0.3.0",
+  "description": "DataSift streaming API consumer",
+  "main": "datasift.js",
+  "keywords": [
+    "datasift",
+    "twitter",
+    "streaming"
+  ],
+  "dependencies": {
+    "q": "",
+    "tenacious-http": ""
+  },
+  "devDependencies": {
+    "nock": "",
+    "monkey-patcher": ""
+  },
+  "readmeFilename": "README.md",
+  "gitHead": "6396215b4bf893c554f54a6a56117f7cb54faf37",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/LocalResponse/node-sdk.git"
+  },
+  "author": "LocalResponse",
+  "license": "BSD"
 }

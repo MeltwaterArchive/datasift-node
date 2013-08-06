@@ -8,7 +8,7 @@ Note: this module uses promises (via the Q library) and events, not callbacks.
 - You have a DataSift account (username and API key) available from http://datasift.com
 
 ## Install
-- Using npm `npm install datasift-node-sdk`
+- Using npm `npm install datasift-sdk`
 
 ## General usage
 
