@@ -1,6 +1,6 @@
 {
-  "name": "datasift-sdk",
-  "version": "0.3.0",
+  "name": "datasift-node",
+  "version": "0.4.0",
   "description": "DataSift streaming API consumer",
   "main": "datasift.js",
   "keywords": [
@@ -26,8 +26,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/LocalResponse/node-sdk.git"
+    "url": "git://github.com/datasift/datasift-node.git"
   },
-  "author": "LocalResponse",
+  "author": "DataSift",
   "license": "BSD"
 }
