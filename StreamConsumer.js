@@ -188,9 +188,10 @@ __.prototype._connect = function (headers) {
     var options = {
         host: 'stream.datasift.com',
         headers: headers,
-        path: path
+        path: path,
+        secureProtocol: 'TLSv1_method'
     };
-
+    options.agent = new https.Agent(options);
     var req = https.request(options);
 
     req.write('\n');
