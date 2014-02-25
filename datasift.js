@@ -21,13 +21,6 @@ var __ = function (username, apiKey) {
     }
     this.username = username;
     this.apiKey = apiKey;
-    this.headers = {
-        'User-Agent'        : 'DataSiftNodeSDK/0.3.0',
-        'Connection'        : 'Keep-Alive',
-        'Transfer-Encoding' : 'chunked',
-        'Content-Type'      : 'application/x-www-form-urlencoded; charset=UTF-8',
-        'Auth'              : username + ':' + apiKey
-    };
 };
 
 ////////////////////////////////////////////////////////////////////////////
@@ -39,17 +32,23 @@ var __ = function (username, apiKey) {
 __.prototype.doApiPost = function(endpoint, params) {
 
     var d = Q.defer();
-    var postBody = qs.stringify(params);
+    var postBody = JSON.stringify(params);
 
-    var options = {
-        host: 'api.datasift.com',
-        path: '/' + endpoint,
-        method: 'POST',
-        headers: this.headers,
-        auth: this.username + ':' + this.apiKey
+    var headers = {
+      'Content-Type': 'application/json',
+      'Content-Length': postBody.length
     };
 
-    options.headers["Content-Length"] = postBody.length;
+    var options = {
+      host: 'api.datasift.com',
+      path: '/' + endpoint,
+      method: 'POST',
+      secureProtocol: 'TLSv1_method',
+      auth: this.username + ':' + this.apiKey,
+      headers: headers
+    };
+
+    options.agent = new https.Agent(options);
 
     var req = https.request(options, function(res) {
 
@@ -108,7 +107,16 @@ __.prototype.doApiPost = function(endpoint, params) {
  * @return {Object} stream consumer instance
  */
 __.prototype.createStreamConsumer = function() {
-    return StreamConsumer.create(this.headers);
+
+    var headers = {
+        'User-Agent'        : 'DataSiftNodeSDK/0.3.0',
+        'Connection'        : 'Keep-Alive',
+        'Transfer-Encoding' : 'chunked',
+        'Content-Type'      : 'application/x-www-form-urlencoded; charset=UTF-8',
+        'Auth'              : this.username + ':' + this.apiKey
+    };
+
+    return StreamConsumer.create(headers);
 };
 
 module.exports = __;
