@@ -1,0 +1,37 @@
+{
+    "validate": {
+        "uri": "https://api.datasift.com/v1/validate",
+        "method": "post",
+        "params": [{
+            "name": "csdl",
+            "type": "string",
+            "required": true
+        }]
+    },
+    "compile": {
+        "uri": "https://api.datasift.com/v1/compile",
+        "method": "post",
+        "params": [{
+            "name": "csdl",
+            "type": "string",
+            "required": true
+        }]
+    },
+    "stream": {
+        "uri": "https://api.datasift.com/v1/stream",
+        "method": "get",
+        "params": [{
+            "name": "hash",
+            "type": "string",
+            "required": true
+        }, {
+            "name": "interaction_id",
+            "type": "string",
+            "required": false
+        }, {
+            "name": "count",
+            "type": "int",
+            "required": false
+        }]
+    }
+}
