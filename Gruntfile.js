@@ -22,10 +22,17 @@ module.exports = function (grunt) {
 					outdir: 'docs'
 				}
 			}
+		},
+		'gh-pages': {
+			options: {
+				base: 'docs'
+			},
+			src: ['**']
 		}
 	});
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-nodeunit');
 	grunt.loadNpmTasks('grunt-contrib-yuidoc');
-	grunt.registerTask('default', ['jshint', 'nodeunit', 'yuidoc']);
+	grunt.loadNpmTasks('grunt-gh-pages');
+	grunt.registerTask('default', ['jshint', 'nodeunit', 'yuidoc', 'gh-pages']);
 };

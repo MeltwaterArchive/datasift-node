@@ -68,7 +68,7 @@
         },
         {
             "file": "lib/datasift.js",
-            "line": 55,
+            "line": 62,
             "description": "Dispatch the API method\n\nThis method uses the definition file in order to validate the endpoint, then\nit will dispatch the API method using the `request` node library.\n\nTake special notice of the `TLSv1_method` secure protocol that the DataSift API\nuses",
             "itemtype": "method",
             "name": "_dispatch",
@@ -99,7 +99,7 @@
         },
         {
             "file": "lib/datasift.js",
-            "line": 133,
+            "line": 140,
             "description": "Subscribe to one or multiple hashes",
             "chainable": 1,
             "params": [
@@ -119,7 +119,7 @@
         },
         {
             "file": "lib/datasift.js",
-            "line": 142,
+            "line": 149,
             "description": "Unsubscribe to the given hash or hashes",
             "chainable": 1,
             "params": [
@@ -136,11 +136,11 @@
     "warnings": [
         {
             "message": "Missing item type\nSubscribe to one or multiple hashes",
-            "line": " lib/datasift.js:133"
+            "line": " lib/datasift.js:140"
         },
         {
             "message": "Missing item type\nUnsubscribe to the given hash or hashes",
-            "line": " lib/datasift.js:142"
+            "line": " lib/datasift.js:149"
         }
     ]
 }

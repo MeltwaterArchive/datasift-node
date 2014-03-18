@@ -136,7 +136,14 @@ var DataSift = function (username, apikey, version) {
  */
 DataSift.prototype._setupRoutes = function () {
 	Object.keys(this.definition).forEach(function (key) {
-		this[key] = this._dispatch.bind(this, this.definition[key]);
+		if (this.definition[key].uri !== undefined) {
+			this[key] = this._dispatch.bind(this, this.definition[key]);
+		} else {
+			this[key] = {};
+			Object.keys(this.definition[key]).forEach(function (subkey) {
+				this[key][subkey] = this._dispatch.bind(this, this.definition[key][subkey]);
+			}.bind(this));
+		}
 	}.bind(this));
 };
 

@@ -19,13 +19,36 @@ exports.constructor = function (test) {
 	test.equals(username, ds.username);
 	test.equals(apikey, ds.apikey);
 
-	// test to make sure we have the correct object
-	Object.keys(definition).forEach(function (key) {
-		test.ok(ds[key]);
+	var crawl = function (obj, callback, parents) {
+
+		if (!parents) {
+			parents = [];
+		}
+
+		for (var key in obj) {
+			if (obj.hasOwnProperty(key)) {
+				if (obj[key].uri === undefined) {
+					// not an enpoint
+					crawl(obj[key], callback, parents.concat([key]));
+				} else {
+					callback(parents.concat([key]), obj[key]);
+				}
+			}
+		}
+	};
+
+	// make sure the object is created successfully
+	crawl(definition, function (keys) {
+		var tmp = ds;
+		keys.forEach(function (key) {
+			test.ok(tmp[key], 'couldnt find ' + key + ' in ' + tmp);
+			tmp = tmp[key];
+		});
 	});
 
 	// test all the param checking
-	Object.keys(definition).forEach(function (key) {
+	/*Object.keys(definition).forEach(function (key) {
+
 
 		var params = definition[key].params,
 			requireExists = false;
@@ -40,7 +63,7 @@ exports.constructor = function (test) {
 		if (requireExists) {
 			test.throws(function () { ds[key](); });
 		}
-	});
+	});*/
 
 	test.done();
 
