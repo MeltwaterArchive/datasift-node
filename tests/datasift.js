@@ -2,7 +2,8 @@
 undef:true, unused:true, curly:true, browser:true, jquery:true, node:true, indent:4, maxerr:50, globalstrict:true */
 
 var DataSift = require('../lib/datasift'),
-	definition = require('../lib/version/1.json');
+	async = require('async'),
+	config = require('./config.json');
 
 var apikey = '12345',
 	username = 'test';
@@ -19,52 +20,65 @@ exports.constructor = function (test) {
 	test.equals(username, ds.username);
 	test.equals(apikey, ds.apikey);
 
-	var crawl = function (obj, callback, parents) {
+	test.done();
+};
 
-		if (!parents) {
-			parents = [];
-		}
+exports.endToEnd = function (test) {
 
-		for (var key in obj) {
-			if (obj.hasOwnProperty(key)) {
-				if (obj[key].uri === undefined) {
-					// not an enpoint
-					crawl(obj[key], callback, parents.concat([key]));
-				} else {
-					callback(parents.concat([key]), obj[key]);
-				}
-			}
-		}
-	};
+	// create the client
+	var queue = [],
+		hash = false,
+		ds = new DataSift(config.username, config.apikey);
 
-	// make sure the object is created successfully
-	crawl(definition, function (keys) {
-		var tmp = ds;
-		keys.forEach(function (key) {
-			test.ok(tmp[key], 'couldnt find ' + key + ' in ' + tmp);
-			tmp = tmp[key];
-		});
+	// test the require param fails
+	test.throws(function () {
+		ds.compile('test');
 	});
 
-	// test all the param checking
-	/*Object.keys(definition).forEach(function (key) {
+	// testing complilation of CSDL
+	var compile = function (next) {
 
+		console.log('Compiling .....');
 
-		var params = definition[key].params,
-			requireExists = false;
+		ds.compile({
+			'csdl': 'interaction.content contains "test"'
+		}, function (err, resp) {
 
-		// if there is at least one require
-		params.forEach(function (p) {
-			if (p.required) {
-				requireExists = true;
-			}
+			console.log('Compiling completed');
+
+			test.ok(resp, 'reponse is null');
+			test.equal(typeof resp, 'object', 'response is not valid JSON');
+			hash = resp.hash;
+			next();
+		});
+	};
+
+	// testing the streaming componants
+	var stream = function (next) {
+
+		console.log('Streaming ' + hash);
+
+		ds.connect();
+		ds.on('connect', function () {
+			console.log('Connected to datasift');
+			ds.subscribe(hash);
 		});
 
-		if (requireExists) {
-			test.throws(function () { ds[key](); });
-		}
-	});*/
+		ds.on('error', function (error) {
+			console.log('Connection errored with: ' + error);
+		});
 
-	test.done();
+		ds.on('interaction', function (data) {
+			console.log('Recieved data');
+			test.ok(data, 'We recived no data');
+			ds.disconnect();
+			next();
+		});
+	};
 
+	queue.push(compile);
+	queue.push(stream);
+	async.series(queue, function () {
+		test.done();
+	});
 };
