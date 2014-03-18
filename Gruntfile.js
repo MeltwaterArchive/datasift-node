@@ -11,15 +11,12 @@ module.exports = function (grunt) {
 		nodeunit: {
 			all: ['tests/*.js']
 		},
-		yuidoc: {
-			compile: {
-				name: '<%= pkg.name %>',
-				description: '<%= pkg.description %>',
-				version: '<%= pkg.version %>',
-				url: '<%= pkg.homepage %>',
+		docco: {
+			debug: {
+				src: ['lib/**/*.js'],
 				options: {
-					paths: 'lib',
-					outdir: 'docs'
+					output: 'docs',
+					layout: 'linear'
 				}
 			}
 		},
@@ -32,7 +29,7 @@ module.exports = function (grunt) {
 	});
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-nodeunit');
-	grunt.loadNpmTasks('grunt-contrib-yuidoc');
+	grunt.loadNpmTasks('grunt-docco');
 	grunt.loadNpmTasks('grunt-gh-pages');
-	grunt.registerTask('default', ['jshint', 'nodeunit', 'yuidoc', 'gh-pages']);
+	grunt.registerTask('default', ['jshint', 'nodeunit', 'docco', 'gh-pages']);
 };

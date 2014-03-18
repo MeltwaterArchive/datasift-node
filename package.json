@@ -14,8 +14,8 @@
     "grunt": "^0.4.2",
     "grunt-contrib-jshint": "~0.6.3",
     "grunt-contrib-nodeunit": "~0.2.0",
-    "grunt-contrib-yuidoc": "^0.5.1",
-    "grunt-gh-pages": "^0.9.1"
+    "grunt-gh-pages": "^0.9.1",
+    "grunt-docco": "^0.3.3"
   },
   "readmeFilename": "README.md",
   "directories": {
