@@ -8,7 +8,9 @@
     "url": ""
   },
   "dependencies": {
-    "request": "*"
+    "request": "*",
+    "http": "*",
+    "events": "*"
   },
   "devDependencies": {
     "grunt": "^0.4.2",
