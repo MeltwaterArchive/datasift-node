@@ -5,7 +5,7 @@
   "main": "./lib/datasift.js",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/datasift/datasift-node"
   },
   "dependencies": {
     "request": "*",
