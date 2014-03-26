@@ -17,7 +17,8 @@
     "grunt-contrib-jshint": "~0.6.3",
     "grunt-contrib-nodeunit": "~0.2.0",
     "grunt-gh-pages": "^0.9.1",
-    "grunt-docco": "^0.3.3"
+    "grunt-docco": "^0.3.3",
+    "async": "~0.2.10"
   },
   "readmeFilename": "README.md",
   "directories": {

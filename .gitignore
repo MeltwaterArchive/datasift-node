@@ -1,3 +1,5 @@
 node_modules
 _site
 tests/config.json
+.idea/*
+.*.iml
