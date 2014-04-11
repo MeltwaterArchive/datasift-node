@@ -8,7 +8,7 @@
     "url": "https://github.com/datasift/datasift-node"
   },
   "dependencies": {
-    "request": "*",
+    "request": "1.4.3",
     "http": "*",
     "events": "*"
   },
