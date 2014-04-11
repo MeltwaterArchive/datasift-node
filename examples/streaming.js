@@ -1,5 +1,5 @@
 // require DataSift
-var DataSift = require('datasift'),
+var DataSift = require('../lib/datasift'),
 // define your username and apikey which can be found at http://datasift.com/dashboard
 	username = 'abcd',
 	apikey = '1234';
@@ -11,7 +11,10 @@ var ds = new DataSift(username, apikey);
 // Connect to DataSift, this will attempt to open the connection to DataSift. Once connected you
 // will get a callback function. We cant subscribe to a hash until we are connected, but first lets
 // grab a stream hash by compiling a piece of CSDL.
-ds.connect(function () {
+ds.connect();
+
+ds.on('connect', function () {
+	console.log('connected');
 	// compile the CSDL so we get a hash back
 	ds.compile({
 		'csdl': 'interaction.content contains "test"'
@@ -22,6 +25,7 @@ ds.connect(function () {
 		}
 
 		if (response && response.hash) {
+			console.log('Compiled CSDL, new hash: ' + response.hash);
 			// great we have our hash now we can subscribe to our stream
 			ds.subscribe(response.hash);
 		}
