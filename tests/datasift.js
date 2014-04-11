@@ -23,6 +23,7 @@ exports.constructor = function (test) {
 	test.done();
 };
 
+/*
 exports.endToEnd = function (test) {
 
 	// create the client
@@ -81,4 +82,5 @@ exports.endToEnd = function (test) {
 	async.series(queue, function () {
 		test.done();
 	});
+*/
 };
