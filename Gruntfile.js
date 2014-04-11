@@ -8,9 +8,9 @@ module.exports = function (grunt) {
 		jshint: {
 			all: ['Gruntfile.js', 'lib/**/*.js', 'test/**/*.js']
 		},
-		nodeunit: {
+		/*nodeunit: {
 			all: ['tests/*.js']
-		},
+		},*/
 		docco: {
 			debug: {
 				src: ['lib/**/*.js', 'examples/**/*.js'],
