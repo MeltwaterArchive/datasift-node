@@ -82,5 +82,5 @@ exports.endToEnd = function (test) {
 	async.series(queue, function () {
 		test.done();
 	});
-*/
-};
+
+};*/
