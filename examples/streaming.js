@@ -1,3 +1,5 @@
+// A simple example to show how to compile CSDL on DataSift and stream the response to you
+
 // require DataSift
 var DataSift = require('../lib/datasift'),
 // define your username and apikey which can be found at http://datasift.com/dashboard
