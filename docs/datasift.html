@@ -23,6 +23,20 @@
               
                 
                 <li>
+                  <a class="source" href="consume-stream.html">
+                    consume-stream.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="streaming.html">
+                    streaming.js
+                  </a>
+                </li>
+              
+                
+                <li>
                   <a class="source" href="datasift.html">
                     datasift.js
                   </a>
@@ -169,19 +183,39 @@ so each will become of method.</p>
 		}
 	});
 
-	request({
+	<span class="hljs-keyword">var</span> options = {
 		method: route.method.toUpperCase(),
-		form: params,
 		uri: route.uri,
 		secureProtocol: <span class="hljs-string">'TLSv1_method'</span>,
 		auth: {
 			<span class="hljs-string">'username'</span>: <span class="hljs-keyword">this</span>.username,
 			<span class="hljs-string">'password'</span>: <span class="hljs-keyword">this</span>.apikey
-		}
-	}, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err, response, body)</span> {</span>
+		},
+        headers: {
+            <span class="hljs-string">'User-Agent'</span>: <span class="hljs-string">'DataSift/v1 Node/v0.5.0'</span>
+        }
+	};
 
-		<span class="hljs-keyword">if</span> (err) {
-			<span class="hljs-keyword">return</span> callback(err);
+	<span class="hljs-keyword">if</span> (options.method === <span class="hljs-string">'POST'</span>) {
+		options.form = params;
+	} <span class="hljs-keyword">else</span> {
+		options.qs = params;
+	}
+
+	request(options, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err, response, body)</span> {</span>
+
+		<span class="hljs-keyword">if</span> (err) {</pre></div>
+        
+      
+        
+        <p>Temp fix: awaiting resolution of DM-3137</p>
+
+        
+          <div class='highlight'><pre>			<span class="hljs-keyword">if</span>(err.code === <span class="hljs-string">"HPE_INVALID_CONSTANT"</span>) {
+				<span class="hljs-keyword">return</span> callback();
+			} <span class="hljs-keyword">else</span> {
+				<span class="hljs-keyword">return</span> callback(err, <span class="hljs-literal">null</span>, response.headers);
+			}
 		}
 
 		<span class="hljs-keyword">switch</span>(response.statusCode) {
@@ -194,19 +228,22 @@ so each will become of method.</p>
 			});
 		}
 
-		<span class="hljs-keyword">if</span> (response.headers[<span class="hljs-string">'content-type'</span>] !== <span class="hljs-string">'application/json'</span>) {
-			<span class="hljs-keyword">return</span> callback({
-				message: <span class="hljs-string">'Invalid return type'</span>,
-				response: response
-			});
-		}
-
 		<span class="hljs-keyword">if</span> (!body) {
-			<span class="hljs-keyword">return</span> callback();
+			<span class="hljs-keyword">return</span> callback(<span class="hljs-literal">null</span>,<span class="hljs-literal">null</span>,response.headers);
 		}
 
 		<span class="hljs-keyword">try</span> {
-			body = <span class="hljs-built_in">JSON</span>.parse(body);
+			<span class="hljs-keyword">if</span> (response.headers[<span class="hljs-string">'x-datasift-format'</span>] === <span class="hljs-string">'json_new_line'</span>) {
+				<span class="hljs-keyword">var</span> lines = body.split(<span class="hljs-string">"\n"</span>);
+				body = [];
+
+				lines.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(line)</span> {</span>
+					body.push(<span class="hljs-built_in">JSON</span>.parse(line));
+				});
+
+			} <span class="hljs-keyword">else</span> {
+				body = <span class="hljs-built_in">JSON</span>.parse(body);
+			}
 		} <span class="hljs-keyword">catch</span> (e) {
 			<span class="hljs-keyword">return</span> callback({
 				message: <span class="hljs-string">'Invalid JSON'</span>,
@@ -214,7 +251,7 @@ so each will become of method.</p>
 			});
 		}
 
-		<span class="hljs-keyword">return</span> callback(<span class="hljs-literal">null</span>, body);
+		<span class="hljs-keyword">return</span> callback(<span class="hljs-literal">null</span>, body, response.headers);
 	}.bind(<span class="hljs-keyword">this</span>));
 };
 

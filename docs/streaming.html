@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>streaming.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          <h1>streaming.js</h1>
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="consume-stream.html">
+                    consume-stream.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="streaming.html">
+                    streaming.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="datasift.html">
+                    datasift.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="stream.html">
+                    stream.js
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        <p>A simple example to show how to compile CSDL on DataSift and stream the response to you</p>
+
+        
+      
+        
+        <p>require DataSift</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> DataSift = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../lib/datasift'</span>),</pre></div>
+        
+      
+        
+        <p>define your username and apikey which can be found at <a href="http://datasift.com/dashboard">http://datasift.com/dashboard</a></p>
+
+        
+          <div class='highlight'><pre>	username = <span class="hljs-string">'abcd'</span>,
+	apikey = <span class="hljs-string">'1234'</span>;</pre></div>
+        
+      
+        
+        <p>Intilise the object, if we are using an API version other than 1.0 you can specify this in the 
+3rd parameter</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> ds = <span class="hljs-keyword">new</span> DataSift(username, apikey);</pre></div>
+        
+      
+        
+        <p>Connect to DataSift, this will attempt to open the connection to DataSift. Once connected you
+will get a callback function. We cant subscribe to a hash until we are connected, but first lets
+grab a stream hash by compiling a piece of CSDL.</p>
+
+        
+          <div class='highlight'><pre>ds.connect();
+
+ds.on(<span class="hljs-string">'connect'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> {</span>
+	console.log(<span class="hljs-string">'connected'</span>);</pre></div>
+        
+      
+        
+        <p>compile the CSDL so we get a hash back</p>
+
+        
+          <div class='highlight'><pre>	ds.compile({
+		<span class="hljs-string">'csdl'</span>: <span class="hljs-string">'interaction.content contains "test"'</span>
+	}, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err, response)</span> {</span></pre></div>
+        
+      
+        
+        <p>check for errors</p>
+
+        
+          <div class='highlight'><pre>		<span class="hljs-keyword">if</span> (err) {
+			console.log(err);
+		}
+
+		<span class="hljs-keyword">if</span> (response &amp;&amp; response.hash) {
+			console.log(<span class="hljs-string">'Compiled CSDL, new hash: '</span> + response.hash);</pre></div>
+        
+      
+        
+        <p>great we have our hash now we can subscribe to our stream</p>
+
+        
+          <div class='highlight'><pre>			ds.subscribe(response.hash);
+		}
+	});
+});</pre></div>
+        
+      
+        
+        <p>Our error checker</p>
+
+        
+          <div class='highlight'><pre>ds.on(<span class="hljs-string">'error'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(error)</span> {</span>
+	console.log(<span class="hljs-string">'Connection errored with: '</span> + error);
+});</pre></div>
+        
+      
+        
+        <p>This is where we get the data from our stream</p>
+
+        
+          <div class='highlight'><pre>ds.on(<span class="hljs-string">'interaction'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(data)</span> {</span>
+	console.log(<span class="hljs-string">'Recieved data'</span>, data);
+});</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>
