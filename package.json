@@ -25,5 +25,8 @@
     "test": "tests"
   },
   "license": "BSD",
-  "author": "DataSift"
+  "author": "DataSift",
+  "scripts": {
+    "test": "grunt nodeunit"
+  }
 }
