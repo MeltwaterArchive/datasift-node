@@ -2,8 +2,8 @@
 undef:true, unused:true, curly:true, browser:true, jquery:true, node:true, indent:4, maxerr:50, globalstrict:true */
 
 var DataSift = require('../lib/datasift'),
-	async = require('async'),
-	config = require('./config.json');
+	async = require('async');
+	//config = require('./config.json');
 
 var apikey = '12345',
 	username = 'test';
