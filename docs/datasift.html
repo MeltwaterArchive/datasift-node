@@ -30,8 +30,22 @@
               
                 
                 <li>
+                  <a class="source" href="cli.html">
+                    cli.js
+                  </a>
+                </li>
+              
+                
+                <li>
                   <a class="source" href="datasift.html">
                     datasift.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="library-version.html">
+                    library-version.js
                   </a>
                 </li>
               
@@ -56,18 +70,14 @@ undef:true, unused:true, curly:true, browser:true, jquery:true, node:true, inden
         
       
         
-        <p>DataSift.js 0.5.0</p>
-
-        
-      
-        
         <p>A NodeJS client for DataSift. This client supports both the REST and streaming API’s. More
 information about the endpoints can be found at (dev.datasift.com)[<a href="http://dev.datasift.com">http://dev.datasift.com</a>].</p>
 
         
           <div class='highlight'><pre>
 <span class="hljs-keyword">var</span> request = <span class="hljs-built_in">require</span>(<span class="hljs-string">'request'</span>),
-	Stream = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./stream.js'</span>);</pre></div>
+	Stream = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./stream.js'</span>),
+	libVersion = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./library-version'</span>);</pre></div>
         
       
         
@@ -185,7 +195,7 @@ so each will become of method.</p>
 			<span class="hljs-string">'password'</span>: <span class="hljs-keyword">this</span>.apikey
 		},
         headers: {
-            <span class="hljs-string">'User-Agent'</span>: <span class="hljs-string">'DataSift/v1 Node/v0.5.0'</span>
+            <span class="hljs-string">'User-Agent'</span>: <span class="hljs-string">'DataSift/v1 Node/v'</span> + libVersion.version
         }
 	};
 
@@ -207,7 +217,7 @@ so each will become of method.</p>
           <div class='highlight'><pre>			<span class="hljs-keyword">if</span>(err.code === <span class="hljs-string">"HPE_INVALID_CONSTANT"</span>) {
 				<span class="hljs-keyword">return</span> callback();
 			} <span class="hljs-keyword">else</span> {
-				<span class="hljs-keyword">return</span> callback(err, <span class="hljs-literal">null</span>, response.headers);
+				<span class="hljs-keyword">return</span> callback(err, <span class="hljs-literal">null</span>, response.headers, response.statusCode);
 			}
 		}
 
@@ -215,14 +225,11 @@ so each will become of method.</p>
 		<span class="hljs-keyword">case</span> <span class="hljs-number">401</span>:
 		<span class="hljs-keyword">case</span> <span class="hljs-number">404</span>:
 		<span class="hljs-keyword">case</span> <span class="hljs-number">500</span>:
-			<span class="hljs-keyword">return</span> callback({
-				code: response.statusCode,
-				response: response
-			});
+			<span class="hljs-keyword">return</span> callback(response, <span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>, response.statusCode);
 		}
 
 		<span class="hljs-keyword">if</span> (!body) {
-			<span class="hljs-keyword">return</span> callback(<span class="hljs-literal">null</span>,<span class="hljs-literal">null</span>,response.headers);
+			<span class="hljs-keyword">return</span> callback(<span class="hljs-literal">null</span>,<span class="hljs-literal">null</span>,response.headers, response.statusCode);
 		}
 
 		<span class="hljs-keyword">try</span> {
@@ -244,7 +251,8 @@ so each will become of method.</p>
 			});
 		}
 
-		<span class="hljs-keyword">return</span> callback(<span class="hljs-literal">null</span>, body, response.headers);
+		<span class="hljs-keyword">return</span> callback(<span class="hljs-literal">null</span>, body, response.headers, response.statusCode);
+		
 	}.bind(<span class="hljs-keyword">this</span>));
 };
 
