@@ -1,13 +1,7 @@
 #!/bin/bash
 command -v jq >/dev/null 2>&1 || { echo >&2 "jq command must be available. See http://stedolan.github.io/jq/.  Aborting."; exit 1; }
+
 set -e
-
-if [ "$#" -lt 3 ]; then
-    echo "Usage: cli.sh [runnable datasift script] [username] [apikey] [OPTIONAL: api endpoint domain]"
-    echo "e.g. .\\cli.sh \"node lib/cli.js\" myusername z29a225fe2f1ffd748c12268fd473661"
-    exit -1
-fi
-
 
 DEFAULT_API='api.datasift.com'
 
@@ -17,7 +11,7 @@ DK=${3:-$DK}
 API=${4:-$DEFAULT_API}
 
 function ds(){
-    ${CC} -a ${DU}:${DK} --u ${API} "$@" #| jq .
+    ${CC} -a ${DU} ${DK} --u ${API} "$@" #| jq .
 }
 
 # core API - validate our hash, compile it, check our usage, dpu and balance
@@ -48,11 +42,10 @@ echo 'Preparing Historic query'
 end=`expr $(date +%s) - 7200`
 start=`expr $end - 3600`
 
-historic=$(ds -e historics -c prepare -p start ${start} -p end ${end} -p name "Historics CLI @ $start" -p hash ${hash} -p sources twitter)
+historic=$(ds -e historics -c prepare -p start ${start} -p end ${end} -p name "Historics CLI @ $start" -p hash ${hash})
 echo ${historic} | jq .
 historic_id=$(echo ${historic} | jq -r .body.id)
 echo "Historic created with ID $historic_id"
-
 
 echo 'Validating Push subscription'
 push_v=$(ds -e push -c validate -p playback_id ${historic_id} -p name "Playback CLI @ $start" -p output_type http \
@@ -87,7 +80,7 @@ echo 'Getting Historics'
 ds -e historics -c get -p id ${historic_id} | jq .
 
 echo 'Updating historic'
-ds -e historics -c update -p id ${historic_id} -p name "Some name @ $start - CLI" -p reason "CLI test script" | jq .
+ds -e historics -c update -p id ${historic_id} -p name "Some name @ $start - CLI" | jq .
 
 echo 'Getting push'
 ds -e push -c get -p id ${push_id} | jq .
@@ -126,7 +119,7 @@ echo "Getting the preview we created"
 ds -e preview -c get -p id ${preview_id} | jq .
 
 echo "Creating a managed source"
-source=$(ds -e source -c create -p source_type instagram -p name api \
+source=$(ds -e managed_sources -c create -p source_type instagram -p name api \
      -p auth "[{\"parameters\":{\"value\":\"$start$end\"}}]" \
      -p resources '[{"parameters":{"value":"cats","type":"tag"}}]' \
      -p parameters '{"comments":true,"likes":false}')
@@ -135,28 +128,28 @@ source_id=$(echo ${source}| jq -r .body.id)
 echo ${source_id}
 
 echo "Starting managed source"
-ds -e source -c start -p id ${source_id} | jq .
+ds -e managed_sources -c start -p source_id ${source_id} | jq .
 
 echo "Getting managed sources"
-ds -e source -c get | jq .
+ds -e managed_sources -c get | jq .
 
 echo "Getting Instagram sources"
-ds -e source -c get -p source_type instagram | jq .
+ds -e managed_sources -c get -p source_type instagram | jq .
 
 echo "Getting Facebook page sources"
-ds -e source -c get -p source_type facebook_page | jq .
+ds -e managed_sources -c get -p source_type facebook_page | jq .
 
 echo "Getting page 2 of instagram sources"
-ds -e source -c get -p source_type instagram -p page 2 | jq .
+ds -e managed_sources -c get -p source_type instagram -p page 2 | jq .
 
 echo "Getting source for $source_id"
-ds -e source -c get -p id ${source_id} | jq .
+ds -e managed_sources -c get -p source_id ${source_id} | jq .
 
 echo "Getting logs for source $source_id"
-ds -e source -c log -p id ${source_id} -p page 2 -p per_page 1 | jq .
+ds -e managed_sources -c log -p source_id ${source_id} -p page 2 -p per_page 1 | jq .
 
 echo "Stopping managed source"
-ds -e source -c stop -p id ${source_id} | jq .
+ds -e managed_sources -c stop -p source_id ${source_id} | jq .
 
 echo "Deleting managed source $source_id"
-ds -e source -c delete -p id ${source_id} | jq .
+ds -e managed_sources -c delete -p source_id ${source_id} | jq .
