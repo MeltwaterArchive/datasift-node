@@ -6,7 +6,7 @@ var DataSift = require('../lib/datasift'),
 	username = 'abcd',
 	apikey = '1234';
 
-// Intilise the object, if we are using an API version other than 1.0 you can specify this in the 
+// Intilise the object, if we are using an API version other than 1.0 you can specify this in the
 // 3rd parameter
 var ds = new DataSift(username, apikey);
 
@@ -41,5 +41,9 @@ ds.on('error', function (error) {
 
 // This is where we get the data from our stream
 ds.on('interaction', function (data) {
-	console.log('Recieved data', data);
+	// checks if the intercation hash matches the hash from the request
+	// very useful while subscribing to multiple streams
+	if (data.hash === response.hash) {
+		console.log('Recieved data', data);
+	}
 });
