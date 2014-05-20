@@ -38,6 +38,10 @@ The second argument to the function takes a `callback` function.
 
 This takes an error object and the response the library got back from the server.
 
+## Supported Operating Enviroment
+
+Tested on Node v0.10.26.
+
 ## Contributing
 
 Please feel free to contribute to this library.
