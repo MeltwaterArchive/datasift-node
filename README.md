@@ -6,11 +6,37 @@ This NodeJS client library for DataSift supports the full REST API and streaming
 
 ## Usage
 
-		new DataSift('username', 'apikey').validate({
-			'csdl': 'interaction.content contains "hello"'
-		}, function (err, response) {
+	var ds = new DataSift('username', 'apikey');
+
+This will create a new DataSift object. The DataSift object supports the REST and streaming API and streaming API's.
+
+### REST Endpoint
+
+		new DataSift('username', 'apikey').<api_method>(<method_params), function (err, response) {
 			console.log(response);
 		});
+
+All of the REST endpoints are available as functions on the DataSift object. 
+
+For example if we would like to validate our CSDL using the validate endpoint we can access it through:
+
+	ds.validate({
+		'csdl': 'interaction.content contains "hello"'
+	}, callback);
+
+Each object takes an object list of parameters, in our instance we can [see the only parameter](http://dev.datasift.com/docs/api/1/validate) is `csdl`.
+
+The second argument to the function takes a `callback` function.
+
+    var callback = function (err, response) {
+    	if (err) {
+    		// we have errored
+    	} else {
+    		// do something with the response
+    	}
+    };
+
+This takes an error object and the response the library got back from the server.
 
 ## Contributing
 
