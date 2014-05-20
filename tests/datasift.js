@@ -23,6 +23,20 @@ exports.constructor = function (test) {
 	test.done();
 };
 
+exports.method = function (test) {
+
+	var ds = new DataSift(username, apikey);
+
+	// make sure we throw an error if we are missing a param
+	test.throws(function () { ds.validate(); });
+	// or if a param is the wrong type (int when should be string)
+	test.throws(function () { ds.validate({ 'csdl': 1 }); });
+	// test the int now
+	test.throws(function () { ds.stream({ 'hash': '1234', 'count': '1'}); });
+
+	test.done();
+};
+
 /*
 exports.endToEnd = function (test) {
 

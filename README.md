@@ -45,3 +45,7 @@ Please feel free to contribute to this library.
 ### Running Tests
 
 The client library uses Grunt to run it's tests and will also lint the files. To run Grunt make sure you have Grunt installed and run the `grunt` command in the directory.
+
+## Changelog
+
+- 0.5.2: Each parameter type is now enforced. There are only two types (`int`|`string`).

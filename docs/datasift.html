@@ -23,6 +23,13 @@
               
                 
                 <li>
+                  <a class="source" href="historics.html">
+                    historics.js
+                  </a>
+                </li>
+              
+                
+                <li>
                   <a class="source" href="streaming.html">
                     streaming.js
                   </a>
@@ -174,6 +181,10 @@ so each will become of method.</p>
 		<span class="hljs-keyword">if</span> (params[param.name] === <span class="hljs-literal">undefined</span> &amp;&amp; param.required) {
 			<span class="hljs-keyword">throw</span> param.name + <span class="hljs-string">' is required, but hasn\'t been specified'</span>;
 		}
+
+		<span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> params[param.name] !== param.type) {
+			<span class="hljs-keyword">throw</span> param.name + <span class="hljs-string">' is meant to be '</span> + param.type +<span class="hljs-string">', however '</span> + <span class="hljs-keyword">typeof</span> params[param.name] + <span class="hljs-string">' was supplied'</span>;
+		}
 	});
 
 	<span class="hljs-keyword">var</span> options = {
@@ -209,12 +220,24 @@ so each will become of method.</p>
 			} <span class="hljs-keyword">else</span> {
 				<span class="hljs-keyword">return</span> callback(err, <span class="hljs-literal">null</span>, response.headers);
 			}
-		}
+		}</pre></div>
+        
+      
+        
+        <p>we look at the response code, if it’s an error code return the callback</p>
 
-		<span class="hljs-keyword">switch</span>(response.statusCode) {
+        
+          <div class='highlight'><pre>		<span class="hljs-keyword">switch</span>(response.statusCode) {
+		<span class="hljs-keyword">case</span> <span class="hljs-number">400</span>:
 		<span class="hljs-keyword">case</span> <span class="hljs-number">401</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-number">403</span>:
 		<span class="hljs-keyword">case</span> <span class="hljs-number">404</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-number">405</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-number">409</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-number">413</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-number">416</span>:
 		<span class="hljs-keyword">case</span> <span class="hljs-number">500</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-number">503</span>:
 			<span class="hljs-keyword">return</span> callback({
 				code: response.statusCode,
 				response: response
