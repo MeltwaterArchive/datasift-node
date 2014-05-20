@@ -6,7 +6,7 @@ var DataSift = require('../lib/datasift'),
 	username = 'abcd',
 	apikey = '1234';
 
-// Intilise the object, if we are using an API version other than 1.0 you can specify this in the 
+// Intilise the object, if we are using an API version other than 1.0 you can specify this in the
 // 3rd parameter
 var ds = new DataSift(username, apikey);
 
@@ -16,30 +16,37 @@ var ds = new DataSift(username, apikey);
 ds.connect();
 
 ds.on('connect', function () {
-	console.log('connected');
-	// compile the CSDL so we get a hash back
-	ds.compile({
-		'csdl': 'interaction.content contains "test"'
-	}, function (err, response) {
-		// check for errors
-		if (err) {
-			console.log(err);
-		}
+		console.log("Connected to Datasift");
 
-		if (response && response.hash) {
-			console.log('Compiled CSDL, new hash: ' + response.hash);
-			// great we have our hash now we can subscribe to our stream
-			ds.subscribe(response.hash);
-		}
+		// compile the CSDL so we get a hash back
+		ds.compile({
+			'csdl': 'interaction.content contains "test"'
+		}, function(err, response) {
+			// check for errors
+			if (err) {
+				console.log("Error compiling CSDL: " + err.message);
+			}
+
+			if (response && response.hash) {
+				console.log("Compiled CSDL, new hash: " + response.hash);
+				// great we have our hash now we can subscribe to our stream
+				ds.subscribe(response.hash);
+
+				// This is where we get the data from our stream
+				ds.on('interaction', function(data) {
+					// checks if the intercation hash matches the hash from the request
+					// very useful while subscribing to multiple streams
+					if ( data.hash === response.hash ) {
+						console.log('Recieved data', data);
+					}
+				});
+			}
+		});
+
+	})
+
+	// Our error checker
+	ds.on('error', function(error) {
+		console.log("Connection error: " + error.message);
 	});
-});
-
-// Our error checker
-ds.on('error', function (error) {
-	console.log('Connection errored with: ' + error);
-});
-
-// This is where we get the data from our stream
-ds.on('interaction', function (data) {
-	console.log('Recieved data', data);
-});
+}
