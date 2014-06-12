@@ -1,45 +1,52 @@
-// A simple example to show how to compile CSDL on DataSift and stream the response to you
+// #Example - Streaming Live Data
+// *How to connect to the DataSift platform, compile a filter and stream live data to your machine.*
 
-// require DataSift
-var DataSift = require('../lib/datasift'),
-// define your username and apikey which can be found at http://datasift.com/dashboard
-	username = 'abcd',
-	apikey = '1234';
+// Require the DataSift library - **choose one of these**:
+var DataSift = require('datasift'); // When running from NPM package
+var DataSift = require('../lib/datasift'); // When running within datasift-node repository
 
-// Intilise the object, if we are using an API version other than 1.0 you can specify this in the 
-// 3rd parameter
-var ds = new DataSift(username, apikey);
+// Create a DataSift client object - **insert your API credentials**:
+var ds = new DataSift('YOUR_USERNAME', 'YOUR_APIKEY');
 
-// Connect to DataSift, this will attempt to open the connection to DataSift. Once connected you
-// will get a callback function. We cant subscribe to a hash until we are connected, but first lets
-// grab a stream hash by compiling a piece of CSDL.
-ds.connect();
-
+// Set up a 'connect' event handler, which will fire when a connection is established. When connected we compile our CSDL filter and subscribe to streaming data.
 ds.on('connect', function () {
-	console.log('connected');
-	// compile the CSDL so we get a hash back
-	ds.compile({
-		'csdl': 'interaction.content contains "test"'
+
+	console.log('Connected to DataSift');
+	
+	console.log('Compiling CSDL filter');
+	ds.compile({ 
+		'csdl': 'interaction.content contains "music"'
 	}, function (err, response) {
-		// check for errors
-		if (err) {
+	
+		if (err) 
 			console.log(err);
+		else
+		{
+			if (response && response.hash) {
+				console.log('Compiled CSDL, stream hash: ' + response.hash);
+			
+				console.log('Subscribing to live data stream');
+				ds.subscribe(response.hash);
+			}
 		}
 
-		if (response && response.hash) {
-			console.log('Compiled CSDL, new hash: ' + response.hash);
-			// great we have our hash now we can subscribe to our stream
-			ds.subscribe(response.hash);
-		}
 	});
 });
 
-// Our error checker
+// Set up 'error' handler to alert us of any errors. For more details on possible errors see [http://dev.datasift.com/docs/resources/errors](http://dev.datasift.com/docs/resources/errors).
 ds.on('error', function (error) {
-	console.log('Connection errored with: ' + error);
+	console.log('ERROR: ' + error);
 });
 
-// This is where we get the data from our stream
-ds.on('interaction', function (data) {
-	console.log('Recieved data', data);
+// Set up 'delete' handler. Depending on the data sources you are using, you may need to delete this data to stay compliant.
+ds.on('delete', function (data) {
+	console.log('Data deleted: ', data); // TODO: Do something useful with the data!
 });
+
+// Set up 'interaction' handler - this receives our data! This is triggered each time we receive a new interaction - a piece of data on the live stream.
+ds.on('interaction', function (data) {
+	console.log('Recieved data: ', data);
+});
+
+// Now all hanlders are set up, connect to DataSift!
+ds.connect();

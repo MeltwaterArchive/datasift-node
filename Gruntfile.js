@@ -13,7 +13,7 @@ module.exports = function (grunt) {
 		},
 		docco: {
 			debug: {
-				src: ['lib/**/*.js', 'examples/**/*.js'],
+				src: ['examples/**/*.js'],
 				options: {
 					output: 'docs',
 					layout: 'linear'

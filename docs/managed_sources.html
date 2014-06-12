@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Example - Core API Functions</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          
+          <h1 id="example-core-api-functions">Example - Core API Functions</h1>
+<p><em>How to create, run, update, stop and delete a managed source. In this case we use a <a href="https://datasift.com/source/managed/facebook_page">Facebook Page source</a>. </em></p>
+
+          
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="core.html">
+                    core.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="historics.html">
+                    historics.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="managed_sources.html">
+                    managed_sources.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="push.html">
+                    push.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="streaming.html">
+                    streaming.js
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        <p>Require the DataSift library - <strong>choose one of these</strong>:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> DataSift = <span class="hljs-built_in">require</span>(<span class="hljs-string">'datasift'</span>); <span class="hljs-comment">// When running from NPM package</span>
+<span class="hljs-keyword">var</span> DataSift = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../lib/datasift'</span>); <span class="hljs-comment">// When running within datasift-node repository</span></pre></div>
+        
+      
+        
+        <p>Create a DataSift client object - <strong>insert your API credentials</strong>:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> ds = <span class="hljs-keyword">new</span> DataSift(<span class="hljs-string">'YOUR_USERNAME'</span>, <span class="hljs-string">'YOUR_APIKEY'</span>);</pre></div>
+        
+      
+        
+        <p>A variable to store the source details for use later:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> sourceDetails;</pre></div>
+        
+      
+        
+        <p>Parameters &amp; resources for the managed source:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> parameters = {
+    <span class="hljs-string">'likes'</span>: <span class="hljs-literal">true</span>,
+    <span class="hljs-string">'page_likes'</span>: <span class="hljs-literal">true</span>,
+    <span class="hljs-string">'posts_by_others'</span>: <span class="hljs-literal">true</span>,
+    <span class="hljs-string">'comments'</span>: <span class="hljs-literal">true</span>
+};
+
+<span class="hljs-keyword">var</span> resources = [
+    {
+        <span class="hljs-string">'parameters'</span>: {
+            <span class="hljs-string">'url'</span>: <span class="hljs-string">'http://www.facebook.com/theguardian'</span>,
+            <span class="hljs-string">'title'</span>: <span class="hljs-string">'Some news page'</span>,
+            <span class="hljs-string">'id'</span>: <span class="hljs-string">'theguardian'</span>
+        }
+    }
+];</pre></div>
+        
+      
+        
+        <p>Authentication parameters - <strong>enter your token here from <a href="https://datasift.com/source/managed/new/facebook_page">Facebook Page source</a> </strong>:</p>
+
+        
+          <div class='highlight'><pre>auth = [
+    {
+        <span class="hljs-string">'parameters'</span>: {
+            <span class="hljs-string">'value'</span>: <span class="hljs-string">'YOUR_FACEBOOK_TOKEN'</span>
+        }
+    }
+];</pre></div>
+        
+      
+        
+        <h2 id="declare-utility-methods">Declare Utility Methods</h2>
+<p>This method creates the managed source, then starts it:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createSource</span><span class="hljs-params">()</span> {</span>
+
+	console.log(<span class="hljs-string">"Creating managed source."</span>);
+
+	ds.source.create({
+		<span class="hljs-string">"source_type"</span>: <span class="hljs-string">"facebook_page"</span>,
+		<span class="hljs-string">"name"</span>: <span class="hljs-string">"Example Facebook source"</span>,
+		<span class="hljs-string">"resources"</span>: <span class="hljs-built_in">JSON</span>.stringify(resources),
+		<span class="hljs-string">"auth"</span>: <span class="hljs-built_in">JSON</span>.stringify(auth),
+		<span class="hljs-string">"parameters"</span>: <span class="hljs-built_in">JSON</span>.stringify(parameters)
+	}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span> (err) 
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			sourceDetails = response;
+			console.log(<span class="hljs-string">"Created source ID: "</span> + sourceDetails.id);
+			startSource();
+		}
+	});
+
+}</pre></div>
+        
+      
+        
+        <p>This method starts the source, then updates it:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">startSource</span><span class="hljs-params">()</span> {</span>
+	ds.source.start({
+			<span class="hljs-string">"id"</span>: sourceDetails.id
+		}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+			<span class="hljs-keyword">if</span> (err) 
+				console.log(err);
+			<span class="hljs-keyword">else</span>
+			{
+				console.log(<span class="hljs-string">"Source started."</span>);
+				updateSource();
+			}
+		});
+}</pre></div>
+        
+      
+        
+        <p>This method updates the source, then gets its details:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">updateSource</span><span class="hljs-params">()</span> {</span>
+
+	console.log(<span class="hljs-string">"Updating managed source."</span>);
+
+	ds.source.update({
+		<span class="hljs-string">"id"</span>: sourceDetails.id,
+		<span class="hljs-string">"source_type"</span>: <span class="hljs-string">"facebook_page"</span>,
+		<span class="hljs-string">"name"</span>: <span class="hljs-string">"Updated Facebook source"</span>,
+		<span class="hljs-string">"resources"</span>: <span class="hljs-built_in">JSON</span>.stringify(sourceDetails.resources),
+		<span class="hljs-string">"auth"</span>: <span class="hljs-built_in">JSON</span>.stringify(sourceDetails.auth),
+		<span class="hljs-string">"parameters"</span>: <span class="hljs-built_in">JSON</span>.stringify(sourceDetails.parameters)
+	}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span> (err) 
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			console.log(<span class="hljs-string">"Updated source ID: "</span> + response.id);
+			getSource();
+		}
+	});
+
+}</pre></div>
+        
+      
+        
+        <p>This method gets the source’s details, then gets the source’s log:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getSource</span><span class="hljs-params">()</span> {</span>
+
+	ds.source.get({
+			<span class="hljs-string">"id"</span>: sourceDetails.id
+		}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+			<span class="hljs-keyword">if</span> (err) 
+				console.log(err);
+			<span class="hljs-keyword">else</span>
+			{
+				console.log(<span class="hljs-string">"Source details: "</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+				getSourceLog();
+			}
+		});
+}</pre></div>
+        
+      
+        
+        <p>This method gets the source’s log, then stops it:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getSourceLog</span><span class="hljs-params">()</span> {</span>
+	ds.source.log({
+			<span class="hljs-string">"id"</span>: sourceDetails.id
+		}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+			<span class="hljs-keyword">if</span> (err) 
+				console.log(err);
+			<span class="hljs-keyword">else</span>
+			{
+				console.log(<span class="hljs-string">"Source log: "</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+				stopSource();
+			}
+		});
+}</pre></div>
+        
+      
+        
+        <p>This method gets stops the source, then deletes it:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">stopSource</span><span class="hljs-params">()</span> {</span>
+	ds.source.stop({
+			<span class="hljs-string">"id"</span>: sourceDetails.id
+		}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+			<span class="hljs-keyword">if</span> (err) 
+				console.log(err);
+			<span class="hljs-keyword">else</span>
+			{
+				console.log(<span class="hljs-string">"Source stopped."</span>);
+				deleteSource();
+			}
+		});
+}</pre></div>
+        
+      
+        
+        <p>This method deletes the source:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">deleteSource</span><span class="hljs-params">()</span> {</span>
+	ds.source.delete({
+			<span class="hljs-string">"id"</span>: sourceDetails.id
+		}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+			<span class="hljs-keyword">if</span> (err) 
+				console.log(err);
+			<span class="hljs-keyword">else</span>
+			{
+				console.log(<span class="hljs-string">"Source deleted."</span>);
+			}
+		});
+}</pre></div>
+        
+      
+        
+        <h2 id="initiate-process">Initiate Process</h2>
+<p>Finally we start the process by creating the source. This will lead to:</p>
+<ul>
+<li>The source being started</li>
+<li>The source being updated</li>
+<li>The source’s details and log being fetched</li>
+<li>Ths source being stopped</li>
+<li>Ths source being deleted</li>
+</ul>
+
+        
+          <div class='highlight'><pre>createSource();</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>

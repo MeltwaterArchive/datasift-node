@@ -96,7 +96,7 @@
                 "type": "string",
                 "required": false
             }, {
-                "name": "historic_id",
+                "name": "historics_id",
                 "type": "string",
                 "required": false
             },{
@@ -106,7 +106,7 @@
             },{
                 "name": "output_params",
                 "type": "string",
-                "required": true
+                "required": false
             },{
                 "name": "initial_status",
                 "type": "string",
@@ -258,6 +258,10 @@
                 "type": "string",
                 "required": true
             },{
+                "name": "name",
+                "type": "string",
+                "required": true
+            },{
                 "name": "sample",
                 "type": "int",
                 "required": false
@@ -310,7 +314,7 @@
                 "type": "string",
                 "required": true
             },{
-                "name": "reason",
+                "name": "name",
                 "type": "string",
                 "required": true
             }]
