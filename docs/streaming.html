@@ -82,66 +82,94 @@
         
       
         
-        <p>Set up a ‘connect’ event handler, which will fire when a connection is established. When connected we compile our CSDL filter and subscribe to streaming data.</p>
+        <p>The CSDL filter definition for the stream:</p>
 
         
-          <div class='highlight'><pre>ds.on(<span class="hljs-string">'connect'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> {</span>
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> filter = <span class="hljs-string">'interaction.content contains "music"'</span>;</pre></div>
+        
+      
+        
+        <h2 id="declare-methods">Declare Methods</h2>
+<p>Compiles a stream from a CSDL definition:</p>
 
-	console.log(<span class="hljs-string">'Connected to DataSift'</span>);
-	
-	console.log(<span class="hljs-string">'Compiling CSDL filter'</span>);
-	ds.compile({ 
-		<span class="hljs-string">'csdl'</span>: <span class="hljs-string">'interaction.content contains "music"'</span>
-	}, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err, response)</span> {</span>
-	
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">compileFilter</span><span class="hljs-params">(csdl)</span> {</span>
+
+	ds.compile({ <span class="hljs-string">'csdl'</span>: csdl }, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err, response)</span> {</span>
 		<span class="hljs-keyword">if</span> (err) 
 			console.log(err);
 		<span class="hljs-keyword">else</span>
 		{
-			<span class="hljs-keyword">if</span> (response &amp;&amp; response.hash) {
-				console.log(<span class="hljs-string">'Compiled CSDL, stream hash: '</span> + response.hash);
-			
-				console.log(<span class="hljs-string">'Subscribing to live data stream'</span>);
-				ds.subscribe(response.hash);
-			}
+			console.log(<span class="hljs-string">"Filter hash: "</span> + response.hash);
+			connect(response.hash);
 		}
-
 	});
-});</pre></div>
+}</pre></div>
+        
+      
+        
+        <p>Connects to DataSift and starts streaming data:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">connect</span><span class="hljs-params">(hash)</span> {</span></pre></div>
+        
+      
+        
+        <p>Set up a ‘connect’ event handler, which will fire when a connection is established. When connected we compile our CSDL filter and subscribe to streaming data.</p>
+
+        
+          <div class='highlight'><pre>	ds.on(<span class="hljs-string">'connect'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> {</span>
+		console.log(<span class="hljs-string">'Connected to DataSift'</span>);
+		ds.subscribe(hash);
+	});</pre></div>
         
       
         
         <p>Set up ‘error’ handler to alert us of any errors. For more details on possible errors see <a href="http://dev.datasift.com/docs/resources/errors">http://dev.datasift.com/docs/resources/errors</a>.</p>
 
         
-          <div class='highlight'><pre>ds.on(<span class="hljs-string">'error'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(error)</span> {</span>
-	console.log(<span class="hljs-string">'ERROR: '</span> + error);
-});</pre></div>
+          <div class='highlight'><pre>	ds.on(<span class="hljs-string">'error'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(error)</span> {</span>
+		console.log(<span class="hljs-string">'ERROR: '</span> + error);
+	});</pre></div>
         
       
         
         <p>Set up ‘delete’ handler. Depending on the data sources you are using, you may need to delete this data to stay compliant.</p>
 
         
-          <div class='highlight'><pre>ds.on(<span class="hljs-string">'delete'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(data)</span> {</span>
-	console.log(<span class="hljs-string">'Data deleted: '</span>, data); <span class="hljs-comment">// TODO: Do something useful with the data!</span>
-});</pre></div>
+          <div class='highlight'><pre>	ds.on(<span class="hljs-string">'delete'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(data)</span> {</span>
+		console.log(<span class="hljs-string">'Data deleted: '</span>, data); <span class="hljs-comment">// TODO: Do something useful with the data!</span>
+	});</pre></div>
         
       
         
         <p>Set up ‘interaction’ handler - this receives our data! This is triggered each time we receive a new interaction - a piece of data on the live stream.</p>
 
         
-          <div class='highlight'><pre>ds.on(<span class="hljs-string">'interaction'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(data)</span> {</span>
-	console.log(<span class="hljs-string">'Recieved data: '</span>, data);
-});</pre></div>
+          <div class='highlight'><pre>	ds.on(<span class="hljs-string">'interaction'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(data)</span> {</span>
+		console.log(<span class="hljs-string">'Recieved data: '</span>, data);
+	});</pre></div>
         
       
         
-        <p>Now all hanlders are set up, connect to DataSift!</p>
+        <p>Now all handlers are set up, connect to DataSift!</p>
 
         
-          <div class='highlight'><pre>ds.connect();</pre></div>
+          <div class='highlight'><pre>	ds.connect();
+
+}</pre></div>
+        
+      
+        
+        <h2 id="initiate-process">Initiate Process</h2>
+<p>Finally we start the process, comprising of:</p>
+<ul>
+<li>Compiling the CSDL filter</li>
+<li>Connecting to DataSift</li>
+</ul>
+
+        
+          <div class='highlight'><pre>compileFilter(filter);</pre></div>
         
       
       <div class="fleur">h</div>
