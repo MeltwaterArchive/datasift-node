@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Example - Core API Functions</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          
+          <h1 id="example-core-api-functions">Example - Core API Functions</h1>
+<p><em>How to setup and reliably deliver to a push destination. In this case we use a <a href="https://datasift.com/destination/pull">Pull Destination</a> which provides a data buffer which you can pull data from whenever suits you. </em></p>
+
+          
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="core.html">
+                    core.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="historics.html">
+                    historics.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="managed_sources.html">
+                    managed_sources.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="push.html">
+                    push.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="streaming.html">
+                    streaming.js
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        <p>Require the DataSift library - <strong>choose one of these</strong>:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> DataSift = <span class="hljs-built_in">require</span>(<span class="hljs-string">'datasift'</span>); <span class="hljs-comment">// When running from NPM package</span>
+<span class="hljs-keyword">var</span> DataSift = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../lib/datasift'</span>); <span class="hljs-comment">// When running within datasift-node repository</span></pre></div>
+        
+      
+        
+        <p>Create a DataSift client object - <strong>insert your API credentials</strong>:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> ds = <span class="hljs-keyword">new</span> DataSift(<span class="hljs-string">'YOUR_USERNAME'</span>, <span class="hljs-string">'YOUR_APIKEY'</span>);</pre></div>
+        
+      
+        
+        <p>A variable to store the subscription ID for use later:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> subscriptionId;</pre></div>
+        
+      
+        
+        <h2 id="declare-utility-methods">Declare Utility Methods</h2>
+<p>This method compiles CSDL to obtain a filter hash, then creates the pull destination:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">compileFilter</span><span class="hljs-params">()</span>
+{</span>
+	ds.compile({ <span class="hljs-string">'csdl'</span>: <span class="hljs-string">'interaction.content contains "music"'</span> }, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span> (err) 
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			console.log(<span class="hljs-string">"Compiled filter hash: "</span> + response.hash);
+			createPullDestination(response.hash);
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>Creates a Pull destination for the data:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createPullDestination</span><span class="hljs-params">(hash)</span> 
+{</span>
+	ds.push.create({ 
+			<span class="hljs-string">'hash'</span>: hash,
+			<span class="hljs-string">'name'</span>: <span class="hljs-string">"Example pull subscription"</span>,
+			<span class="hljs-string">'output_type'</span>: <span class="hljs-string">'pull'</span>
+		}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+			<span class="hljs-keyword">if</span> (err) 
+				console.log(err);
+			<span class="hljs-keyword">else</span>
+			{
+				subscriptionId = response.id;
+				console.log(<span class="hljs-string">"Created subscription ID: "</span> + subscriptionId);
+
+				console.log(<span class="hljs-string">"Waiting 5 seconds before data pull..."</span>);
+				setTimeout(pullData, <span class="hljs-number">5000</span>);
+			}
+		});
+}</pre></div>
+        
+      
+        
+        <p>Pulls data from the destination buffer:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">pullData</span><span class="hljs-params">()</span>
+{</span>
+	ds.pull({<span class="hljs-string">"id"</span>: subscriptionId}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span> (err) 
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			console.log(<span class="hljs-string">"Pulled data: "</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+			stopPullDestination();
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>Stops the destination:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">stopPullDestination</span><span class="hljs-params">()</span>
+{</span>
+	ds.push.stop({<span class="hljs-string">"id"</span>: subscriptionId}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err)</span> {</span>
+		<span class="hljs-keyword">if</span> (err) 
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+			console.log(<span class="hljs-string">"Pull destination stopped."</span>);
+	});
+}</pre></div>
+        
+      
+        
+        <h2 id="initiate-process">Initiate Process</h2>
+<p>Finally we start the process by compiling the filter. This will lead to:</p>
+<ul>
+<li>A pull destination being created</li>
+<li>A brief wait for live data to arrive at the destination</li>
+<li>Data being pulled from the destination</li>
+<li>The destination being stopped</li>
+</ul>
+
+        
+          <div class='highlight'><pre>compileFilter();</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>

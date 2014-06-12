@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Example - Core API Functions</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          
+          <h1 id="example-core-api-functions">Example - Core API Functions</h1>
+<p><em>How to run a historic query and deliver data to a push destination.</em></p>
+
+          
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="core.html">
+                    core.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="historics.html">
+                    historics.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="managed_sources.html">
+                    managed_sources.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="push.html">
+                    push.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="streaming.html">
+                    streaming.js
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        <p>Require the DataSift library - <strong>choose one of these</strong>:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> DataSift = <span class="hljs-built_in">require</span>(<span class="hljs-string">'datasift'</span>); <span class="hljs-comment">// When running from NPM package</span>
+<span class="hljs-keyword">var</span> DataSift = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../lib/datasift'</span>); <span class="hljs-comment">// When running within datasift-node repository</span></pre></div>
+        
+      
+        
+        <p>Create a DataSift client object - <strong>insert your API credentials</strong>:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> ds = <span class="hljs-keyword">new</span> DataSift(<span class="hljs-string">'YOUR_USERNAME'</span>, <span class="hljs-string">'YOUR_APIKEY'</span>);</pre></div>
+        
+      
+        
+        <p>Calculate start and end time (as UNIX timestamp) for our query (start 48 hours ago, duration 2 hours)</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> startTime = <span class="hljs-built_in">parseInt</span>((<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>).getTime()/<span class="hljs-number">1000</span>) - (<span class="hljs-number">7200</span> * <span class="hljs-number">48</span>);
+<span class="hljs-keyword">var</span> endTime = <span class="hljs-built_in">parseInt</span>(startTime + <span class="hljs-number">3600</span>);</pre></div>
+        
+      
+        
+        <h2 id="declare-methods">Declare Methods</h2>
+<p>This method checks the historic data coverage for the query period, then compiles CSDL for the query:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">checkStatus</span><span class="hljs-params">()</span> {</span>
+
+	console.log(<span class="hljs-string">"Checking data coverage for our query period"</span>);
+
+	ds.historics.status({
+			<span class="hljs-string">"start"</span>: startTime,
+			<span class="hljs-string">"end"</span>: endTime
+		}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err,response)</span> {</span>
+			<span class="hljs-keyword">if</span> (err) 
+				console.log(err);
+			<span class="hljs-keyword">else</span>
+			{
+				console.log(<span class="hljs-string">"Historic status for query period: "</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+				compileStream();
+			}
+		});
+}</pre></div>
+        
+      
+        
+        <p>This method compiles CSDL into a hash for the query, then prepares the query:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">compileStream</span><span class="hljs-params">()</span> {</span>
+	ds.compile({ <span class="hljs-string">'csdl'</span>: <span class="hljs-string">'interaction.content contains "datasift"'</span> }, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span> (err) 
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			console.log(<span class="hljs-string">"Compiled filter hash: "</span> + response.hash);
+			prepareQuery(response.hash);
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>Prepares the historic query, then creates the subscription for data delivery:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">prepareQuery</span><span class="hljs-params">(hash)</span> {</span>
+
+	ds.historics.prepare({
+		<span class="hljs-string">"hash"</span>: hash,
+		<span class="hljs-string">"start"</span>: startTime,
+		<span class="hljs-string">"end"</span>: endTime,
+		<span class="hljs-string">"sources"</span>: <span class="hljs-string">"twitter"</span>,
+		<span class="hljs-string">"name"</span>: <span class="hljs-string">"Example historic query"</span>
+	}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span> (err) 
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			console.log(<span class="hljs-string">"Prepared query: "</span> + response.id);
+			createSubscription(response.id);
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>Creates a Pull subscription for data delivery, then starts the query:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createSubscription</span><span class="hljs-params">(historicsId)</span> {</span>
+
+	ds.push.create({ 
+			<span class="hljs-string">'historics_id'</span>: historicsId,
+			<span class="hljs-string">'name'</span>: <span class="hljs-string">"Example historics subscription"</span>,
+			<span class="hljs-string">'output_type'</span>: <span class="hljs-string">'pull'</span>
+		}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+			<span class="hljs-keyword">if</span> (err) 
+				console.log(err);
+			<span class="hljs-keyword">else</span>
+			{
+				subscriptionId = response.id;
+				console.log(<span class="hljs-string">"Created subscription ID: "</span> + subscriptionId);
+
+				start(historicsId);
+			}
+		});
+}</pre></div>
+        
+      
+        
+        <p>Starts the query running, then updates the query name:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">start</span><span class="hljs-params">(historicsId)</span> {</span>
+	ds.historics.start({
+		<span class="hljs-string">"id"</span>: historicsId
+	}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span> (err) 
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			console.log(<span class="hljs-string">"Started historic query."</span>);
+			update(historicsId);
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>Updates the query’s name, then gets the query’s details:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">update</span><span class="hljs-params">(historicsId)</span> {</span>
+	ds.historics.update({
+		<span class="hljs-string">"id"</span>: historicsId,
+		<span class="hljs-string">"name"</span>: <span class="hljs-string">"Updated historic query"</span>
+	}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span> (err) 
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			console.log(<span class="hljs-string">"Updated historic query."</span>);
+			get(historicsId);
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>Gets the historic query’s details, then stops the query running -
+<strong>In a real world solution you would allow the query to run and deliver all the data!</strong></p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">get</span><span class="hljs-params">(historicsId)</span> {</span>
+	ds.historics.get({
+		<span class="hljs-string">"id"</span>: historicsId
+	}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span> (err) 
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			console.log(<span class="hljs-string">"Historic query details: "</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+			stop(historicsId);
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>Stops the query running, then deletes it:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">stop</span><span class="hljs-params">(historicsId)</span> {</span>
+	ds.historics.stop({
+		<span class="hljs-string">"id"</span>: historicsId
+	}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span> (err) 
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			console.log(<span class="hljs-string">"Stopped historic query."</span>);
+			deleteHistoric(historicsId);
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>Deletes the historic query:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">deleteHistoric</span><span class="hljs-params">(historicsId)</span> {</span>
+	ds.historics.delete({
+		<span class="hljs-string">"id"</span>: historicsId
+	}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span> (err) 
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			console.log(<span class="hljs-string">"Deleted historic query."</span>);
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <h2 id="initiate-process">Initiate Process</h2>
+<p>Finally we start the process, comprising of:</p>
+<ul>
+<li>Historic data coverage check</li>
+<li>Compiling the CSDL for the query</li>
+<li>Prepares the historic query</li>
+<li>Creates a pull subscription for data delivery</li>
+<li>Starts the query running</li>
+<li>Updates the query’s name</li>
+<li>Gets the query’s details</li>
+<li>Stops the query running</li>
+<li>Deletes the query</li>
+</ul>
+
+        
+          <div class='highlight'><pre>checkStatus();</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>

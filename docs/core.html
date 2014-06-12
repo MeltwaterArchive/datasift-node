@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Example - Core API Functions</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          
+          <h1 id="example-core-api-functions">Example - Core API Functions</h1>
+<p><em>How to perform basic API features, such as compiling a stream, find our your usage and account balance.</em></p>
+
+          
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="core.html">
+                    core.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="historics.html">
+                    historics.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="managed_sources.html">
+                    managed_sources.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="push.html">
+                    push.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="streaming.html">
+                    streaming.js
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        <p>Require the DataSift library - <strong>choose one of these</strong>:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> DataSift = <span class="hljs-built_in">require</span>(<span class="hljs-string">'datasift'</span>); <span class="hljs-comment">// When running from NPM package</span>
+<span class="hljs-keyword">var</span> DataSift = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../lib/datasift'</span>); <span class="hljs-comment">// When running within datasift-node repository</span></pre></div>
+        
+      
+        
+        <p>Create a DataSift client object - <strong>insert your API credentials</strong>:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> ds = <span class="hljs-keyword">new</span> DataSift(<span class="hljs-string">'YOUR_USERNAME'</span>, <span class="hljs-string">'YOUR_APIKEY'</span>);</pre></div>
+        
+      
+        
+        <p>Validate and compile an example filter:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> csdl = <span class="hljs-string">'interaction.content contains "music"'</span>;
+
+ds.validate({ <span class="hljs-string">'csdl'</span>: csdl }, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err, response)</span> {</span>
+	<span class="hljs-keyword">if</span> (err) 
+		console.log(err);
+	<span class="hljs-keyword">else</span>
+	{
+		console.log(<span class="hljs-string">"CSDL is valid, DPU cost = "</span> + response.dpu);
+
+		ds.compile({ <span class="hljs-string">'csdl'</span>: csdl }, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err, response)</span> {</span>
+			<span class="hljs-keyword">if</span> (err) 
+				console.log(err);
+			<span class="hljs-keyword">else</span>
+			{
+				console.log(<span class="hljs-string">"Compiled filter hash: "</span> + response.hash);
+			}
+		});
+	}
+});</pre></div>
+        
+      
+        
+        <p>Query API for usage metrics:</p>
+
+        
+          <div class='highlight'><pre>ds.usage(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err,response)</span> {</span>
+	<span class="hljs-keyword">if</span> (err) 
+		console.log(err);
+	<span class="hljs-keyword">else</span>
+	{
+		console.log(<span class="hljs-string">"Usage = "</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+	}
+});</pre></div>
+        
+      
+        
+        <p>Query API for account balance:</p>
+
+        
+          <div class='highlight'><pre>ds.balance(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err,response)</span> {</span>
+	<span class="hljs-keyword">if</span> (err) 
+		console.log(err);
+	<span class="hljs-keyword">else</span>
+	{
+		console.log(<span class="hljs-string">"Balance = "</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+	}
+});</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>
