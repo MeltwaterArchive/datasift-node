@@ -2,7 +2,7 @@
 // *How to perform basic API features, such as compiling a stream, find our your usage and account balance.*
 
 // Require the DataSift library - **choose one of these**:
-var DataSift = require('datasift'); // When running from NPM package
+var DataSift = require('datasift-node'); // When running from NPM package
 var DataSift = require('../lib/datasift'); // When running within datasift-node repository
 
 // Create a DataSift client object - **insert your API credentials**:

@@ -2,7 +2,7 @@
 // *How to create, run, update, stop and delete a managed source. In this case we use a [Facebook Page source](https://datasift.com/source/managed/facebook_page). *
 
 // Require the DataSift library - **choose one of these**:
-var DataSift = require('datasift'); // When running from NPM package
+var DataSift = require('datasift-node'); // When running from NPM package
 var DataSift = require('../lib/datasift'); // When running within datasift-node repository
 
 // Create a DataSift client object - **insert your API credentials**:

@@ -2,7 +2,7 @@
 // *How to setup and reliably deliver to a push destination. In this case we use a [Pull Destination](https://datasift.com/destination/pull) which provides a data buffer which you can pull data from whenever suits you. *
 
 // Require the DataSift library - **choose one of these**:
-var DataSift = require('datasift'); // When running from NPM package
+var DataSift = require('datasift-node'); // When running from NPM package
 var DataSift = require('../lib/datasift'); // When running within datasift-node repository
 
 // Create a DataSift client object - **insert your API credentials**:
