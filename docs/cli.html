@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>cli.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          <h1>cli.js</h1>
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="streaming.html">
+                    streaming.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="cli.html">
+                    cli.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="datasift.html">
+                    datasift.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="library-version.html">
+                    library-version.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="stream.html">
+                    stream.js
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> nopt = <span class="hljs-built_in">require</span>(<span class="hljs-string">"nopt"</span>);
+<span class="hljs-keyword">var</span> DataSift = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../lib/datasift'</span>);
+<span class="hljs-keyword">var</span> libVersion = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../lib/library-version'</span>);
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">printHelp</span><span class="hljs-params">()</span> {</span>
+	console.log(<span class="hljs-string">"Usage: cli.js -a [-e] -c [-u] [-p*]"</span>);
+	console.log(<span class="hljs-string">"\t-a --auth : Authentication details in format 'username:apikey'"</span>);
+	console.log(<span class="hljs-string">"\t-e --endpoint : The API endpoint, e.g. core"</span>);
+	console.log(<span class="hljs-string">"\t-c --command : The command you want to perform, e.g. validate"</span>);
+	console.log(<span class="hljs-string">"\t--u : The API domain to hit, e.g. api.datasift.com"</span>);
+	console.log(<span class="hljs-string">"\t-p --param [name] [value] : Additional parameters for the command"</span>);
+	console.log(<span class="hljs-string">""</span>);
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parseAuthDetails</span><span class="hljs-params">(parsedOptions)</span> {</span>
+	<span class="hljs-keyword">var</span> auth = {};
+
+	parsedOptions.argv.cooked.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(option, i)</span> {</span>
+		<span class="hljs-keyword">if</span>(option === <span class="hljs-string">"--auth"</span>)
+		{
+			<span class="hljs-keyword">var</span> valid = <span class="hljs-literal">false</span>;
+			<span class="hljs-keyword">var</span> username = parsedOptions.argv.cooked[i + <span class="hljs-number">1</span>];
+			<span class="hljs-keyword">var</span> apikey = parsedOptions.argv.cooked[i + <span class="hljs-number">2</span>];</pre></div>
+        
+      
+        
+        <p>Check param arguments exist</p>
+
+        
+          <div class='highlight'><pre>			<span class="hljs-keyword">if</span>(username &amp;&amp; apikey)
+			{
+				<span class="hljs-keyword">if</span>(username.indexOf(<span class="hljs-string">"--"</span>) === -<span class="hljs-number">1</span> &amp;&amp; apikey.indexOf(<span class="hljs-string">"--"</span>) === -<span class="hljs-number">1</span>)
+				{
+					valid = <span class="hljs-literal">true</span>;
+				}
+			}
+
+			<span class="hljs-keyword">if</span>(!valid)
+				<span class="hljs-keyword">throw</span> <span class="hljs-string">"Authentication details not found, please specify as -a [username] [apikey]"</span>;
+			<span class="hljs-keyword">else</span>
+			{
+				auth.username = username;
+				auth.apikey = apikey;
+			}
+		}
+
+	});
+
+	<span class="hljs-keyword">return</span> auth;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parseParams</span><span class="hljs-params">(parsedOptions)</span> {</span>
+	<span class="hljs-keyword">var</span> params = {};
+
+	parsedOptions.argv.cooked.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(option, i)</span> {</span>
+		<span class="hljs-keyword">if</span>(option === <span class="hljs-string">"--param"</span>)
+		{
+			<span class="hljs-keyword">var</span> valid = <span class="hljs-literal">false</span>;
+			<span class="hljs-keyword">var</span> paramName = parsedOptions.argv.cooked[i + <span class="hljs-number">1</span>];
+			<span class="hljs-keyword">var</span> paramValue = parsedOptions.argv.cooked[i + <span class="hljs-number">2</span>];</pre></div>
+        
+      
+        
+        <p>Check param arguments exist</p>
+
+        
+          <div class='highlight'><pre>			<span class="hljs-keyword">if</span>(paramName &amp;&amp; paramValue)
+			{
+				<span class="hljs-keyword">if</span>(paramName.indexOf(<span class="hljs-string">"--"</span>) === -<span class="hljs-number">1</span> &amp;&amp; paramValue.indexOf(<span class="hljs-string">"--"</span>) === -<span class="hljs-number">1</span>)
+				{
+					valid = <span class="hljs-literal">true</span>;
+				}
+			}
+
+			<span class="hljs-keyword">if</span>(!valid)
+				<span class="hljs-keyword">throw</span> <span class="hljs-string">"Parameter '"</span> + paramName + <span class="hljs-string">"' is incorrectly specified, please check the arguments specified"</span>;
+			<span class="hljs-keyword">else</span>
+			{
+				<span class="hljs-keyword">var</span> parts = paramName.split(<span class="hljs-string">'.'</span>);
+				<span class="hljs-keyword">var</span> tempParams = params;
+
+				<span class="hljs-keyword">while</span>(parts.length &gt; <span class="hljs-number">1</span>)
+				{
+					<span class="hljs-keyword">if</span>(!tempParams[parts[<span class="hljs-number">0</span>]])
+						tempParams[parts[<span class="hljs-number">0</span>]] = {};
+
+					tempParams = tempParams[parts[<span class="hljs-number">0</span>]];
+					parts = parts.slice(<span class="hljs-number">1</span>);
+					
+				}
+
+				tempParams[parts[<span class="hljs-number">0</span>]] = paramValue;
+			}
+			
+		}
+	});
+
+	<span class="hljs-keyword">return</span> params;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parseOptions</span><span class="hljs-params">()</span> {</span>
+	<span class="hljs-keyword">var</span> knownOpts = { <span class="hljs-string">"endpoint"</span> : [<span class="hljs-built_in">String</span>, <span class="hljs-literal">null</span>],
+					<span class="hljs-string">"command"</span>: [<span class="hljs-built_in">String</span>, <span class="hljs-literal">null</span>],
+					<span class="hljs-string">"u"</span>: [<span class="hljs-built_in">String</span>,<span class="hljs-literal">null</span>],
+					<span class="hljs-string">"help"</span>: <span class="hljs-built_in">Boolean</span>,
+					<span class="hljs-string">"version"</span>: <span class="hljs-built_in">Boolean</span>,
+					<span class="hljs-string">"auth"</span>: [<span class="hljs-built_in">String</span>,<span class="hljs-literal">null</span>],
+					<span class="hljs-string">"param"</span>: [<span class="hljs-built_in">String</span>,<span class="hljs-literal">null</span>]
+                };
+
+	<span class="hljs-keyword">var</span> shortHands = {
+						<span class="hljs-string">"e"</span> : [<span class="hljs-string">"--endpoint"</span>],
+						<span class="hljs-string">"c"</span> : [<span class="hljs-string">"--command"</span>],
+						<span class="hljs-string">"h"</span> : [<span class="hljs-string">"--help"</span>],
+						<span class="hljs-string">"v"</span> : [<span class="hljs-string">"--version"</span>],
+						<span class="hljs-string">"a"</span> : [<span class="hljs-string">"--auth"</span>],
+						<span class="hljs-string">"p"</span> : [<span class="hljs-string">"--param"</span>]
+					};
+
+	<span class="hljs-keyword">var</span> parsed = nopt(knownOpts, shortHands, process.argv);
+	<span class="hljs-keyword">var</span> options = {};
+	options.params = parseParams(parsed);
+	options.auth = parseAuthDetails(parsed);
+	
+	<span class="hljs-keyword">if</span>(parsed.version)
+	{
+		console.log(libVersion.version);
+		<span class="hljs-keyword">return</span>;
+	}
+
+	<span class="hljs-keyword">if</span>(parsed.help)
+	{
+		printHelp();
+		<span class="hljs-keyword">return</span>;
+	}
+
+	options.api = (parsed.url) ? parsed.url : <span class="hljs-string">"api.datasift.com"</span>;
+	options.endpoint = (parsed.endpoint) ? parsed.endpoint : <span class="hljs-string">"core"</span>;
+	options.command = parsed.command;
+	
+	<span class="hljs-keyword">return</span> options;
+
+}
+
+<span class="hljs-comment">/* The CLI has been built to work with internal automated testing. In this function
+  we map / adjust parameters from the shell script to match the library.
+*/</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">correctOptions</span><span class="hljs-params">(options)</span>
+{</span>
+	<span class="hljs-keyword">if</span>(options.command === <span class="hljs-string">"prepare"</span> &amp;&amp; options.endpoint === <span class="hljs-string">"historics"</span>)
+	{
+		options.params.sources = <span class="hljs-string">"twitter"</span>;
+	}
+
+	<span class="hljs-keyword">if</span>(options.command === <span class="hljs-string">"update"</span> &amp;&amp; options.endpoint === <span class="hljs-string">"historics"</span>)
+	{
+		options.params.reason = <span class="hljs-string">"CLI test script"</span>;
+	}
+
+	<span class="hljs-keyword">if</span>(options.endpoint === <span class="hljs-string">"managed_sources"</span> &amp;&amp; options.params.source_id)
+	{
+		options.params.id = options.params.source_id;
+	}
+
+	<span class="hljs-keyword">if</span>(options.endpoint === <span class="hljs-string">"managed_sources"</span>)
+		options.endpoint = <span class="hljs-string">"source"</span>;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">resultHandler</span><span class="hljs-params">(err, result, headers, statusCode)</span>
+{</span>
+	<span class="hljs-keyword">if</span> (err) {
+		console.log(<span class="hljs-string">"ERROR: "</span> + err); 
+	}
+	<span class="hljs-keyword">else</span>
+	{
+		console.log(<span class="hljs-built_in">JSON</span>.stringify({
+			status: statusCode,
+			headers: headers,
+			body: result
+		}));
+	}
+}
+
+<span class="hljs-keyword">try</span>
+{
+	<span class="hljs-keyword">var</span> options = parseOptions();
+	correctOptions(options);
+	<span class="hljs-keyword">var</span> ds = <span class="hljs-keyword">new</span> DataSift(options.auth.username, options.auth.apikey);
+
+	<span class="hljs-keyword">if</span>(!options.command)
+		<span class="hljs-keyword">throw</span> <span class="hljs-string">"Please define a command to run."</span>;
+
+	<span class="hljs-keyword">if</span>(options.endpoint === <span class="hljs-string">"core"</span>)
+		ds[options.command](options.params, resultHandler);
+	<span class="hljs-keyword">else</span>
+		ds[options.endpoint][options.command](options.params, resultHandler);	
+}
+<span class="hljs-keyword">catch</span>(ex)
+{
+	console.log((ex.stack) ? ex.stack : <span class="hljs-built_in">JSON</span>.stringify(ex));
+}</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>
