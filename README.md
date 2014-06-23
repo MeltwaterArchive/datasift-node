@@ -17,35 +17,35 @@ Full API reference documentation can be found on the DataSift [developer site](h
 
 	var ds = new DataSift('username', 'apikey');
 
-This will create a new DataSift object. The DataSift object supports the REST and streaming API and streaming API's.
+This will create a new DataSift object. The DataSift object supports the REST and streaming APIs.
 
-### REST Endpoint
+### REST API
 
-		new DataSift('username', 'apikey').<api_method>(<method_params), function (err, response) {
-			console.log(response);
-		});
+All of the DataSift REST endpoints are available as functions on the DataSift object. Use this pattern to call an endpoint:
 
-All of the REST endpoints are available as functions on the DataSift object. 
+	new DataSift('username', 'apikey').<api_method>(<method_params), 
+	  function (err, response) {
+		console.log(response);
+	});
 
-For example if we would like to validate our CSDL using the validate endpoint we can access it through:
+
+For example to validate a CSDL filter you can use the **validate** endpoint:
 
 	ds.validate({
 		'csdl': 'interaction.content contains "hello"'
-	}, callback);
+	}, function(err, response) {
+		if (err) 
+			console.log(err);
+		else
+			console.log("CSDL is valid");
+	});
 
 Each object takes an object list of parameters, in our instance we can [see the only parameter](http://dev.datasift.com/docs/api/1/validate) is `csdl`.
 
-The second argument to the function takes a `callback` function.
+### Streaming API
 
-    var callback = function (err, response) {
-    	if (err) {
-    		// we have errored
-    	} else {
-    		// do something with the response
-    	}
-    };
+The [Node.JS Quickstart Guide](http://dev.datasift.com/quickstart/nodejs) explains how to use the streaming API. Or, take look at the **/examples** folder in the repo.
 
-This takes an error object and the response the library got back from the server.
 
 ## Supported Operating Enviroment
 
