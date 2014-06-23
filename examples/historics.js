@@ -1,4 +1,4 @@
-// #Example - Core API Functions
+// #Example - Historic Data Access
 // *How to run a historic query and deliver data to a push destination.*
 
 // Require the DataSift library - **choose one of these**:

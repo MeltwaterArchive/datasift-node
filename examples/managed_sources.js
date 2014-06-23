@@ -1,4 +1,4 @@
-// #Example - Core API Functions
+// #Example - Managed Sources
 // *How to create, run, update, stop and delete a managed source. In this case we use a [Facebook Page source](https://datasift.com/source/managed/facebook_page). *
 
 // Require the DataSift library - **choose one of these**:

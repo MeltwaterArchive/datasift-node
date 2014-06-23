@@ -502,5 +502,115 @@
                 "required": true
             }]
         }
+    },
+    "list": {
+        "create": {
+            "uri": "https://api.datasift.com/v1/list/create",
+            "method": "post",
+            "params": [{
+                "name": "type",
+                "type": "string",
+                "required": true
+            },{
+                "name": "name",
+                "type": "string",
+                "required": true
+            }]
+        },
+        "get": {
+            "uri": "https://api.datasift.com/v1/list/get",
+            "method": "get",
+            "params": []
+        },
+        "add": {
+            "uri": "https://api.datasift.com/v1/list/add",
+            "method": "post",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": true
+            },{
+                "name": "items",
+                "type": "string",
+                "required": true
+            }]
+        },
+        "remove": {
+            "uri": "https://api.datasift.com/v1/list/remove",
+            "method": "post",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": true
+            },{
+                "name": "items",
+                "type": "string",
+                "required": true
+            }]
+        },
+        "exists": {
+            "uri": "https://api.datasift.com/v1/list/exists",
+            "method": "post",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": true
+            },{
+                "name": "items",
+                "type": "string",
+                "required": true
+            }]
+        },
+        "delete": {
+            "uri": "https://api.datasift.com/v1/list/delete",
+            "method": "post",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": true
+            }]
+        },
+        "replace": {
+            "add": {
+                "uri": "https://api.datasift.com/v1/list/replace/add",
+                "method": "post",
+                "params": [{
+                    "name": "id",
+                    "type": "string",
+                    "required": true
+                },{
+                    "name": "items",
+                    "type": "string",
+                    "required": true
+                }]
+            },
+            "abort": {
+                "uri": "https://api.datasift.com/v1/list/replace/abort",
+                "method": "post",
+                "params": [{
+                    "name": "id",
+                    "type": "string",
+                    "required": true
+                }]
+            },
+            "start": {
+                "uri": "https://api.datasift.com/v1/list/replace/start",
+                "method": "post",
+                "params": [{
+                    "name": "list_id",
+                    "type": "string",
+                    "required": true
+                }]
+            },
+            "commit": {
+                "uri": "https://api.datasift.com/v1/list/replace/commit",
+                "method": "post",
+                "params": [{
+                    "name": "id",
+                    "type": "string",
+                    "required": true
+                }]
+            }
+        }
     }
 }

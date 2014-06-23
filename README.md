@@ -4,7 +4,7 @@
 
 This NodeJS client library for DataSift supports the full REST API and streaming API's. For more information about the API's please see the [dev documentation](http://dev.datasift.com).
 
-## Usage
+## Usage & Examples
 
 	var ds = new DataSift('username', 'apikey');
 
