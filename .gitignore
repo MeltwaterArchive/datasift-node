@@ -3,3 +3,4 @@ _site
 tests/config.json
 .idea/*
 .*.iml
+lib/version/staging.json

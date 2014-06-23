@@ -2,7 +2,16 @@
 
 # DataSift Node Client Library
 
-This NodeJS client library for DataSift supports the full REST API and streaming API's. For more information about the API's please see the [dev documentation](http://dev.datasift.com).
+This NodeJS client library for DataSift supports the full REST API and streaming API's. 
+
+## Quickstart & Examples
+
+Please read our [Node.JS Quickstart Guide](http://dev.datasift.com/quickstart/nodejs) to get started with the DataSift platform.
+
+For further examples take a look at the **/examples** folder in the repo.
+
+Full API reference documentation can be found on the DataSift [developer site](http://dev.datasift.com).
+
 
 ## Usage
 
