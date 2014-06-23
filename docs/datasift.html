@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>datasift.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          <h1>datasift.js</h1>
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="streaming.html">
+                    streaming.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="cli.html">
+                    cli.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="datasift.html">
+                    datasift.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="library-version.html">
+                    library-version.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="stream.html">
+                    stream.js
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        
+        
+          <div class='highlight'><pre><span class="hljs-comment">/* jshint debug:true, forin:true, noarg:true, noempty:true, eqeqeq:true, loopfunc:true, bitwise:true, strict:false,
+undef:true, unused:true, curly:true, browser:true, jquery:true, node:true, indent:4, maxerr:50, globalstrict:true */</span></pre></div>
+        
+      
+        
+        <p>A NodeJS client for DataSift. This client supports both the REST and streaming API’s. More
+information about the endpoints can be found at (dev.datasift.com)[<a href="http://dev.datasift.com">http://dev.datasift.com</a>].</p>
+
+        
+          <div class='highlight'><pre>
+<span class="hljs-keyword">var</span> request = <span class="hljs-built_in">require</span>(<span class="hljs-string">'request'</span>),
+	Stream = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./stream.js'</span>),
+	libVersion = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./library-version'</span>);</pre></div>
+        
+      
+        
+        <h2 id="initial-setup">Initial Setup</h2>
+
+        
+      
+        
+        
+        
+      
+        
+        <p>Creates a new DataSift object, passing in your DataSift username and apikey</p>
+<pre><code><span class="hljs-keyword">var</span> ds = <span class="hljs-keyword">new</span> DataSift(<span class="hljs-string">'username'</span>, <span class="hljs-string">'apikey'</span>);
+</code></pre>
+        
+      
+        
+        <ul>
+<li><code>username</code> - Your DataSift username</li>
+<li><code>apikey</code> - DataSift APIKey</li>
+<li><code>version</code> - <strong> optional </strong> An API version different than 1</li>
+</ul>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> DataSift = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(username, apikey, version)</span> {</span>
+
+	<span class="hljs-keyword">if</span> (!username || !apikey) {
+		<span class="hljs-keyword">throw</span> <span class="hljs-string">'Username &amp; API key are required'</span>;
+	}
+
+	Stream.call(<span class="hljs-keyword">this</span>, username, apikey);
+
+	<span class="hljs-keyword">this</span>.username = username;
+	<span class="hljs-keyword">this</span>.apikey = apikey;
+	<span class="hljs-keyword">this</span>.version = version || <span class="hljs-number">1</span>;
+	<span class="hljs-keyword">this</span>.definition = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./version/'</span> + <span class="hljs-keyword">this</span>.version + <span class="hljs-string">'.json'</span>);
+	<span class="hljs-keyword">this</span>._setupRoutes();
+	<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+};
+
+DataSift.prototype = <span class="hljs-keyword">new</span> Stream();
+DataSift.prototype.constructor = DataSift;</pre></div>
+        
+      
+        
+        <h2 id="defining-routes">Defining Routes</h2>
+
+        
+      
+        
+        
+        
+      
+        
+        <p>Take each of the routes which have been defined in version JSON file and extend the <code>DataSift</code> object
+so each will become of method.</p>
+<p>For example the version file defines the following route for the /validate endpoint:</p>
+<pre><code><span class="hljs-string">"validate"</span>: {
+    <span class="hljs-string">"uri"</span>: <span class="hljs-string">"https://api.datasift.com/v1/validate"</span>,
+     <span class="hljs-string">"method"</span>: <span class="hljs-string">"post"</span>,
+     <span class="hljs-string">"params"</span>: [{
+         <span class="hljs-string">"name"</span>: <span class="hljs-string">"csdl"</span>,
+         <span class="hljs-string">"type"</span>: <span class="hljs-string">"string"</span>,
+         <span class="hljs-string">"required"</span>: <span class="hljs-literal">true</span>
+     }]
+ }
+</code></pre><p>This is taken and is attached the the DataSift object as (using the examples above) ds.validate.</p>
+<p>When the function is called it is passed to the <code>_dispatch</code> function, passing through all the route information.</p>
+
+        
+          <div class='highlight'><pre>DataSift.prototype._setupRoutes = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> {</span>
+	<span class="hljs-built_in">Object</span>.keys(<span class="hljs-keyword">this</span>.definition).forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(key)</span> {</span>
+		<span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.definition[key].uri !== <span class="hljs-literal">undefined</span>) {
+			<span class="hljs-keyword">this</span>[key] = <span class="hljs-keyword">this</span>._dispatch.bind(<span class="hljs-keyword">this</span>, <span class="hljs-keyword">this</span>.definition[key]);
+		} <span class="hljs-keyword">else</span> {
+			<span class="hljs-keyword">this</span>[key] = {};
+			<span class="hljs-built_in">Object</span>.keys(<span class="hljs-keyword">this</span>.definition[key]).forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(subkey)</span> {</span>
+				<span class="hljs-keyword">this</span>[key][subkey] = <span class="hljs-keyword">this</span>._dispatch.bind(<span class="hljs-keyword">this</span>, <span class="hljs-keyword">this</span>.definition[key][subkey]);
+			}.bind(<span class="hljs-keyword">this</span>));
+		}
+	}.bind(<span class="hljs-keyword">this</span>));
+};</pre></div>
+        
+      
+        
+        <h2 id="dispatch-the-method">Dispatch the method</h2>
+
+        
+      
+        
+        <p>This method uses the definition file in order to validate the endpoint, then it will dispatch the API method using the <code>request</code> node library.</p>
+<p>Take special notice of the <code>TLSv1_method</code> secure protocol that the DataSift API</p>
+<ul>
+<li><code>route</code> - The route from the version file</li>
+<li><code>params</code> -  An object which defines the params for this method</li>
+<li><code>callback</code> - The callback function, which takes two parameters <code>err</code>, and <code>reponse</code></li>
+</ul>
+
+        
+          <div class='highlight'><pre>DataSift.prototype._dispatch = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(route, params, callback)</span> {</span>
+
+	route.params.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(param)</span> {</span>
+		<span class="hljs-keyword">if</span> (params[param.name] === <span class="hljs-literal">undefined</span> &amp;&amp; param.required) {
+			<span class="hljs-keyword">throw</span> param.name + <span class="hljs-string">' is required, but hasn\'t been specified'</span>;
+		}
+	});
+
+	<span class="hljs-keyword">var</span> options = {
+		method: route.method.toUpperCase(),
+		uri: route.uri,
+		secureProtocol: <span class="hljs-string">'TLSv1_method'</span>,
+		auth: {
+			<span class="hljs-string">'username'</span>: <span class="hljs-keyword">this</span>.username,
+			<span class="hljs-string">'password'</span>: <span class="hljs-keyword">this</span>.apikey
+		},
+        headers: {
+            <span class="hljs-string">'User-Agent'</span>: <span class="hljs-string">'DataSift/v1 Node/v'</span> + libVersion.version
+        }
+	};
+
+	<span class="hljs-keyword">if</span> (options.method === <span class="hljs-string">'POST'</span>) {
+		options.form = params;
+	} <span class="hljs-keyword">else</span> {
+		options.qs = params;
+	}
+
+	request(options, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err, response, body)</span> {</span>
+
+		<span class="hljs-keyword">if</span> (err) {</pre></div>
+        
+      
+        
+        <p>Temp fix: awaiting resolution of DM-3137</p>
+
+        
+          <div class='highlight'><pre>			<span class="hljs-keyword">if</span>(err.code === <span class="hljs-string">"HPE_INVALID_CONSTANT"</span>) {
+				<span class="hljs-keyword">return</span> callback();
+			} <span class="hljs-keyword">else</span> {
+				<span class="hljs-keyword">return</span> callback(err, <span class="hljs-literal">null</span>, response.headers, response.statusCode);
+			}
+		}
+
+		<span class="hljs-keyword">switch</span>(response.statusCode) {
+		<span class="hljs-keyword">case</span> <span class="hljs-number">401</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-number">404</span>:
+		<span class="hljs-keyword">case</span> <span class="hljs-number">500</span>:
+			<span class="hljs-keyword">return</span> callback(response, <span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>, response.statusCode);
+		}
+
+		<span class="hljs-keyword">if</span> (!body) {
+			<span class="hljs-keyword">return</span> callback(<span class="hljs-literal">null</span>,<span class="hljs-literal">null</span>,response.headers, response.statusCode);
+		}
+
+		<span class="hljs-keyword">try</span> {
+			<span class="hljs-keyword">if</span> (response.headers[<span class="hljs-string">'x-datasift-format'</span>] === <span class="hljs-string">'json_new_line'</span>) {
+				<span class="hljs-keyword">var</span> lines = body.split(<span class="hljs-string">"\n"</span>);
+				body = [];
+
+				lines.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(line)</span> {</span>
+					body.push(<span class="hljs-built_in">JSON</span>.parse(line));
+				});
+
+			} <span class="hljs-keyword">else</span> {
+				body = <span class="hljs-built_in">JSON</span>.parse(body);
+			}
+		} <span class="hljs-keyword">catch</span> (e) {
+			<span class="hljs-keyword">return</span> callback({
+				message: <span class="hljs-string">'Invalid JSON'</span>,
+				response: response
+			});
+		}
+
+		<span class="hljs-keyword">return</span> callback(<span class="hljs-literal">null</span>, body, response.headers, response.statusCode);
+		
+	}.bind(<span class="hljs-keyword">this</span>));
+};
+
+module.exports = DataSift;</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>

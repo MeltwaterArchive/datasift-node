@@ -10,7 +10,8 @@
   "dependencies": {
     "request": "2.33.*",
     "http": "*",
-    "events": "*"
+    "events": "*",
+    "nopt": "*"
   },
   "devDependencies": {
     "grunt": "^0.4.2",
