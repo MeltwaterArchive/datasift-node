@@ -4,6 +4,9 @@ These quick examples will help you get started with the core features of the Dat
 ### [Streaming Live Data](streaming.js)
 How to connect to the DataSift platform, compile a filter and stream live data to your machine.
 
+### [Multi-Streaming Live Data](multi-streaming.js)
+How to connect to the DataSift platform and stream multiple streams simultaneously.
+
 ### [Core API Functions](core.js)
 How to perform basic API features, such as compiling a stream, find our your usage and account balance.
 
