@@ -348,6 +348,28 @@
                 "type": "int",
                 "required": false
             }]
+        },
+        "pause": {
+            "uri": "https://api.datasift.com/v1/historics/pause",
+            "method": "post",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": true
+            }, {
+                "name": "reason",
+                "type": "string",
+                "required": false
+            }]
+        },
+        "resume": {
+            "uri": "https://api.datasift.com/v1/historics/resume",
+            "method": "post",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": true
+            }]
         }
     },
     "preview": {
