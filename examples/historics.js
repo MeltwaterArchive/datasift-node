@@ -2,11 +2,11 @@
 // *How to run a historic query and deliver data to a push destination.*
 
 // Require the DataSift library - **choose one of these**:
-//var DataSift = require('datasift-node'); // When running from NPM package
+var DataSift = require('datasift-node'); // When running from NPM package
 var DataSift = require('../lib/datasift'); // When running within datasift-node repository
 
 // Create a DataSift client object - **insert your API credentials**:
-var ds = new DataSift('rcaudle', 'b09a645fe2f1fed748c12268fd473662');
+var ds = new DataSift('YOUR_USERNAME', 'YOUR_APIKEY');
 
 // Calculate start and end time (as UNIX timestamp) for our query (start 48 hours ago, duration 2 hours)
 var startTime = parseInt((new Date).getTime()/1000) - (7200 * 48);
@@ -201,6 +201,7 @@ function deleteHistoric(historicsId) {
 // * Starts the query running
 // * Updates the query's name
 // * Gets the query's details
+// * Pauses and resumes the query
 // * Stops the query running
 // * Deletes the query
 checkStatus();

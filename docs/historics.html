@@ -218,7 +218,7 @@
         
       
         
-        <p>Gets the historic query’s details, then stops the query running -
+        <p>Gets the historic query’s details, then pauses the query -
 <strong>In a real world solution you would allow the query to run and deliver all the data!</strong></p>
 
         
@@ -231,6 +231,45 @@
 		<span class="hljs-keyword">else</span>
 		{
 			console.log(<span class="hljs-string">"Historic query details: "</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+			pause(historicsId);
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>Pauses the query, then resumes it:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">pause</span><span class="hljs-params">(historicsId)</span> {</span>
+	ds.historics.pause({
+		<span class="hljs-string">"id"</span>: historicsId,
+		<span class="hljs-string">"reason"</span>: <span class="hljs-string">"Pausing example query"</span>
+	}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span> (err) 
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			console.log(<span class="hljs-string">"Paused historic query."</span>);
+			resume(historicsId);
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>Resumes the query, then stops it:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">resume</span><span class="hljs-params">(historicsId)</span> {</span>
+	ds.historics.resume({
+		<span class="hljs-string">"id"</span>: historicsId
+	}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span> (err) 
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			console.log(<span class="hljs-string">"Resumed historic query."</span>);
 			stop(historicsId);
 		}
 	});
@@ -285,6 +324,7 @@
 <li>Starts the query running</li>
 <li>Updates the query’s name</li>
 <li>Gets the query’s details</li>
+<li>Pauses and resumes the query</li>
 <li>Stops the query running</li>
 <li>Deletes the query</li>
 </ul>
