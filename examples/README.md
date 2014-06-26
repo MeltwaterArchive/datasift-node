@@ -15,3 +15,6 @@ How to run a historic query and deliver data to a push destination.
 
 ### [Managed Sources](managed_sources.js)
 How to create, run, update, stop and delete a managed source.
+
+### [Dynamic Lists](dynamic_lists.js)
+How to create, add to, remove from and delete dynamic lists.

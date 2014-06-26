@@ -1,4 +1,4 @@
-// #Example - Core API Functions
+// #Example - Push Delivery
 // *How to setup and reliably deliver to a push destination. In this case we use a [Pull Destination](https://datasift.com/destination/pull) which provides a data buffer which you can pull data from whenever suits you. *
 
 // Require the DataSift library - **choose one of these**:

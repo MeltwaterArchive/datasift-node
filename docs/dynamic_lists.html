@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Example - Dynamic Lists</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          
+          <h1 id="example-dynamic-lists">Example - Dynamic Lists</h1>
+<p>These examples show how to:</p>
+<ul>
+<li>Create and delete lists</li>
+<li>Add and remove items from lists</li>
+<li>Check for the existence of items in a list</li>
+<li>Bulk replace the contents of a dynamic list</li>
+</ul>
+
+          
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="core.html">
+                    core.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="dynamic_lists.html">
+                    dynamic_lists.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="historics.html">
+                    historics.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="managed_sources.html">
+                    managed_sources.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="push.html">
+                    push.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="streaming.html">
+                    streaming.js
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        <p>Require the DataSift library - <strong>choose one of these</strong>:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> DataSift = <span class="hljs-built_in">require</span>(<span class="hljs-string">'datasift'</span>); <span class="hljs-comment">// When running from NPM package</span>
+<span class="hljs-keyword">var</span> DataSift = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../lib/datasift'</span>); <span class="hljs-comment">// When running within datasift-node repository</span></pre></div>
+        
+      
+        
+        <p>Create a DataSift client object - <strong>insert your API credentials</strong>:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> ds = <span class="hljs-keyword">new</span> DataSift(<span class="hljs-string">'YOUR_USERNAME'</span>, <span class="hljs-string">'YOUR_APIKEY'</span>);</pre></div>
+        
+      
+        
+        <p>A variable to store the list ID for use later:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> listId;</pre></div>
+        
+      
+        
+        <h2 id="declare-utility-methods">Declare Utility Methods</h2>
+<p>This method creates a dynamic list, then shows all lists you have:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">create</span><span class="hljs-params">()</span> {</span>
+
+	ds.list.create({
+		<span class="hljs-string">"type"</span>: <span class="hljs-string">"integer"</span>,
+		<span class="hljs-string">"name"</span>: <span class="hljs-string">"Example integer list"</span>
+	},<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span>(err)
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			listId = response.id;
+			console.log(<span class="hljs-string">"Created list: "</span> + response.id);
+			get();
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>This method shows all lists you have, then adds items to a list:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">get</span><span class="hljs-params">()</span> {</span>
+
+	ds.list.get(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span>(err)
+			console.log(err);
+		<span class="hljs-keyword">else</span> {
+			console.log(<span class="hljs-string">"Current lists: "</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+			add();
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>This method adds items to the created list, then removes some items:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">add</span><span class="hljs-params">()</span> {</span>
+	ds.list.add({
+		<span class="hljs-string">"id"</span>: listId,
+		<span class="hljs-string">"items"</span>: <span class="hljs-built_in">JSON</span>.stringify([<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>])
+	},<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err,response)</span> {</span>
+		<span class="hljs-keyword">if</span>(err)
+			console.log(err);
+		<span class="hljs-keyword">else</span> {
+			console.log(<span class="hljs-string">"Items have been added to the list."</span>);
+			remove();
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>This method removes items from the list, then checks for item existence:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">remove</span><span class="hljs-params">()</span> {</span>
+	ds.list.remove({
+		<span class="hljs-string">"id"</span>: listId,
+		<span class="hljs-string">"items"</span>: <span class="hljs-built_in">JSON</span>.stringify([<span class="hljs-number">1</span>,<span class="hljs-number">2</span>])
+	},<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err,response)</span> {</span>
+		<span class="hljs-keyword">if</span>(err)
+			console.log(err);
+		<span class="hljs-keyword">else</span> {
+			console.log(<span class="hljs-string">"Items have been removed from the list."</span>);
+			exists();
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>This method checks for item existence in the list, then starts a bulk replace:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">exists</span><span class="hljs-params">()</span> {</span>
+	ds.list.exists({
+		<span class="hljs-string">"id"</span>: listId,
+		<span class="hljs-string">"items"</span>: <span class="hljs-built_in">JSON</span>.stringify([<span class="hljs-number">3</span>,<span class="hljs-number">4</span>])
+	},<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err,response)</span> {</span>
+		<span class="hljs-keyword">if</span>(err)
+			console.log(err);
+		<span class="hljs-keyword">else</span> {
+			console.log(<span class="hljs-string">"Exists result: "</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+			replaceStart();
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>This method starts a bulk replace, then performs the replace:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">replaceStart</span><span class="hljs-params">()</span> {</span>
+	ds.list.replace.start({
+		<span class="hljs-string">"list_id"</span>: listId
+	},<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err,response)</span> {</span>
+		<span class="hljs-keyword">if</span>(err)
+			console.log(err);
+		<span class="hljs-keyword">else</span> {
+			console.log(<span class="hljs-string">"Replace started"</span>);
+			replaceAdd(response.id);
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>This method adds items during the bulk replace, then commits:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">replaceAdd</span><span class="hljs-params">(replaceId)</span> {</span>
+	ds.list.replace.add({
+		<span class="hljs-string">"id"</span>: replaceId,
+		<span class="hljs-string">"items"</span>: <span class="hljs-built_in">JSON</span>.stringify([<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>,<span class="hljs-number">6</span>,<span class="hljs-number">7</span>,<span class="hljs-number">8</span>,<span class="hljs-number">9</span>])
+	},<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err,response)</span> {</span>
+		<span class="hljs-keyword">if</span>(err)
+			console.log(err);
+		<span class="hljs-keyword">else</span> {
+			console.log(<span class="hljs-string">"Replace completed"</span>);
+			replaceCommit(replaceId);
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>This method commits the bulk replace, then deletes the list for cleanup:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">replaceCommit</span><span class="hljs-params">(replaceId)</span> {</span>
+	ds.list.replace.commit({
+		<span class="hljs-string">"id"</span>: replaceId
+	},<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err,response)</span> {</span>
+		<span class="hljs-keyword">if</span>(err)
+			console.log(err);
+		<span class="hljs-keyword">else</span> {
+			console.log(<span class="hljs-string">"Replace committed"</span>);
+			deleteList();
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>This method deletes the list</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">deleteList</span><span class="hljs-params">()</span> {</span>
+	ds.list.delete({
+		<span class="hljs-string">"id"</span>: listId
+	},<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err,response)</span> {</span>
+		<span class="hljs-keyword">if</span>(err)
+			console.log(err);
+		<span class="hljs-keyword">else</span> {
+			console.log(<span class="hljs-string">"List deleted"</span>);
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <h2 id="initiate-process">Initiate Process</h2>
+<p>Finally we start the process creating a list. This will lead to:</p>
+<ul>
+<li>Showing all the lists in the account</li>
+<li>Adding items to the list</li>
+<li>Removing items from the list</li>
+<li>Checking if items exist in the list</li>
+<li>Performing a bulk replace of items in the list</li>
+<li>Deleting the list</li>
+</ul>
+
+        
+          <div class='highlight'><pre>create();</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>

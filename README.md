@@ -13,7 +13,7 @@ For further examples take a look at the **/examples** folder in the repo.
 Full API reference documentation can be found on the DataSift [developer site](http://dev.datasift.com).
 
 
-## Usage
+## Usage & Examples
 
 	var ds = new DataSift('username', 'apikey');
 
