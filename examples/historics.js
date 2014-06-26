@@ -116,7 +116,7 @@ function update(historicsId) {
 	});
 }
 
-// Gets the historic query's details, then stops the query running -
+// Gets the historic query's details, then pauses the query -
 // **In a real world solution you would allow the query to run and deliver all the data!**
 function get(historicsId) {
 	ds.historics.get({
@@ -127,6 +127,37 @@ function get(historicsId) {
 		else
 		{
 			console.log("Historic query details: " + JSON.stringify(response));
+			pause(historicsId);
+		}
+	});
+}
+
+// Pauses the query, then resumes it:
+function pause(historicsId) {
+	ds.historics.pause({
+		"id": historicsId,
+		"reason": "Pausing example query"
+	}, function(err, response) {
+		if (err) 
+			console.log(err);
+		else
+		{
+			console.log("Paused historic query.");
+			resume(historicsId);
+		}
+	});
+}
+
+// Resumes the query, then stops it:
+function resume(historicsId) {
+	ds.historics.resume({
+		"id": historicsId
+	}, function(err, response) {
+		if (err) 
+			console.log(err);
+		else
+		{
+			console.log("Resumed historic query.");
 			stop(historicsId);
 		}
 	});
@@ -170,6 +201,7 @@ function deleteHistoric(historicsId) {
 // * Starts the query running
 // * Updates the query's name
 // * Gets the query's details
+// * Pauses and resumes the query
 // * Stops the query running
 // * Deletes the query
 checkStatus();
