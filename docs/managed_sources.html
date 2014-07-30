@@ -114,17 +114,35 @@
             <span class="hljs-string">'id'</span>: <span class="hljs-string">'theguardian'</span>
         }
     }
+];
+
+<span class="hljs-keyword">var</span> resourcesToAddLater = [
+    {
+        <span class="hljs-string">'parameters'</span>: {
+            <span class="hljs-string">"title"</span>: <span class="hljs-string">"The Sun"</span>,
+	        <span class="hljs-string">"url"</span>: <span class="hljs-string">"http://www.facebook.com/thesun"</span>,
+	        <span class="hljs-string">"id"</span>: <span class="hljs-string">"161385360554578"</span>
+        }
+    }
 ];</pre></div>
         
       
         
-        <p>Authentication parameters - <strong>enter your token here from <a href="https://datasift.com/source/managed/new/facebook_page">Facebook Page source</a> </strong>:</p>
+        <p>Authentication parameters - <strong>enter tokens here from <a href="https://datasift.com/source/managed/new/facebook_page">Facebook Page source</a> </strong>:</p>
 
         
-          <div class='highlight'><pre>auth = [
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> auth = [
     {
         <span class="hljs-string">'parameters'</span>: {
             <span class="hljs-string">'value'</span>: <span class="hljs-string">'YOUR_FACEBOOK_TOKEN'</span>
+        }
+    }
+];
+
+<span class="hljs-keyword">var</span> authToAddLater = [
+    {
+        <span class="hljs-string">'parameters'</span>: {
+            <span class="hljs-string">'value'</span>: <span class="hljs-string">'ANOTHER_FACEBOOK_TOKEN'</span>
         }
     }
 ];</pre></div>
@@ -132,7 +150,7 @@
       
         
         <h2 id="declare-utility-methods">Declare Utility Methods</h2>
-<p>This method creates the managed source, then starts it:</p>
+<p>This method creates the managed source:</p>
 
         
           <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createSource</span><span class="hljs-params">()</span> {</span>
@@ -160,7 +178,7 @@
         
       
         
-        <p>This method starts the source, then updates it:</p>
+        <p>This method starts the source:</p>
 
         
           <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">startSource</span><span class="hljs-params">()</span> {</span>
@@ -179,7 +197,7 @@
         
       
         
-        <p>This method updates the source, then gets its details:</p>
+        <p>This method updates the source:</p>
 
         
           <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">updateSource</span><span class="hljs-params">()</span> {</span>
@@ -189,10 +207,7 @@
 	ds.source.update({
 		<span class="hljs-string">"id"</span>: sourceDetails.id,
 		<span class="hljs-string">"source_type"</span>: <span class="hljs-string">"facebook_page"</span>,
-		<span class="hljs-string">"name"</span>: <span class="hljs-string">"Updated Facebook source"</span>,
-		<span class="hljs-string">"resources"</span>: <span class="hljs-built_in">JSON</span>.stringify(sourceDetails.resources),
-		<span class="hljs-string">"auth"</span>: <span class="hljs-built_in">JSON</span>.stringify(sourceDetails.auth),
-		<span class="hljs-string">"parameters"</span>: <span class="hljs-built_in">JSON</span>.stringify(sourceDetails.parameters)
+		<span class="hljs-string">"name"</span>: <span class="hljs-string">"Updated Facebook source"</span>
 	}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
 		<span class="hljs-keyword">if</span> (err) 
 			console.log(err);
@@ -207,7 +222,7 @@
         
       
         
-        <p>This method gets the source’s details, then gets the source’s log:</p>
+        <p>This method gets the source’s details:</p>
 
         
           <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getSource</span><span class="hljs-params">()</span> {</span>
@@ -220,14 +235,118 @@
 			<span class="hljs-keyword">else</span>
 			{
 				console.log(<span class="hljs-string">"Source details: "</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
-				getSourceLog();
+				addResource();
 			}
 		});
 }</pre></div>
         
       
         
-        <p>This method gets the source’s log, then stops it:</p>
+        <p>This method adds a new resource to the source:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">addResource</span><span class="hljs-params">()</span> {</span>
+
+	console.log(<span class="hljs-string">"Adding resource to managed source."</span>);
+
+	ds.source.resource.add({
+		<span class="hljs-string">"id"</span>: sourceDetails.id,
+		<span class="hljs-string">"resources"</span>: <span class="hljs-built_in">JSON</span>.stringify(resourcesToAddLater),
+		<span class="hljs-string">"validate"</span>: <span class="hljs-literal">true</span>
+	}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span> (err) 
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			sourceDetails = response;
+			<span class="hljs-keyword">var</span> newResourceId = sourceDetails.resources[<span class="hljs-number">1</span>].resource_id;
+
+			console.log(<span class="hljs-string">"New resource ID: "</span> + newResourceId);
+			removeResource(newResourceId);
+		}
+	});
+
+}</pre></div>
+        
+      
+        
+        <p>This method removes a resource from the source:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">removeResource</span><span class="hljs-params">(resourceId)</span> {</span>
+
+	console.log(<span class="hljs-string">"Removing resource from managed source."</span>);
+
+	ds.source.resource.remove({
+		<span class="hljs-string">"id"</span>: sourceDetails.id,
+		<span class="hljs-string">"resource_ids"</span>: <span class="hljs-built_in">JSON</span>.stringify([resourceId])
+	}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span> (err) 
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			console.log(<span class="hljs-string">"Removed resource ID: "</span> + resourceId);
+			addAuth();
+		}
+	});
+
+}</pre></div>
+        
+      
+        
+        <p>This method adds a new auth token to the source:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">addAuth</span><span class="hljs-params">()</span> {</span>
+
+	console.log(<span class="hljs-string">"Adding auth token to managed source."</span>);
+
+	ds.source.auth.add({
+		<span class="hljs-string">"id"</span>: sourceDetails.id,
+		<span class="hljs-string">"auth"</span>: <span class="hljs-built_in">JSON</span>.stringify(authToAddLater),
+		<span class="hljs-string">"validate"</span>: <span class="hljs-literal">true</span>
+	}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span> (err) 
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			sourceDetails = response;
+			<span class="hljs-keyword">var</span> newAuthId = sourceDetails.auth[<span class="hljs-number">1</span>].identity_id;
+
+			console.log(<span class="hljs-string">"New auth ID: "</span> + newAuthId);
+			removeAuth(newAuthId);
+		}
+	});
+
+}</pre></div>
+        
+      
+        
+        <p>This method removes an auth token from the source:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">removeAuth</span><span class="hljs-params">(authId)</span> {</span>
+
+	console.log(<span class="hljs-string">"Removing auth from managed source."</span>);
+
+	ds.source.auth.remove({
+		<span class="hljs-string">"id"</span>: sourceDetails.id,
+		<span class="hljs-string">"auth_ids"</span>: <span class="hljs-built_in">JSON</span>.stringify([authId])
+	}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span> (err) 
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			console.log(<span class="hljs-string">"Removed auth ID: "</span> + authId);
+			getSourceLog();
+		}
+	});
+
+}</pre></div>
+        
+      
+        
+        <p>This method gets the source’s log:</p>
 
         
           <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getSourceLog</span><span class="hljs-params">()</span> {</span>
@@ -246,7 +365,7 @@
         
       
         
-        <p>This method gets stops the source, then deletes it:</p>
+        <p>This method gets stops the source:</p>
 
         
           <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">stopSource</span><span class="hljs-params">()</span> {</span>
@@ -288,7 +407,10 @@
 <ul>
 <li>The source being started</li>
 <li>The source being updated</li>
-<li>The source’s details and log being fetched</li>
+<li>The source’s details being fetched</li>
+<li>Adding and removing a resource from the source</li>
+<li>Adding and removing an auth token from the source</li>
+<li>The source’s log being fetched</li>
 <li>Ths source being stopped</li>
 <li>Ths source being deleted</li>
 </ul>
