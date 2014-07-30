@@ -61,4 +61,5 @@ The client library uses Grunt to run it's tests and will also lint the files. To
 
 ## Changelog
 
+- 0.5.4: Added managed source resource & auth add and remove endpoints
 - 0.5.2: Each parameter type is now enforced. There are only two types (`int`|`string`).
