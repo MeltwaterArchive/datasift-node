@@ -440,23 +440,23 @@
             "params": [{
                 "name": "source_type",
                 "type": "string",
-                "required": true
+                "required": false
             },{
                 "name": "name",
                 "type": "string",
-                "required": true
+                "required": false
             },{
                 "name": "parameters",
                 "type": "string",
-                "required": true
+                "required": false
             },{
                 "name": "resources",
                 "type": "string",
-                "required": true
+                "required": false
             },{
                 "name": "auth",
                 "type": "string",
-                "required": true
+                "required": false
             }]
         },
         "delete": {
@@ -523,6 +523,70 @@
                 "type": "string",
                 "required": true
             }]
+        },
+        "resource": {
+            "add": {
+                "uri": "https://api.datasift.com/v1/source/resource/add",
+                "method": "post",
+                "params": [{
+                    "name": "id",
+                    "type": "string",
+                    "required": true
+                },{
+                    "name": "resources",
+                    "type": "string",
+                    "required": true
+                },{
+                    "name": "validate",
+                    "type": "boolean",
+                    "required": false
+                }]
+            },
+            "remove": {
+                "uri": "https://api.datasift.com/v1/source/resource/remove",
+                "method": "post",
+                "params": [{
+                    "name": "id",
+                    "type": "string",
+                    "required": true
+                },{
+                    "name": "resource_ids",
+                    "type": "string",
+                    "required": true
+                }]
+            }
+        },
+        "auth": {
+            "add": {
+                "uri": "https://api.datasift.com/v1/source/auth/add",
+                "method": "post",
+                "params": [{
+                    "name": "id",
+                    "type": "string",
+                    "required": true
+                },{
+                    "name": "auth",
+                    "type": "string",
+                    "required": true
+                },{
+                    "name": "validate",
+                    "type": "boolean",
+                    "required": false
+                }]
+            },
+            "remove": {
+                "uri": "https://api.datasift.com/v1/source/auth/remove",
+                "method": "post",
+                "params": [{
+                    "name": "id",
+                    "type": "string",
+                    "required": true
+                },{
+                    "name": "auth_ids",
+                    "type": "string",
+                    "required": true
+                }]
+            }
         }
     },
     "list": {

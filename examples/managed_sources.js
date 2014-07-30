@@ -29,8 +29,18 @@ var resources = [
     }
 ];
 
-// Authentication parameters - **enter your token here from [Facebook Page source](https://datasift.com/source/managed/new/facebook_page) **:
-auth = [
+var resourcesToAddLater = [
+    {
+        'parameters': {
+            "title": "The Sun",
+	        "url": "http://www.facebook.com/thesun",
+	        "id": "161385360554578"
+        }
+    }
+];
+
+// Authentication parameters - **enter tokens here from [Facebook Page source](https://datasift.com/source/managed/new/facebook_page) **:
+var auth = [
     {
         'parameters': {
             'value': 'YOUR_FACEBOOK_TOKEN'
@@ -38,8 +48,16 @@ auth = [
     }
 ];
 
+var authToAddLater = [
+    {
+        'parameters': {
+            'value': 'ANOTHER_FACEBOOK_TOKEN'
+        }
+    }
+];
+
 // ## Declare Utility Methods
-// This method creates the managed source, then starts it:
+// This method creates the managed source:
 function createSource() {
 
 	console.log("Creating managed source.");
@@ -63,7 +81,7 @@ function createSource() {
 
 }
 
-// This method starts the source, then updates it:
+// This method starts the source:
 function startSource() {
 	ds.source.start({
 			"id": sourceDetails.id
@@ -78,7 +96,7 @@ function startSource() {
 		});
 }
 
-// This method updates the source, then gets its details:
+// This method updates the source:
 function updateSource() {
 
 	console.log("Updating managed source.");
@@ -86,10 +104,7 @@ function updateSource() {
 	ds.source.update({
 		"id": sourceDetails.id,
 		"source_type": "facebook_page",
-		"name": "Updated Facebook source",
-		"resources": JSON.stringify(sourceDetails.resources),
-		"auth": JSON.stringify(sourceDetails.auth),
-		"parameters": JSON.stringify(sourceDetails.parameters)
+		"name": "Updated Facebook source"
 	}, function(err, response) {
 		if (err) 
 			console.log(err);
@@ -102,7 +117,7 @@ function updateSource() {
 
 }
 
-// This method gets the source's details, then gets the source's log:
+// This method gets the source's details:
 function getSource() {
 
 	ds.source.get({
@@ -113,12 +128,100 @@ function getSource() {
 			else
 			{
 				console.log("Source details: " + JSON.stringify(response));
-				getSourceLog();
+				addResource();
 			}
 		});
 }
 
-// This method gets the source's log, then stops it:
+// This method adds a new resource to the source:
+function addResource() {
+
+	console.log("Adding resource to managed source.");
+
+	ds.source.resource.add({
+		"id": sourceDetails.id,
+		"resources": JSON.stringify(resourcesToAddLater),
+		"validate": true
+	}, function(err, response) {
+		if (err) 
+			console.log(err);
+		else
+		{
+			sourceDetails = response;
+			var newResourceId = sourceDetails.resources[1].resource_id;
+
+			console.log("New resource ID: " + newResourceId);
+			removeResource(newResourceId);
+		}
+	});
+
+}
+
+// This method removes a resource from the source:
+function removeResource(resourceId) {
+
+	console.log("Removing resource from managed source.");
+
+	ds.source.resource.remove({
+		"id": sourceDetails.id,
+		"resource_ids": JSON.stringify([resourceId])
+	}, function(err, response) {
+		if (err) 
+			console.log(err);
+		else
+		{
+			console.log("Removed resource ID: " + resourceId);
+			addAuth();
+		}
+	});
+
+}
+
+// This method adds a new auth token to the source:
+function addAuth() {
+
+	console.log("Adding auth token to managed source.");
+
+	ds.source.auth.add({
+		"id": sourceDetails.id,
+		"auth": JSON.stringify(authToAddLater),
+		"validate": true
+	}, function(err, response) {
+		if (err) 
+			console.log(err);
+		else
+		{
+			sourceDetails = response;
+			var newAuthId = sourceDetails.auth[1].identity_id;
+
+			console.log("New auth ID: " + newAuthId);
+			removeAuth(newAuthId);
+		}
+	});
+
+}
+
+// This method removes an auth token from the source:
+function removeAuth(authId) {
+
+	console.log("Removing auth from managed source.");
+
+	ds.source.auth.remove({
+		"id": sourceDetails.id,
+		"auth_ids": JSON.stringify([authId])
+	}, function(err, response) {
+		if (err) 
+			console.log(err);
+		else
+		{
+			console.log("Removed auth ID: " + authId);
+			getSourceLog();
+		}
+	});
+
+}
+
+// This method gets the source's log:
 function getSourceLog() {
 	ds.source.log({
 			"id": sourceDetails.id
@@ -133,7 +236,7 @@ function getSourceLog() {
 		});
 }
 
-// This method gets stops the source, then deletes it:
+// This method gets stops the source:
 function stopSource() {
 	ds.source.stop({
 			"id": sourceDetails.id
@@ -166,7 +269,10 @@ function deleteSource() {
 // Finally we start the process by creating the source. This will lead to:
 // * The source being started
 // * The source being updated
-// * The source's details and log being fetched
+// * The source's details being fetched
+// * Adding and removing a resource from the source
+// * Adding and removing an auth token from the source
+// * The source's log being fetched
 // * Ths source being stopped
 // * Ths source being deleted
 createSource();
