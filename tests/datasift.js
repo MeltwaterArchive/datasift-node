@@ -23,7 +23,7 @@ exports.constructor = function (test) {
 	test.done();
 };
 
-exports.method = function (test) {
+exports.topLevelFunctions = function (test) {
 
 	var ds = new DataSift(username, apikey);
 
@@ -33,6 +33,33 @@ exports.method = function (test) {
 	test.throws(function () { ds.validate({ 'csdl': 1 }); });
 	// test the int now
 	test.throws(function () { ds.stream({ 'hash': '1234', 'count': '1'}); });
+
+	test.done();
+};
+
+exports.secondLevelEndpoints = function (test) {
+
+	var ds = new DataSift(username, apikey);
+
+	// check mandatory args are sill enforced
+	test.throws(function () { ds.push.pause(); });
+
+	// check validation of argument types still occurs
+	test.throws(function () { ds.push.pause({ 'id': true }); });
+
+	test.done();
+};
+
+
+exports.thirdLevelEndpoints = function (test) {
+
+	var ds = new DataSift(username, apikey);
+
+	// check mandatory args are sill enforced
+	test.throws(function () { ds.list.replace.start(); });
+
+	// check validation of argument types still occurs
+	test.throws(function () { ds.list.replace.start({ 'list_id': 1 }); });
 
 	test.done();
 };
