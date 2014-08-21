@@ -2,7 +2,7 @@
 
 # DataSift Node Client Library
 
-This NodeJS client library for DataSift supports the full REST API and streaming API's. 
+This NodeJS client library for DataSift supports the full REST API and streaming API's.
 
 ## Quickstart & Examples
 
@@ -23,7 +23,7 @@ This will create a new DataSift object. The DataSift object supports the REST an
 
 All of the DataSift REST endpoints are available as functions on the DataSift object. Use this pattern to call an endpoint:
 
-	new DataSift('username', 'apikey').<api_method>(<method_params), 
+	new DataSift('username', 'apikey').<api_method>(<method_params),
 	  function (err, response) {
 		console.log(response);
 	});
@@ -34,7 +34,7 @@ For example to validate a CSDL filter you can use the **validate** endpoint:
 	ds.validate({
 		'csdl': 'interaction.content contains "hello"'
 	}, function(err, response) {
-		if (err) 
+		if (err)
 			console.log(err);
 		else
 			console.log("CSDL is valid");
@@ -61,5 +61,6 @@ The client library uses Grunt to run it's tests and will also lint the files. To
 
 ## Changelog
 
+- 0.5.5: Removed the api.datasift.com/stream API endpoint; it is not fit for production usage! Consider using [Push Delivery](http://dev.datasift.com/docs/push) or the [Streaming API](http://dev.datasift.com/quickstart/nodejs).
 - 0.5.4: Added managed source resource & auth add and remove endpoints
 - 0.5.2: Each parameter type is now enforced. There are only two types (`int`|`string`).
