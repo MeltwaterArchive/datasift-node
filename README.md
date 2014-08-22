@@ -4,6 +4,14 @@
 
 This NodeJS client library for DataSift supports the full REST API and streaming API's. 
 
+Getting Started
+---------------
+Before you can begin using this library, you will need to have an active [DataSift](http://datasift.com) account - you can sign up for a new account at [datasift.com/get-started](http://datasift.com/get-started/).
+
+Many of the examples and API endpoints used in this library require you have enabled certain data sources before you can receive any data (you should do this at [datasift.com/source](https://datasift.com/source)). Certain API features, such as [Historics](http://datasift.com/platform/historics/) and [Managed Sources](http://datasift.com/platform/datasources/) will require you have signed up to a monthly subscription before you can access them.
+
+If you are interested in using these features, or would like more information about DataSift, please [get in touch](http://datasift.com/contact-us/)!
+
 ## Quickstart & Examples
 
 Please read our [Node.JS Quickstart Guide](http://dev.datasift.com/quickstart/nodejs) to get started with the DataSift platform.
