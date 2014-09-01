@@ -8,17 +8,19 @@ var DataSift = require('../lib/datasift'); // When running within datasift-node 
 // Create a DataSift client object - **insert your API credentials**:
 var ds = new DataSift('YOUR_USERNAME', 'YOUR_APIKEY');
 
-// The CSDL filter definition for the stream:
-var filter = 'interaction.content contains "music"';
+// The CSDL filter definitions for the streams:
+var filter1 = 'interaction.content contains "music"';
+var filter2 = 'interaction.content contains "sport"';
 
 // ## Declare Methods
 // Connects to DataSift and starts streaming data:
-function connect(hash) {
+function connect() {
 
 	// Set up a 'connect' event handler, which will fire when a connection is established. When connected we compile our CSDL filter and subscribe to streaming data.
 	ds.on('connect', function () {
 		console.log('Connected to DataSift');
-		subscribe(filter);
+		subscribe(filter1);
+		subscribe(filter2);
 	});
 
 	// Set up 'error' handler to alert us of any errors. For more details on possible errors see [http://dev.datasift.com/docs/resources/errors](http://dev.datasift.com/docs/resources/errors).
@@ -33,7 +35,7 @@ function connect(hash) {
 
 	// Set up 'interaction' handler - this receives our data! This is triggered each time we receive a new interaction - a piece of data on the live stream.
 	ds.on('interaction', function (data) {
-		console.log('Recieved data: ', data);
+		console.log('Data (stream: ' + data.hash + '): ' + data.data.interaction.content);
 	});
 
 	// Now all handlers are set up, connect to DataSift!
@@ -57,6 +59,5 @@ function subscribe(csdl) {
 // ## Initiate Process
 // Finally we start the process, comprising of:
 // * Connecting to DataSift
-// * Compiling & subscribing to the CSDL filter
+// * Compiling and subscribing to the two filters
 connect();
-

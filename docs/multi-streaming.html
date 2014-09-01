@@ -34,13 +34,6 @@
               
                 
                 <li>
-                  <a class="source" href="dynamic_lists.html">
-                    dynamic_lists.js
-                  </a>
-                </li>
-              
-                
-                <li>
                   <a class="source" href="historics.html">
                     historics.js
                   </a>
@@ -96,10 +89,11 @@
         
       
         
-        <p>The CSDL filter definition for the stream:</p>
+        <p>The CSDL filter definitions for the streams:</p>
 
         
-          <div class='highlight'><pre><span class="hljs-keyword">var</span> filter = <span class="hljs-string">'interaction.content contains "music"'</span>;</pre></div>
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> filter1 = <span class="hljs-string">'interaction.content contains "music"'</span>;
+<span class="hljs-keyword">var</span> filter2 = <span class="hljs-string">'interaction.content contains "sport"'</span>;</pre></div>
         
       
         
@@ -107,7 +101,7 @@
 <p>Connects to DataSift and starts streaming data:</p>
 
         
-          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">connect</span><span class="hljs-params">(hash)</span> {</span></pre></div>
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">connect</span><span class="hljs-params">()</span> {</span></pre></div>
         
       
         
@@ -116,7 +110,8 @@
         
           <div class='highlight'><pre>	ds.on(<span class="hljs-string">'connect'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> {</span>
 		console.log(<span class="hljs-string">'Connected to DataSift'</span>);
-		subscribe(filter);
+		subscribe(filter1);
+		subscribe(filter2);
 	});</pre></div>
         
       
@@ -143,7 +138,7 @@
 
         
           <div class='highlight'><pre>	ds.on(<span class="hljs-string">'interaction'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(data)</span> {</span>
-		console.log(<span class="hljs-string">'Recieved data: '</span>, data);
+		console.log(<span class="hljs-string">'Data (stream: '</span> + data.hash + <span class="hljs-string">'): '</span> + data.data.interaction.content);
 	});</pre></div>
         
       
@@ -178,7 +173,7 @@
 <p>Finally we start the process, comprising of:</p>
 <ul>
 <li>Connecting to DataSift</li>
-<li>Compiling &amp; subscribing to the CSDL filter</li>
+<li>Compiling and subscribing to the two filters</li>
 </ul>
 
         
