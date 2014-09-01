@@ -17,23 +17,6 @@
             "required": true
         }]
     },
-    "stream": {
-        "uri": "https://api.datasift.com/v1/stream",
-        "method": "get",
-        "params": [{
-            "name": "hash",
-            "type": "string",
-            "required": true
-        }, {
-            "name": "interaction_id",
-            "type": "string",
-            "required": false
-        }, {
-            "name": "count",
-            "type": "int",
-            "required": false
-        }]
-    },
     "usage": {
         "uri": "https://api.datasift.com/v1/usage",
         "method": "get",
