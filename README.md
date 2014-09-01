@@ -2,7 +2,15 @@
 
 # DataSift Node Client Library
 
-This NodeJS client library for DataSift supports the full REST API and streaming API's. 
+This NodeJS client library for DataSift supports the full REST API and streaming API's.
+
+Getting Started
+---------------
+Before you can begin using this library, you will need to have an active [DataSift](http://datasift.com) account - you can sign up for a new account at [datasift.com/get-started](http://datasift.com/get-started/).
+
+Many of the examples and API endpoints used in this library require you have enabled certain data sources before you can receive any data (you should do this at [datasift.com/source](https://datasift.com/source)). Certain API features, such as [Historics](http://datasift.com/platform/historics/) and [Managed Sources](http://datasift.com/platform/datasources/) will require you have signed up to a monthly subscription before you can access them.
+
+If you are interested in using these features, or would like more information about DataSift, please [get in touch](http://datasift.com/contact-us/)!
 
 ## Quickstart & Examples
 
@@ -23,7 +31,7 @@ This will create a new DataSift object. The DataSift object supports the REST an
 
 All of the DataSift REST endpoints are available as functions on the DataSift object. Use this pattern to call an endpoint:
 
-	new DataSift('username', 'apikey').<api_method>(<method_params), 
+	new DataSift('username', 'apikey').<api_method>(<method_params),
 	  function (err, response) {
 		console.log(response);
 	});
@@ -34,7 +42,7 @@ For example to validate a CSDL filter you can use the **validate** endpoint:
 	ds.validate({
 		'csdl': 'interaction.content contains "hello"'
 	}, function(err, response) {
-		if (err) 
+		if (err)
 			console.log(err);
 		else
 			console.log("CSDL is valid");
@@ -61,5 +69,6 @@ The client library uses Grunt to run it's tests and will also lint the files. To
 
 ## Changelog
 
+- 0.5.5: Removed the api.datasift.com/stream API endpoint; it is not fit for production usage! Consider using [Push Delivery](http://dev.datasift.com/docs/push) or the [Streaming API](http://dev.datasift.com/quickstart/nodejs).
 - 0.5.4: Added managed source resource & auth add and remove endpoints
 - 0.5.2: Each parameter type is now enforced. There are only two types (`int`|`string`).
