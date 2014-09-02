@@ -6,28 +6,27 @@ This NodeJS client library for DataSift supports the full REST API and streaming
 
 Getting Started
 ---------------
-Before you can begin using this library, you will need to have an active [DataSift](http://datasift.com) account - you can sign up for a new account at [datasift.com/get-started](http://datasift.com/get-started/).
+
+**Read our [Node.JS Getting Started Guide](http://dev.datasift.com/quickstart/nodejs) to get started with the DataSift platform.** This guide will take you through creating a [DataSift](http://datasift.com) account, and activating data sources which you will need to do before using the DataSift API.
 
 Many of the examples and API endpoints used in this library require you have enabled certain data sources before you can receive any data (you should do this at [datasift.com/source](https://datasift.com/source)). Certain API features, such as [Historics](http://datasift.com/platform/historics/) and [Managed Sources](http://datasift.com/platform/datasources/) will require you have signed up to a monthly subscription before you can access them.
 
 If you are interested in using these features, or would like more information about DataSift, please [get in touch](http://datasift.com/contact-us/)!
 
-## Quickstart & Examples
+## Usage & Examples
 
-Please read our [Node.JS Quickstart Guide](http://dev.datasift.com/quickstart/nodejs) to get started with the DataSift platform.
-
-For further examples take a look at the **/examples** folder in the repo.
+For example code take a look at the **/examples** folder in the repo.
 
 Full API reference documentation can be found on the DataSift [developer site](http://dev.datasift.com).
 
-
-## Usage & Examples
+## Creating A Client
+Use the following code to create a DataSift client.
 
 	var ds = new DataSift('username', 'apikey');
 
-This will create a new DataSift object. The DataSift object supports the REST and streaming APIs.
+The DataSift client supports both the REST and streaming APIs.
 
-### REST API
+### REST API Requests
 
 All of the DataSift REST endpoints are available as functions on the DataSift object. Use this pattern to call an endpoint:
 
