@@ -105,7 +105,28 @@
       
         
         <h2 id="declare-methods">Declare Methods</h2>
-<p>This method checks the historic data coverage for the query period, then compiles CSDL for the query:</p>
+
+        
+      
+        
+        <p>This method gets a list of all historic queries for the user:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getAll</span><span class="hljs-params">()</span> {</span>
+	ds.historics.get(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span> (err) 
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			console.log(<span class="hljs-string">"Historic queries: "</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+			checkStatus();
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>This method checks the historic data coverage for the query period, then compiles CSDL for the query:</p>
 
         
           <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">checkStatus</span><span class="hljs-params">()</span> {</span>
@@ -331,6 +352,7 @@
         <h2 id="initiate-process">Initiate Process</h2>
 <p>Finally we start the process, comprising of:</p>
 <ul>
+<li>Get a list of all historics</li>
 <li>Historic data coverage check</li>
 <li>Compiling the CSDL for the query</li>
 <li>Prepares the historic query</li>
@@ -344,7 +366,7 @@
 </ul>
 
         
-          <div class='highlight'><pre>checkStatus();</pre></div>
+          <div class='highlight'><pre>getAll();</pre></div>
         
       
       <div class="fleur">h</div>

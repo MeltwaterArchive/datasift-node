@@ -317,7 +317,7 @@
             "params": [{
                 "name": "id",
                 "type": "string",
-                "required": true
+                "required": false
             },{
                 "name": "max",
                 "type": "int",

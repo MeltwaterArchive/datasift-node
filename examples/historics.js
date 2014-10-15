@@ -12,7 +12,22 @@ var ds = new DataSift('YOUR_USERNAME', 'YOUR_APIKEY');
 var startTime = parseInt((new Date).getTime()/1000) - (7200 * 48);
 var endTime = parseInt(startTime + 3600);
 
+
 // ## Declare Methods
+
+// This method gets a list of all historic queries for the user:
+function getAll() {
+	ds.historics.get(function(err, response) {
+		if (err) 
+			console.log(err);
+		else
+		{
+			console.log("Historic queries: " + JSON.stringify(response));
+			checkStatus();
+		}
+	});
+}
+
 // This method checks the historic data coverage for the query period, then compiles CSDL for the query:
 function checkStatus() {
 
@@ -194,6 +209,7 @@ function deleteHistoric(historicsId) {
 
 // ## Initiate Process
 // Finally we start the process, comprising of:
+// * Get a list of all historics
 // * Historic data coverage check
 // * Compiling the CSDL for the query
 // * Prepares the historic query
@@ -204,4 +220,4 @@ function deleteHistoric(historicsId) {
 // * Pauses and resumes the query
 // * Stops the query running
 // * Deletes the query
-checkStatus();
+getAll();
