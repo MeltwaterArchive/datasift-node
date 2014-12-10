@@ -5,3 +5,4 @@ tests/config.json
 .*.iml
 lib/version/staging.json
 npm-debug.log
+*.tgz
