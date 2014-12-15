@@ -68,6 +68,7 @@ The client library uses Grunt to run it's tests and will also lint the files. To
 
 ## Changelog
 
+- 1.1.0: Added analysis endpoints
 - 0.5.7: Fixed incorrectly required parameter. Added parameter to allow disabling of auto-reconnect.
 - 0.5.6: Corrected incorrect timeout for auto-reconnect.
 - 0.5.5: Removed the api.datasift.com/stream API endpoint; it is not fit for production usage! Consider using [Push Delivery](http://dev.datasift.com/docs/push) or the [Streaming API](http://dev.datasift.com/quickstart/nodejs).
