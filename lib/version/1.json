@@ -720,7 +720,7 @@
             },{
                 "name": "name",
                 "type": "string",
-                "required": true
+                "required": false
             }]
         },
         "stop": {
@@ -755,10 +755,15 @@
                 "name": "end",
                 "type": "int",
                 "required": false
-            },{
-                "name": "include_parameters_in_reply",
-                "type": "boolean",
-                "required": false
+            }]
+        },
+        "tags": {
+            "uri": "/analysis/tags",
+            "method": "get",
+            "params": [{
+                "name": "hash",
+                "type": "string",
+                "required": true
             }]
         }
     }
