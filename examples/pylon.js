@@ -17,7 +17,7 @@ var csdl = 'fb.content contains_any "BMW, Mercedes, Cadillac"';
 // ## Declare Utility Methods
 // Gets a list of all the recordings currently in your account:
 function getRecordings() {
-	ds.analysis.get(function(err, response) {
+	ds.pylon.get(function(err, response) {
 		if(err)
 			console.log(err);
 		else
@@ -31,7 +31,7 @@ function getRecordings() {
 
 // Validates the CSDL we'll use for the recording:
 function validate() {
-	ds.analysis.validate({ "csdl": csdl },
+	ds.pylon.validate({ "csdl": csdl },
 		function(err, response) {
 			if (err) 
 				console.log(err);
@@ -45,7 +45,7 @@ function validate() {
 
 // Compiles the CSDL, to give a hash for the recording:
 function compile() {
-	ds.analysis.compile({ "csdl": csdl },
+	ds.pylon.compile({ "csdl": csdl },
 		function(err, response) {
 			if (err) 
 				console.log(err);
@@ -60,7 +60,7 @@ function compile() {
 
 // Starts the recording:
 function start() {
-	ds.analysis.start({ "hash": hash, "name": "Example recording" },
+	ds.pylon.start({ "hash": hash, "name": "Example recording" },
 		function(err, response) {
 			if (err) 
 				console.log(err);
@@ -74,7 +74,7 @@ function start() {
 
 // Gets details for the recording, once it's created:
 function getRecording() {
-	ds.analysis.get({ "hash": hash }, function(err, response) {
+	ds.pylon.get({ "hash": hash }, function(err, response) {
 		if(err)
 			console.log(err);
 		else
@@ -97,7 +97,7 @@ function analyze() {
 		   }
 		 };
 
-	ds.analysis.analyze({ "hash": hash, 
+	ds.pylon.analyze({ "hash": hash, 
 			"parameters": parameters
 	 }, function(err, response) {
 		if(err)
@@ -122,7 +122,7 @@ function analyzeWithFilter() {
 		   }
 		 };
 
-	ds.analysis.analyze({ "hash": hash, 
+	ds.pylon.analyze({ "hash": hash, 
 			"filter": "fb.author.gender == \"male\"",
 			"parameters": parameters
 	 }, function(err, response) {
@@ -139,7 +139,7 @@ function analyzeWithFilter() {
 
 // Stops the recording running:
 function stop() {
-	ds.analysis.stop({ "hash": hash },
+	ds.pylon.stop({ "hash": hash },
 		function(err, response) {
 			if (err) 
 				console.log(err);

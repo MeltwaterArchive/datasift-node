@@ -27,13 +27,6 @@
               
                 
                 <li>
-                  <a class="source" href="analysis.html">
-                    analysis.js
-                  </a>
-                </li>
-              
-                
-                <li>
                   <a class="source" href="core.html">
                     core.js
                   </a>
@@ -71,6 +64,13 @@
                 <li>
                   <a class="source" href="push.html">
                     push.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="pylon.html">
+                    pylon.js
                   </a>
                 </li>
               
@@ -122,7 +122,7 @@
 
         
           <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getRecordings</span><span class="hljs-params">()</span> </span>{
-	ds.analysis.get(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
+	ds.pylon.get(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
 		<span class="hljs-keyword">if</span>(err)
 			<span class="hljs-built_in">console</span>.log(err);
 		<span class="hljs-keyword">else</span>
@@ -140,7 +140,7 @@
 
         
           <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">validate</span><span class="hljs-params">()</span> </span>{
-	ds.analysis.validate({ <span class="hljs-string">"csdl"</span>: csdl },
+	ds.pylon.validate({ <span class="hljs-string">"csdl"</span>: csdl },
 		<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
 			<span class="hljs-keyword">if</span> (err) 
 				<span class="hljs-built_in">console</span>.log(err);
@@ -158,7 +158,7 @@
 
         
           <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">compile</span><span class="hljs-params">()</span> </span>{
-	ds.analysis.compile({ <span class="hljs-string">"csdl"</span>: csdl },
+	ds.pylon.compile({ <span class="hljs-string">"csdl"</span>: csdl },
 		<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
 			<span class="hljs-keyword">if</span> (err) 
 				<span class="hljs-built_in">console</span>.log(err);
@@ -177,7 +177,7 @@
 
         
           <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">start</span><span class="hljs-params">()</span> </span>{
-	ds.analysis.start({ <span class="hljs-string">"hash"</span>: hash, <span class="hljs-string">"name"</span>: <span class="hljs-string">"Example recording"</span> },
+	ds.pylon.start({ <span class="hljs-string">"hash"</span>: hash, <span class="hljs-string">"name"</span>: <span class="hljs-string">"Example recording"</span> },
 		<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
 			<span class="hljs-keyword">if</span> (err) 
 				<span class="hljs-built_in">console</span>.log(err);
@@ -195,7 +195,7 @@
 
         
           <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getRecording</span><span class="hljs-params">()</span> </span>{
-	ds.analysis.get({ <span class="hljs-string">"hash"</span>: hash }, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
+	ds.pylon.get({ <span class="hljs-string">"hash"</span>: hash }, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
 		<span class="hljs-keyword">if</span>(err)
 			<span class="hljs-built_in">console</span>.log(err);
 		<span class="hljs-keyword">else</span>
@@ -222,7 +222,7 @@
 		   }
 		 };
 
-	ds.analysis.analyze({ <span class="hljs-string">"hash"</span>: hash, 
+	ds.pylon.analyze({ <span class="hljs-string">"hash"</span>: hash, 
 			<span class="hljs-string">"parameters"</span>: parameters
 	 }, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
 		<span class="hljs-keyword">if</span>(err)
@@ -251,7 +251,7 @@
 		   }
 		 };
 
-	ds.analysis.analyze({ <span class="hljs-string">"hash"</span>: hash, 
+	ds.pylon.analyze({ <span class="hljs-string">"hash"</span>: hash, 
 			<span class="hljs-string">"filter"</span>: <span class="hljs-string">"fb.author.gender == \"male\""</span>,
 			<span class="hljs-string">"parameters"</span>: parameters
 	 }, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
@@ -272,7 +272,7 @@
 
         
           <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">stop</span><span class="hljs-params">()</span> </span>{
-	ds.analysis.stop({ <span class="hljs-string">"hash"</span>: hash },
+	ds.pylon.stop({ <span class="hljs-string">"hash"</span>: hash },
 		<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
 			<span class="hljs-keyword">if</span> (err) 
 				<span class="hljs-built_in">console</span>.log(err);

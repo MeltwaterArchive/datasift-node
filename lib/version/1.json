@@ -682,9 +682,9 @@
             }
         }
     },
-    "analysis": {
+    "pylon": {
         "get": {
-            "uri": "/analysis/get",
+            "uri": "/pylon/get",
             "method": "get",
             "params": [{
                 "name": "hash",
@@ -693,7 +693,7 @@
             }]
         },
         "validate": {
-            "uri": "/analysis/validate",
+            "uri": "/pylon/validate",
             "method": "post",
             "params": [{
                 "name": "csdl",
@@ -702,7 +702,7 @@
             }]
         },
         "compile": {
-            "uri": "/analysis/compile",
+            "uri": "/pylon/compile",
             "method": "post",
             "params": [{
                 "name": "csdl",
@@ -711,7 +711,7 @@
             }]
         },
         "start": {
-            "uri": "/analysis/start",
+            "uri": "/pylon/start",
             "method": "post",
             "params": [{
                 "name": "hash",
@@ -724,7 +724,7 @@
             }]
         },
         "stop": {
-            "uri": "/analysis/stop",
+            "uri": "/pylon/stop",
             "method": "post",
             "params": [{
                 "name": "hash",
@@ -733,7 +733,7 @@
             }]
         },
         "analyze": {
-            "uri": "/analysis/analyze",
+            "uri": "/pylon/analyze",
             "method": "post",
             "params": [{
                 "name": "hash",
@@ -758,7 +758,7 @@
             }]
         },
         "tags": {
-            "uri": "/analysis/tags",
+            "uri": "/pylon/tags",
             "method": "get",
             "params": [{
                 "name": "hash",
