@@ -69,6 +69,13 @@
               
                 
                 <li>
+                  <a class="source" href="pylon.html">
+                    pylon.js
+                  </a>
+                </li>
+              
+                
+                <li>
                   <a class="source" href="streaming.html">
                     streaming.js
                   </a>
@@ -101,19 +108,19 @@
         
           <div class='highlight'><pre><span class="hljs-keyword">var</span> csdl = <span class="hljs-string">'interaction.content contains "music"'</span>;
 
-ds.validate({ <span class="hljs-string">'csdl'</span>: csdl }, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err, response)</span> {</span>
+ds.validate({ <span class="hljs-string">'csdl'</span>: csdl }, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err, response)</span> </span>{
 	<span class="hljs-keyword">if</span> (err) 
-		console.log(err);
+		<span class="hljs-built_in">console</span>.log(err);
 	<span class="hljs-keyword">else</span>
 	{
-		console.log(<span class="hljs-string">"CSDL is valid, DPU cost = "</span> + response.dpu);
+		<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"CSDL is valid, DPU cost = "</span> + response.dpu);
 
-		ds.compile({ <span class="hljs-string">'csdl'</span>: csdl }, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err, response)</span> {</span>
+		ds.compile({ <span class="hljs-string">'csdl'</span>: csdl }, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err, response)</span> </span>{
 			<span class="hljs-keyword">if</span> (err) 
-				console.log(err);
+				<span class="hljs-built_in">console</span>.log(err);
 			<span class="hljs-keyword">else</span>
 			{
-				console.log(<span class="hljs-string">"Compiled filter hash: "</span> + response.hash);
+				<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Compiled filter hash: "</span> + response.hash);
 			}
 		});
 	}
@@ -124,12 +131,12 @@ ds.validate({ <span class="hljs-string">'csdl'</span>: csdl }, <span class="hljs
         <p>Query API for usage metrics:</p>
 
         
-          <div class='highlight'><pre>ds.usage(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err,response)</span> {</span>
+          <div class='highlight'><pre>ds.usage(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err,response)</span> </span>{
 	<span class="hljs-keyword">if</span> (err) 
-		console.log(err);
+		<span class="hljs-built_in">console</span>.log(err);
 	<span class="hljs-keyword">else</span>
 	{
-		console.log(<span class="hljs-string">"Usage = "</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+		<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Usage = "</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
 	}
 });</pre></div>
         
@@ -138,12 +145,12 @@ ds.validate({ <span class="hljs-string">'csdl'</span>: csdl }, <span class="hljs
         <p>Query API for account balance:</p>
 
         
-          <div class='highlight'><pre>ds.balance(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err,response)</span> {</span>
+          <div class='highlight'><pre>ds.balance(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err,response)</span> </span>{
 	<span class="hljs-keyword">if</span> (err) 
-		console.log(err);
+		<span class="hljs-built_in">console</span>.log(err);
 	<span class="hljs-keyword">else</span>
 	{
-		console.log(<span class="hljs-string">"Balance = "</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+		<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Balance = "</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
 	}
 });</pre></div>
         

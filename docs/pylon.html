@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Example - Performing analysis with Pylon</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          
+          <h1 id="example-performing-analysis-with-pylon">Example - Performing analysis with Pylon</h1>
+<p><em>How to perform Pylon API functions, such as creating recordings and performing analysis.</em></p>
+
+          
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="core.html">
+                    core.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="dynamic_lists.html">
+                    dynamic_lists.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="historics.html">
+                    historics.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="managed_sources.html">
+                    managed_sources.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="multi-streaming.html">
+                    multi-streaming.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="push.html">
+                    push.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="pylon.html">
+                    pylon.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="streaming.html">
+                    streaming.js
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        <p>Require the DataSift library - <strong>choose one of these</strong>:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> DataSift = <span class="hljs-built_in">require</span>(<span class="hljs-string">'datasift-node'</span>); <span class="hljs-comment">// When running from NPM package</span>
+<span class="hljs-keyword">var</span> DataSift = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../lib/datasift'</span>); <span class="hljs-comment">// When running within datasift-node repository</span></pre></div>
+        
+      
+        
+        <p>Create a DataSift client object - <strong>insert your API credentials</strong>:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> ds = <span class="hljs-keyword">new</span> DataSift(<span class="hljs-string">'YOUR_USERNAME'</span>, <span class="hljs-string">'YOUR_APIKEY'</span>);</pre></div>
+        
+      
+        
+        <p>Variable to store the hash for the recording:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> hash;</pre></div>
+        
+      
+        
+        <p>The CSDL we’ll use for the recording:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> csdl = <span class="hljs-string">'fb.content contains_any "BMW, Mercedes, Cadillac"'</span>;</pre></div>
+        
+      
+        
+        <h2 id="declare-utility-methods">Declare Utility Methods</h2>
+<p>Gets a list of all the recordings currently in your account:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getRecordings</span><span class="hljs-params">()</span> </span>{
+	ds.pylon.get(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
+		<span class="hljs-keyword">if</span>(err)
+			<span class="hljs-built_in">console</span>.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			listId = response.id;
+			<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Current recordings: \n"</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+			validate();
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>Validates the CSDL we’ll use for the recording:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">validate</span><span class="hljs-params">()</span> </span>{
+	ds.pylon.validate({ <span class="hljs-string">"csdl"</span>: csdl },
+		<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
+			<span class="hljs-keyword">if</span> (err) 
+				<span class="hljs-built_in">console</span>.log(err);
+			<span class="hljs-keyword">else</span>
+			{
+				<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"CSDL is valid"</span>);
+				compile();
+			}
+		});
+}</pre></div>
+        
+      
+        
+        <p>Compiles the CSDL, to give a hash for the recording:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">compile</span><span class="hljs-params">()</span> </span>{
+	ds.pylon.compile({ <span class="hljs-string">"csdl"</span>: csdl },
+		<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
+			<span class="hljs-keyword">if</span> (err) 
+				<span class="hljs-built_in">console</span>.log(err);
+			<span class="hljs-keyword">else</span>
+			{
+				hash = response.hash;
+				<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Filter hash: "</span> + response.hash);
+				start();
+			}
+		});
+}</pre></div>
+        
+      
+        
+        <p>Starts the recording:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">start</span><span class="hljs-params">()</span> </span>{
+	ds.pylon.start({ <span class="hljs-string">"hash"</span>: hash, <span class="hljs-string">"name"</span>: <span class="hljs-string">"Example recording"</span> },
+		<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
+			<span class="hljs-keyword">if</span> (err) 
+				<span class="hljs-built_in">console</span>.log(err);
+			<span class="hljs-keyword">else</span>
+			{
+				<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Recording started successfully"</span>);
+				getRecording();
+			}
+		});
+}</pre></div>
+        
+      
+        
+        <p>Gets details for the recording, once it’s created:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getRecording</span><span class="hljs-params">()</span> </span>{
+	ds.pylon.get({ <span class="hljs-string">"hash"</span>: hash }, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
+		<span class="hljs-keyword">if</span>(err)
+			<span class="hljs-built_in">console</span>.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			listId = response.id;
+			<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Current recording: \n"</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+			analyze();
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>Performs a basic analysis on the recording data:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">analyze</span><span class="hljs-params">()</span> </span>{
+
+	<span class="hljs-keyword">var</span> parameters = {
+		   <span class="hljs-string">"analysis_type"</span>: <span class="hljs-string">"freqDist"</span>,
+		   <span class="hljs-string">"parameters"</span>: {
+		     <span class="hljs-string">"threshold"</span>: <span class="hljs-number">5</span>,
+		     <span class="hljs-string">"target"</span>: <span class="hljs-string">"fb.author.age"</span>
+		   }
+		 };
+
+	ds.pylon.analyze({ <span class="hljs-string">"hash"</span>: hash, 
+			<span class="hljs-string">"parameters"</span>: parameters
+	 }, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
+		<span class="hljs-keyword">if</span>(err)
+			<span class="hljs-built_in">console</span>.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			listId = response.id;
+			<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Analysis result: \n"</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+			analyzeWithFilter();
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>Performs analysis, but with the addition of an analysis filter:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">analyzeWithFilter</span><span class="hljs-params">()</span> </span>{
+
+	<span class="hljs-keyword">var</span> parameters = {
+		   <span class="hljs-string">"analysis_type"</span>: <span class="hljs-string">"freqDist"</span>,
+		   <span class="hljs-string">"parameters"</span>: {
+		     <span class="hljs-string">"threshold"</span>: <span class="hljs-number">5</span>,
+		     <span class="hljs-string">"target"</span>: <span class="hljs-string">"fb.author.age"</span>
+		   }
+		 };
+
+	ds.pylon.analyze({ <span class="hljs-string">"hash"</span>: hash, 
+			<span class="hljs-string">"filter"</span>: <span class="hljs-string">"fb.author.gender == \"male\""</span>,
+			<span class="hljs-string">"parameters"</span>: parameters
+	 }, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
+		<span class="hljs-keyword">if</span>(err)
+			<span class="hljs-built_in">console</span>.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			listId = response.id;
+			<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Analysis with filter result: \n"</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+			stop();
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>Stops the recording running:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">stop</span><span class="hljs-params">()</span> </span>{
+	ds.pylon.stop({ <span class="hljs-string">"hash"</span>: hash },
+		<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
+			<span class="hljs-keyword">if</span> (err) 
+				<span class="hljs-built_in">console</span>.log(err);
+			<span class="hljs-keyword">else</span>
+			{
+				<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Recording stopped successfully"</span>);
+			}
+		});
+}</pre></div>
+        
+      
+        
+        <h2 id="initiate-process">Initiate Process</h2>
+<p>Finally we start the process creating a list. This will lead to:</p>
+<ul>
+<li>Getting a list of recordings</li>
+<li>Validating CSDL for a new recording</li>
+<li>Compiling CSDL for a new recording</li>
+<li>Starting a recording</li>
+<li>Getting the new recording’s details</li>
+<li><strong>At this point in practice you’ll need to let the recording run for a time to collect data for analysis!</strong></li>
+<li>Performing a basic analysis</li>
+<li>Performing an analysis with an analysis filter</li>
+<li>Stopping the recording</li>
+</ul>
+
+        
+          <div class='highlight'><pre>getRecordings();</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>

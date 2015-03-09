@@ -69,6 +69,13 @@
               
                 
                 <li>
+                  <a class="source" href="pylon.html">
+                    pylon.js
+                  </a>
+                </li>
+              
+                
+                <li>
                   <a class="source" href="streaming.html">
                     streaming.js
                   </a>
@@ -112,13 +119,13 @@
         <p>This method gets a list of all historic queries for the user:</p>
 
         
-          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getAll</span><span class="hljs-params">()</span> {</span>
-	ds.historics.get(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getAll</span><span class="hljs-params">()</span> </span>{
+	ds.historics.get(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
 		<span class="hljs-keyword">if</span> (err) 
-			console.log(err);
+			<span class="hljs-built_in">console</span>.log(err);
 		<span class="hljs-keyword">else</span>
 		{
-			console.log(<span class="hljs-string">"Historic queries: "</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+			<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Historic queries: "</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
 			checkStatus();
 		}
 	});
@@ -129,19 +136,19 @@
         <p>This method checks the historic data coverage for the query period, then compiles CSDL for the query:</p>
 
         
-          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">checkStatus</span><span class="hljs-params">()</span> {</span>
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">checkStatus</span><span class="hljs-params">()</span> </span>{
 
-	console.log(<span class="hljs-string">"Checking data coverage for our query period"</span>);
+	<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Checking data coverage for our query period"</span>);
 
 	ds.historics.status({
 			<span class="hljs-string">"start"</span>: startTime,
 			<span class="hljs-string">"end"</span>: endTime
-		}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err,response)</span> {</span>
+		}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err,response)</span> </span>{
 			<span class="hljs-keyword">if</span> (err) 
-				console.log(err);
+				<span class="hljs-built_in">console</span>.log(err);
 			<span class="hljs-keyword">else</span>
 			{
-				console.log(<span class="hljs-string">"Historic status for query period: "</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+				<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Historic status for query period: "</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
 				compileStream();
 			}
 		});
@@ -152,13 +159,13 @@
         <p>This method compiles CSDL into a hash for the query, then prepares the query:</p>
 
         
-          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">compileStream</span><span class="hljs-params">()</span> {</span>
-	ds.compile({ <span class="hljs-string">'csdl'</span>: <span class="hljs-string">'interaction.content contains "datasift"'</span> }, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err, response)</span> {</span>
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">compileStream</span><span class="hljs-params">()</span> </span>{
+	ds.compile({ <span class="hljs-string">'csdl'</span>: <span class="hljs-string">'interaction.content contains "datasift"'</span> }, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err, response)</span> </span>{
 		<span class="hljs-keyword">if</span> (err) 
-			console.log(err);
+			<span class="hljs-built_in">console</span>.log(err);
 		<span class="hljs-keyword">else</span>
 		{
-			console.log(<span class="hljs-string">"Compiled filter hash: "</span> + response.hash);
+			<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Compiled filter hash: "</span> + response.hash);
 			prepareQuery(response.hash);
 		}
 	});
@@ -169,7 +176,7 @@
         <p>Prepares the historic query, then creates the subscription for data delivery:</p>
 
         
-          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">prepareQuery</span><span class="hljs-params">(hash)</span> {</span>
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">prepareQuery</span><span class="hljs-params">(hash)</span> </span>{
 
 	ds.historics.prepare({
 		<span class="hljs-string">"hash"</span>: hash,
@@ -177,12 +184,12 @@
 		<span class="hljs-string">"end"</span>: endTime,
 		<span class="hljs-string">"sources"</span>: <span class="hljs-string">"twitter"</span>,
 		<span class="hljs-string">"name"</span>: <span class="hljs-string">"Example historic query"</span>
-	}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+	}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
 		<span class="hljs-keyword">if</span> (err) 
-			console.log(err);
+			<span class="hljs-built_in">console</span>.log(err);
 		<span class="hljs-keyword">else</span>
 		{
-			console.log(<span class="hljs-string">"Prepared query: "</span> + response.id);
+			<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Prepared query: "</span> + response.id);
 			createSubscription(response.id);
 		}
 	});
@@ -193,19 +200,19 @@
         <p>Creates a Pull subscription for data delivery, then starts the query:</p>
 
         
-          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createSubscription</span><span class="hljs-params">(historicsId)</span> {</span>
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createSubscription</span><span class="hljs-params">(historicsId)</span> </span>{
 
 	ds.push.create({ 
 			<span class="hljs-string">'historics_id'</span>: historicsId,
 			<span class="hljs-string">'name'</span>: <span class="hljs-string">"Example historics subscription"</span>,
 			<span class="hljs-string">'output_type'</span>: <span class="hljs-string">'pull'</span>
-		}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
 			<span class="hljs-keyword">if</span> (err) 
-				console.log(err);
+				<span class="hljs-built_in">console</span>.log(err);
 			<span class="hljs-keyword">else</span>
 			{
 				subscriptionId = response.id;
-				console.log(<span class="hljs-string">"Created subscription ID: "</span> + subscriptionId);
+				<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Created subscription ID: "</span> + subscriptionId);
 
 				start(historicsId);
 			}
@@ -217,15 +224,15 @@
         <p>Starts the query running, then updates the query name:</p>
 
         
-          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">start</span><span class="hljs-params">(historicsId)</span> {</span>
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">start</span><span class="hljs-params">(historicsId)</span> </span>{
 	ds.historics.start({
 		<span class="hljs-string">"id"</span>: historicsId
-	}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+	}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
 		<span class="hljs-keyword">if</span> (err) 
-			console.log(err);
+			<span class="hljs-built_in">console</span>.log(err);
 		<span class="hljs-keyword">else</span>
 		{
-			console.log(<span class="hljs-string">"Started historic query."</span>);
+			<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Started historic query."</span>);
 			update(historicsId);
 		}
 	});
@@ -236,16 +243,16 @@
         <p>Updates the query’s name, then gets the query’s details:</p>
 
         
-          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">update</span><span class="hljs-params">(historicsId)</span> {</span>
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">update</span><span class="hljs-params">(historicsId)</span> </span>{
 	ds.historics.update({
 		<span class="hljs-string">"id"</span>: historicsId,
 		<span class="hljs-string">"name"</span>: <span class="hljs-string">"Updated historic query"</span>
-	}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+	}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
 		<span class="hljs-keyword">if</span> (err) 
-			console.log(err);
+			<span class="hljs-built_in">console</span>.log(err);
 		<span class="hljs-keyword">else</span>
 		{
-			console.log(<span class="hljs-string">"Updated historic query."</span>);
+			<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Updated historic query."</span>);
 			get(historicsId);
 		}
 	});
@@ -257,15 +264,15 @@
 <strong>In a real world solution you would allow the query to run and deliver all the data!</strong></p>
 
         
-          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">get</span><span class="hljs-params">(historicsId)</span> {</span>
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">get</span><span class="hljs-params">(historicsId)</span> </span>{
 	ds.historics.get({
 		<span class="hljs-string">"id"</span>: historicsId
-	}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+	}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
 		<span class="hljs-keyword">if</span> (err) 
-			console.log(err);
+			<span class="hljs-built_in">console</span>.log(err);
 		<span class="hljs-keyword">else</span>
 		{
-			console.log(<span class="hljs-string">"Historic query details: "</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+			<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Historic query details: "</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
 			pause(historicsId);
 		}
 	});
@@ -276,16 +283,16 @@
         <p>Pauses the query, then resumes it:</p>
 
         
-          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">pause</span><span class="hljs-params">(historicsId)</span> {</span>
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">pause</span><span class="hljs-params">(historicsId)</span> </span>{
 	ds.historics.pause({
 		<span class="hljs-string">"id"</span>: historicsId,
 		<span class="hljs-string">"reason"</span>: <span class="hljs-string">"Pausing example query"</span>
-	}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+	}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
 		<span class="hljs-keyword">if</span> (err) 
-			console.log(err);
+			<span class="hljs-built_in">console</span>.log(err);
 		<span class="hljs-keyword">else</span>
 		{
-			console.log(<span class="hljs-string">"Paused historic query."</span>);
+			<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Paused historic query."</span>);
 			resume(historicsId);
 		}
 	});
@@ -296,15 +303,15 @@
         <p>Resumes the query, then stops it:</p>
 
         
-          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">resume</span><span class="hljs-params">(historicsId)</span> {</span>
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">resume</span><span class="hljs-params">(historicsId)</span> </span>{
 	ds.historics.resume({
 		<span class="hljs-string">"id"</span>: historicsId
-	}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+	}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
 		<span class="hljs-keyword">if</span> (err) 
-			console.log(err);
+			<span class="hljs-built_in">console</span>.log(err);
 		<span class="hljs-keyword">else</span>
 		{
-			console.log(<span class="hljs-string">"Resumed historic query."</span>);
+			<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Resumed historic query."</span>);
 			stop(historicsId);
 		}
 	});
@@ -315,15 +322,15 @@
         <p>Stops the query running, then deletes it:</p>
 
         
-          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">stop</span><span class="hljs-params">(historicsId)</span> {</span>
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">stop</span><span class="hljs-params">(historicsId)</span> </span>{
 	ds.historics.stop({
 		<span class="hljs-string">"id"</span>: historicsId
-	}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+	}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
 		<span class="hljs-keyword">if</span> (err) 
-			console.log(err);
+			<span class="hljs-built_in">console</span>.log(err);
 		<span class="hljs-keyword">else</span>
 		{
-			console.log(<span class="hljs-string">"Stopped historic query."</span>);
+			<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Stopped historic query."</span>);
 			deleteHistoric(historicsId);
 		}
 	});
@@ -334,15 +341,15 @@
         <p>Deletes the historic query:</p>
 
         
-          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">deleteHistoric</span><span class="hljs-params">(historicsId)</span> {</span>
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">deleteHistoric</span><span class="hljs-params">(historicsId)</span> </span>{
 	ds.historics.delete({
 		<span class="hljs-string">"id"</span>: historicsId
-	}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+	}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
 		<span class="hljs-keyword">if</span> (err) 
-			console.log(err);
+			<span class="hljs-built_in">console</span>.log(err);
 		<span class="hljs-keyword">else</span>
 		{
-			console.log(<span class="hljs-string">"Deleted historic query."</span>);
+			<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Deleted historic query."</span>);
 		}
 	});
 }</pre></div>

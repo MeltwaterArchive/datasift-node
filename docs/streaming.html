@@ -69,6 +69,13 @@
               
                 
                 <li>
+                  <a class="source" href="pylon.html">
+                    pylon.js
+                  </a>
+                </li>
+              
+                
+                <li>
                   <a class="source" href="streaming.html">
                     streaming.js
                   </a>
@@ -107,15 +114,15 @@
 <p>Connects to DataSift and starts streaming data:</p>
 
         
-          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">connect</span><span class="hljs-params">(hash)</span> {</span></pre></div>
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">connect</span><span class="hljs-params">(hash)</span> </span>{</pre></div>
         
       
         
         <p>Set up a ‘connect’ event handler, which will fire when a connection is established. When connected we compile our CSDL filter and subscribe to streaming data.</p>
 
         
-          <div class='highlight'><pre>	ds.on(<span class="hljs-string">'connect'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> {</span>
-		console.log(<span class="hljs-string">'Connected to DataSift'</span>);
+          <div class='highlight'><pre>	ds.on(<span class="hljs-string">'connect'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+		<span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Connected to DataSift'</span>);
 		subscribe(filter);
 	});</pre></div>
         
@@ -124,8 +131,8 @@
         <p>Set up ‘error’ handler to alert us of any errors. For more details on possible errors see <a href="http://dev.datasift.com/docs/resources/errors">http://dev.datasift.com/docs/resources/errors</a>.</p>
 
         
-          <div class='highlight'><pre>	ds.on(<span class="hljs-string">'error'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(error)</span> {</span>
-		console.log(<span class="hljs-string">'ERROR: '</span> + error);
+          <div class='highlight'><pre>	ds.on(<span class="hljs-string">'error'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(error)</span> </span>{
+		<span class="hljs-built_in">console</span>.log(<span class="hljs-string">'ERROR: '</span> + error);
 	});</pre></div>
         
       
@@ -133,8 +140,8 @@
         <p>Set up ‘delete’ handler. Depending on the data sources you are using, you may need to delete this data to stay compliant.</p>
 
         
-          <div class='highlight'><pre>	ds.on(<span class="hljs-string">'delete'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(data)</span> {</span>
-		console.log(<span class="hljs-string">'Data deleted: '</span>, data); <span class="hljs-comment">// TODO: Do something useful with the data!</span>
+          <div class='highlight'><pre>	ds.on(<span class="hljs-string">'delete'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(data)</span> </span>{
+		<span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Data deleted: '</span>, data); <span class="hljs-comment">// TODO: Do something useful with the data!</span>
 	});</pre></div>
         
       
@@ -142,8 +149,8 @@
         <p>Set up ‘interaction’ handler - this receives our data! This is triggered each time we receive a new interaction - a piece of data on the live stream.</p>
 
         
-          <div class='highlight'><pre>	ds.on(<span class="hljs-string">'interaction'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(data)</span> {</span>
-		console.log(<span class="hljs-string">'Recieved data: '</span>, data);
+          <div class='highlight'><pre>	ds.on(<span class="hljs-string">'interaction'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(data)</span> </span>{
+		<span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Recieved data: '</span>, data);
 	});</pre></div>
         
       
@@ -160,13 +167,13 @@
         <p>Compiles and subscribes to a stream given a CSDL definition:</p>
 
         
-          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">subscribe</span><span class="hljs-params">(csdl)</span> {</span>
-	ds.compile({ <span class="hljs-string">'csdl'</span>: csdl }, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err, response)</span> {</span>
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">subscribe</span><span class="hljs-params">(csdl)</span> </span>{
+	ds.compile({ <span class="hljs-string">'csdl'</span>: csdl }, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err, response)</span> </span>{
 		<span class="hljs-keyword">if</span> (err) 
-			console.log(err);
+			<span class="hljs-built_in">console</span>.log(err);
 		<span class="hljs-keyword">else</span>
 		{
-			console.log(<span class="hljs-string">"Filter hash: "</span> + response.hash);
+			<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Filter hash: "</span> + response.hash);
 			ds.subscribe(response.hash);
 		}
 	});

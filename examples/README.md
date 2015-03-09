@@ -21,3 +21,6 @@ How to create, run, update, stop and delete a managed source.
 
 ### [Dynamic Lists](dynamic_lists.js)
 How to create, add to, remove from and delete dynamic lists.
+
+### [Analysis with Pylon](analysis.js)
+How to record and analyze data with Pylon.
