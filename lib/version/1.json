@@ -682,6 +682,202 @@
             }
         }
     },
+    "account": {
+        "get": {
+            "uri": "/account/identity/{{id}}",
+            "method": "get",
+            "params": [{
+                "name": "id",
+                "type": "string"
+            }, {
+                "name": "label",
+                "type": "string"
+            }, {
+                "name": "per_page",
+                "type": "int"
+            }, {
+                "name": "page",
+                "type": "int"
+            }]
+        }, 
+        "create": {
+            "uri": "/account/identity",
+            "method": "post",
+            "params": [{
+                "name": "label",
+                "type": "string"
+            }, {
+                "name": "status",
+                "type": "string"
+            }, {
+                "name": "master",
+                "type": "boolean"
+            }]
+        },
+        "update": {
+            "uri": "/account/identity/{{id}}",
+            "method": "put",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": true
+            }, {
+                "name": "label",
+                "type": "string"
+            }, {
+                "name": "status",
+                "type": "string"
+            }, {
+                "name": "master",
+                "type": "boolean"
+            }]
+        },         
+        "remove": {
+            "uri": "/account/identity/{{id}}",
+            "method": "put",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": true
+            }]
+        },
+        "identity": {
+            "get": {
+                "uri": "/account/identity/{{identity_id}}/token/{{service}}",
+                "method": "get",
+                "params": [{
+                    "name": "identity_id",
+                    "type": "string",
+                    "required": true
+                }, {
+                    "name": "service",
+                    "type": "string"
+                }, {
+                    "name": "label",
+                    "type": "string"
+                }, {
+                    "name": "per_page",
+                    "type": "int"
+                }, {
+                    "name": "page",
+                    "type": "int"
+                }]
+            },
+            "create": {
+                "uri": "/account/identity/{{identity_id}}/token",
+                "method": "post",
+                "params": [{
+                    "name": "identity_id",
+                    "type": "string",
+                    "required": true
+                }, {
+                    "name": "service",
+                    "type": "string"
+                }, {
+                    "name": "token",
+                    "type": "string"
+                }]
+            },
+            "update": {
+                "uri": "/account/identity/{{identity_id}}/token/{{service}}",
+                "method": "post",
+                "params": [{
+                    "name": "identity_id",
+                    "type": "string",
+                    "required": true
+                }, {
+                    "name": "service",
+                    "type": "string",
+                    "required": true
+                }, {
+                    "name": "token",
+                    "type": "string"
+                }]
+            },
+            "remove": {
+                 "uri": "/account/identity/{{identity_id}}/token/{{service}}",
+                "method": "post",
+                "params": [{
+                    "name": "identity_id",
+                    "type": "string",
+                    "required": true
+                }, {
+                    "name": "service",
+                    "type": "string",
+                    "required": true
+                }]
+            },
+            "limit": {
+                "get": {
+                    "uri": "/account/identity/{{identity_id}}/limit/{{service}}",
+                    "method": "get",
+                    "params": [{
+                        "name": "identity_id",
+                        "type": "string"
+                    }, {
+                        "name": "service",
+                        "type": "string"
+                    }, {
+                        "name": "label",
+                        "type": "string"
+                    }, {
+                        "name": "per_page",
+                        "type": "int"
+                    }, {
+                        "name": "page",
+                        "type": "int"
+                    }]
+                },
+                "create": {
+                    "uri": "/account/identity/{{identity_id}}/limit",
+                    "method": "post",
+                    "params": [{
+                        "name": "identity_id",
+                        "type": "string",
+                        "required": true
+                    }, {
+                        "name": "service",
+                        "type": "string",
+                        "require": true
+                    }, {
+                        "name": "total_allowance",
+                        "type": "int",
+                        "require": true
+                    }]
+                },
+                "update": {
+                    "uri": "/account/identity/{{identity_id}}/token/{{service}}",
+                    "method": "post",
+                    "params": [{
+                        "name": "identity_id",
+                        "type": "string",
+                        "required": true
+                    }, {
+                        "name": "service",
+                        "type": "string",
+                        "require": true
+                    }, {
+                        "name": "total_allowance",
+                        "type": "int",
+                        "require": true
+                    }]
+                },
+                "remove": {
+                     "uri": "/account/identity/{{identity_id}}/token/{{service}}",
+                    "method": "post",
+                    "params": [{
+                        "name": "identity_id",
+                        "type": "string",
+                        "required": true
+                    }, {
+                        "name": "service",
+                        "type": "string",
+                        "required": true
+                    }]
+                }
+            }
+        }
+    },
     "pylon": {
         "get": {
             "uri": "/pylon/get",
