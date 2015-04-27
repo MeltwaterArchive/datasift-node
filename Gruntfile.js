@@ -9,27 +9,11 @@ module.exports = function (grunt) {
 			all: ['Gruntfile.js', 'lib/**/*.js', 'test/**/*.js']
 		},
 		nodeunit: {
-			all: ['tests/*.js']
-		},
-		docco: {
-			debug: {
-				src: ['examples/**/*.js'],
-				options: {
-					output: 'docs',
-					layout: 'linear'
-				}
-			}
-		}/*,
-		'gh-pages': {
-			options: {
-				base: 'docs'//
-			},
-			src: ['**']
-		}*/
+			all: [/*'tests/*.js'*/]
+		}
 	});
+
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-nodeunit');
-	grunt.loadNpmTasks('grunt-docco');
-	//grunt.loadNpmTasks('grunt-gh-pages');
-	grunt.registerTask('default', ['jshint', 'nodeunit', 'docco'/*, 'gh-pages'*/]);
+	grunt.registerTask('default', ['jshint', 'nodeunit']);
 };

@@ -682,7 +682,7 @@
             }
         }
     },
-    "account": {
+    "identity": {
         "get": {
             "uri": "/account/identity/{{id}}",
             "method": "get",
@@ -732,7 +732,7 @@
                 "type": "boolean"
             }]
         },         
-        "remove": {
+        "delete": {
             "uri": "/account/identity/{{id}}",
             "method": "put",
             "params": [{
@@ -741,7 +741,7 @@
                 "required": true
             }]
         },
-        "identity": {
+        "token": {
             "get": {
                 "uri": "/account/identity/{{identity_id}}/token/{{service}}",
                 "method": "get",
@@ -794,7 +794,7 @@
                     "type": "string"
                 }]
             },
-            "remove": {
+            "delete": {
                  "uri": "/account/identity/{{identity_id}}/token/{{service}}",
                 "method": "post",
                 "params": [{
@@ -806,75 +806,75 @@
                     "type": "string",
                     "required": true
                 }]
+            }
+        },
+        "limit": {
+            "get": {
+                "uri": "/account/identity/{{identity_id}}/limit/{{service}}",
+                "method": "get",
+                "params": [{
+                    "name": "identity_id",
+                    "type": "string"
+                }, {
+                    "name": "service",
+                    "type": "string"
+                }, {
+                    "name": "label",
+                    "type": "string"
+                }, {
+                    "name": "per_page",
+                    "type": "int"
+                }, {
+                    "name": "page",
+                    "type": "int"
+                }]
             },
-            "limit": {
-                "get": {
-                    "uri": "/account/identity/{{identity_id}}/limit/{{service}}",
-                    "method": "get",
-                    "params": [{
-                        "name": "identity_id",
-                        "type": "string"
-                    }, {
-                        "name": "service",
-                        "type": "string"
-                    }, {
-                        "name": "label",
-                        "type": "string"
-                    }, {
-                        "name": "per_page",
-                        "type": "int"
-                    }, {
-                        "name": "page",
-                        "type": "int"
-                    }]
-                },
-                "create": {
-                    "uri": "/account/identity/{{identity_id}}/limit",
-                    "method": "post",
-                    "params": [{
-                        "name": "identity_id",
-                        "type": "string",
-                        "required": true
-                    }, {
-                        "name": "service",
-                        "type": "string",
-                        "require": true
-                    }, {
-                        "name": "total_allowance",
-                        "type": "int",
-                        "require": true
-                    }]
-                },
-                "update": {
-                    "uri": "/account/identity/{{identity_id}}/token/{{service}}",
-                    "method": "post",
-                    "params": [{
-                        "name": "identity_id",
-                        "type": "string",
-                        "required": true
-                    }, {
-                        "name": "service",
-                        "type": "string",
-                        "require": true
-                    }, {
-                        "name": "total_allowance",
-                        "type": "int",
-                        "require": true
-                    }]
-                },
-                "remove": {
-                     "uri": "/account/identity/{{identity_id}}/token/{{service}}",
-                    "method": "post",
-                    "params": [{
-                        "name": "identity_id",
-                        "type": "string",
-                        "required": true
-                    }, {
-                        "name": "service",
-                        "type": "string",
-                        "required": true
-                    }]
-                }
+            "create": {
+                "uri": "/account/identity/{{identity_id}}/limit",
+                "method": "post",
+                "params": [{
+                    "name": "identity_id",
+                    "type": "string",
+                    "required": true
+                }, {
+                    "name": "service",
+                    "type": "string",
+                    "require": true
+                }, {
+                    "name": "total_allowance",
+                    "type": "int",
+                    "require": true
+                }]
+            },
+            "update": {
+                "uri": "/account/identity/{{identity_id}}/token/{{service}}",
+                "method": "post",
+                "params": [{
+                    "name": "identity_id",
+                    "type": "string",
+                    "required": true
+                }, {
+                    "name": "service",
+                    "type": "string",
+                    "require": true
+                }, {
+                    "name": "total_allowance",
+                    "type": "int",
+                    "require": true
+                }]
+            },
+            "delete": {
+                 "uri": "/account/identity/{{identity_id}}/token/{{service}}",
+                "method": "post",
+                "params": [{
+                    "name": "identity_id",
+                    "type": "string",
+                    "required": true
+                }, {
+                    "name": "service",
+                    "type": "string",
+                    "required": true
+                }]
             }
         }
     },
