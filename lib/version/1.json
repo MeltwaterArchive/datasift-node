@@ -796,8 +796,8 @@
             }]
         },
         "delete": {
-             "uri": "/account/identity/{{identity_id}}/token/{{service}}",
-            "method": "post",
+            "uri": "/account/identity/{{identity_id}}/token/{{service}}",
+            "method": "delete",
             "params": [{
                 "name": "identity_id",
                 "type": "string",
