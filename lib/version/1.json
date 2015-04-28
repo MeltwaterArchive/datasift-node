@@ -781,7 +781,7 @@
         },
         "update": {
             "uri": "/account/identity/{{identity_id}}/token/{{service}}",
-            "method": "post",
+            "method": "put",
             "params": [{
                 "name": "identity_id",
                 "type": "string",
