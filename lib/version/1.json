@@ -33,6 +33,10 @@
             "name": "hash",
             "type": "string",
             "required": true
+        },{
+            "name": "historics_id",
+            "type": "string",
+            "required": false
         }]
     },
     "balance": {
