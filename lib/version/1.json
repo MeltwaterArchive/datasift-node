@@ -852,8 +852,8 @@
             }]
         },
         "update": {
-            "uri": "/account/identity/{{identity_id}}/token/{{service}}",
-            "method": "post",
+            "uri": "/account/identity/{{identity_id}}/limit/{{service}}",
+            "method": "put",
             "params": [{
                 "name": "identity_id",
                 "type": "string",
@@ -869,7 +869,7 @@
             }]
         },
         "delete": {
-            "uri": "/account/identity/{{identity_id}}/token/{{service}}",
+            "uri": "/account/identity/{{identity_id}}/limit/{{service}}",
             "method": "delete",
             "params": [{
                 "name": "identity_id",
