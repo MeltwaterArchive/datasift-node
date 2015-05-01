@@ -782,7 +782,7 @@
                 "type": "int"
             }]
         },
-        "get": {
+        "list": {
             "uri": "/account/identity/{{identity_id}}/token/{{service}}",
             "method": "get",
             "params": [{
