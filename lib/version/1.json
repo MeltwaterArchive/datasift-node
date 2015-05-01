@@ -704,6 +704,20 @@
                 "type": "int"
             }]
         }, 
+        "list": {
+            "uri": "/account/identity/",
+            "method": "get",
+            "params": [{
+                "name": "label",
+                "type": "string"
+            }, {
+                "name": "per_page",
+                "type": "int"
+            }, {
+                "name": "page",
+                "type": "int"
+            }]
+        }, 
         "create": {
             "uri": "/account/identity",
             "method": "post",
@@ -768,6 +782,18 @@
                 "type": "int"
             }]
         },
+        "get": {
+            "uri": "/account/identity/{{identity_id}}/token/{{service}}",
+            "method": "get",
+            "params": [{
+                "name": "identity_id",
+                "type": "string",
+                "required": true
+            }, {
+                "name": "service",
+                "type": "string"
+            }]
+        },
         "create": {
             "uri": "/account/identity/{{identity_id}}/token",
             "method": "post",
@@ -824,7 +850,18 @@
                 "name": "service",
                 "type": "string"
             }, {
-                "name": "label",
+                "name": "per_page",
+                "type": "int"
+            }, {
+                "name": "page",
+                "type": "int"
+            }]
+        },
+        "list": {
+            "uri": "/account/identity/limit/{{service}}",
+            "method": "get",
+            "params": [{
+                "name": "service",
                 "type": "string"
             }, {
                 "name": "per_page",
