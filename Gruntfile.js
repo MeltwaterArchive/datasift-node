@@ -7,9 +7,6 @@ module.exports = function (grunt) {
 		pkg: grunt.file.readJSON('package.json'),
 		jshint: {
 			all: ['Gruntfile.js', 'lib/**/*.js', 'test/**/*.js']
-		},
-		nodeunit: {
-			all: [/*'tests/*.js'*/]
 		}
 	});
 
