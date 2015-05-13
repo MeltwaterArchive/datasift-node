@@ -921,6 +921,12 @@
                 "name": "hash",
                 "type": "string",
                 "required": false
+            },{
+                "name": "per_page",
+                "type": "int"
+            }, {
+                "name": "page",
+                "type": "int"
             }]
         },
         "validate": {
