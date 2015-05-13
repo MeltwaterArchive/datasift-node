@@ -771,27 +771,21 @@
             }, {
                 "name": "service",
                 "type": "string"
-            }, {
-                "name": "label",
-                "type": "string"
-            }, {
-                "name": "per_page",
-                "type": "int"
-            }, {
-                "name": "page",
-                "type": "int"
             }]
         },
         "list": {
-            "uri": "/account/identity/{{identity_id}}/token/{{service}}",
+            "uri": "/account/identity/{{identity_id}}/token",
             "method": "get",
             "params": [{
                 "name": "identity_id",
                 "type": "string",
                 "required": true
             }, {
-                "name": "service",
-                "type": "string"
+                "name": "per_page",
+                "type": "int"
+            }, {
+                "name": "page",
+                "type": "int"
             }]
         },
         "create": {
