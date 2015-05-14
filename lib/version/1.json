@@ -613,7 +613,8 @@
             "method": "post",
             "params": [{
                 "name": "label",
-                "type": "string"
+                "type": "string",
+                "required": true
             }, {
                 "name": "status",
                 "type": "string"

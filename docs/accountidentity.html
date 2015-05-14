@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Example - Managing identities using the Account API</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          
+          <h1 id="example-managing-identities-using-the-account-api">Example - Managing identities using the Account API</h1>
+<p><em>How to perform identity, token and limit management functions.</em></p>
+
+          
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="accountidentity.html">
+                    accountidentity.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="core.html">
+                    core.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="dynamic_lists.html">
+                    dynamic_lists.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="historics.html">
+                    historics.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="managed_sources.html">
+                    managed_sources.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="multi-streaming.html">
+                    multi-streaming.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="push.html">
+                    push.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="pylon.html">
+                    pylon.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="streaming.html">
+                    streaming.js
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        <p>Require the DataSift library - <strong>choose one of these</strong>:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> DataSift = <span class="hljs-built_in">require</span>(<span class="hljs-string">'datasift-node'</span>); <span class="hljs-comment">// When running from NPM package</span>
+<span class="hljs-keyword">var</span> DataSift = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../lib/datasift'</span>); <span class="hljs-comment">// When running within datasift-node repository</span></pre></div>
+        
+      
+        
+        <p>Create a DataSift client object - <strong>insert your API credentials</strong>:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> ds = <span class="hljs-keyword">new</span> DataSift(<span class="hljs-string">'YOUR_USERNAME'</span>, <span class="hljs-string">'YOUR_APIKEY'</span>);</pre></div>
+        
+      
+        
+        <p>Variable to store the ID for the identity:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> identityId = <span class="hljs-string">""</span>;</pre></div>
+        
+      
+        
+        <h2 id="declare-utility-methods">Declare Utility Methods</h2>
+<p>Gets a list of current identities in your account:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getIdentities</span><span class="hljs-params">()</span> {</span>
+	ds.identity.list(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span>(err)
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			console.log(<span class="hljs-string">"Current identities: \n"</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+			createIdentity();
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>Creates a new identity:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createIdentity</span><span class="hljs-params">()</span> {</span>
+	ds.identity.create({ <span class="hljs-string">"label"</span>: <span class="hljs-string">"Test Node Identity"</span> },
+		<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span>(err)
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			identityId = response.id;
+			console.log(<span class="hljs-string">"Identity created: \n"</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+			updateIdentity();
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>Updates the new identity:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">updateIdentity</span><span class="hljs-params">()</span> {</span>
+	ds.identity.update({ <span class="hljs-string">"id"</span>: identityId, <span class="hljs-string">"label"</span>: <span class="hljs-string">"Test Node Identity - Renamed"</span> },
+		<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span>(err)
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			console.log(<span class="hljs-string">"Identity updated: \n"</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+			getIdentity();
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>Gets the new identity:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getIdentity</span><span class="hljs-params">()</span> {</span>
+	ds.identity.get({ <span class="hljs-string">"id"</span>: identityId }, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span>(err)
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			console.log(<span class="hljs-string">"Got identity: \n"</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+			createToken();
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>Creates a token for the identity:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createToken</span><span class="hljs-params">()</span> {</span>
+	ds.token.create({ <span class="hljs-string">"identity_id"</span>: identityId, <span class="hljs-string">"service"</span>: <span class="hljs-string">"facebook"</span>, <span class="hljs-string">"token"</span>: <span class="hljs-string">"680558d94ee9fdbc191cd446a17171fe"</span> }, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span>(err)
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			console.log(<span class="hljs-string">"Created token: \n"</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+			getAllTokens();
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>Get all tokens for the identity:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getAllTokens</span><span class="hljs-params">()</span> {</span>
+	ds.token.list({ <span class="hljs-string">"identity_id"</span>: identityId }, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span>(err)
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			console.log(<span class="hljs-string">"All tokens for identity: \n"</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+			getServiceToken();
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>Get identity token by service:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getServiceToken</span><span class="hljs-params">()</span> {</span>
+	ds.token.get({ <span class="hljs-string">"identity_id"</span>: identityId, <span class="hljs-string">"service"</span>: <span class="hljs-string">"facebook"</span> }, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span>(err)
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			console.log(<span class="hljs-string">"Got service token: \n"</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+			updateToken();
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>Update the identity with a new token:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">updateToken</span><span class="hljs-params">()</span> {</span>
+	ds.token.update({ <span class="hljs-string">"identity_id"</span>: identityId, <span class="hljs-string">"service"</span>: <span class="hljs-string">"facebook"</span>, <span class="hljs-string">"token"</span>: <span class="hljs-string">"780558d94ee9fdbc191cd446a17171fe"</span> }, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span>(err)
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			console.log(<span class="hljs-string">"Updated token: \n"</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+			createLimit();
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>Creates an identity limit:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createLimit</span><span class="hljs-params">()</span> {</span>
+	ds.limit.create({ <span class="hljs-string">"identity_id"</span>: identityId, <span class="hljs-string">"service"</span>: <span class="hljs-string">"facebook"</span>, <span class="hljs-string">"total_allowance"</span>: <span class="hljs-number">10000</span> }, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span>(err)
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			console.log(<span class="hljs-string">"Created limit: \n"</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+			getAllServiceLimits();
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>Gets all limits for a service:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getAllServiceLimits</span><span class="hljs-params">()</span> {</span>
+	ds.limit.list({ <span class="hljs-string">"service"</span>: <span class="hljs-string">"facebook"</span> }, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span>(err)
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			console.log(<span class="hljs-string">"Service limits: \n"</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+			getIdentityServiceLimit();
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>Gets the limit for the identity, for a service:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getIdentityServiceLimit</span><span class="hljs-params">()</span> {</span>
+	ds.limit.get({ <span class="hljs-string">"identity_id"</span>: identityId, <span class="hljs-string">"service"</span>: <span class="hljs-string">"facebook"</span> }, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span>(err)
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			console.log(<span class="hljs-string">"Identity service limit: \n"</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+			updateLimit();
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>Updates the limit for an identity:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">updateLimit</span><span class="hljs-params">()</span> {</span>
+	ds.limit.update({ <span class="hljs-string">"identity_id"</span>: identityId, <span class="hljs-string">"service"</span>: <span class="hljs-string">"facebook"</span>, <span class="hljs-string">"total_allowance"</span>: <span class="hljs-number">20000</span> }, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span>(err)
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			console.log(<span class="hljs-string">"Updated limit: \n"</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+			deleteLimit();
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>Deletes the service limit for an identity:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">deleteLimit</span><span class="hljs-params">()</span> {</span>
+	ds.limit.delete({ <span class="hljs-string">"identity_id"</span>: identityId, <span class="hljs-string">"service"</span>: <span class="hljs-string">"facebook"</span> }, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span>(err)
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			console.log(<span class="hljs-string">"Deleted limit."</span>);
+			deleteToken();
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>Deletes the token for a service:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">deleteToken</span><span class="hljs-params">()</span> {</span>
+	ds.token.delete({ <span class="hljs-string">"identity_id"</span>: identityId, <span class="hljs-string">"service"</span>: <span class="hljs-string">"facebook"</span> }, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span>(err)
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			console.log(<span class="hljs-string">"Deleted token."</span>);
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <h2 id="initiate-process">Initiate Process</h2>
+<p>Finally we start the process creating a list. This will lead to:</p>
+<ul>
+<li>Get a list of current identities</li>
+<li>Create a new identity</li>
+<li>Update the new identity</li>
+<li>Get the updated identity</li>
+<li>Create a token for the identity</li>
+<li>Get all current tokens for the identity</li>
+<li>Get current tokens for a service</li>
+<li>Update the new token</li>
+<li>Create an identity limit</li>
+<li>Get all limits for a service</li>
+<li>Get the limit for the identity, for a service</li>
+<li>Update the limit</li>
+<li>Delete the limit</li>
+<li>Delete the token</li>
+</ul>
+
+        
+          <div class='highlight'><pre>getIdentities();</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>

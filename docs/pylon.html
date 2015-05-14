@@ -27,6 +27,13 @@
               
                 
                 <li>
+                  <a class="source" href="accountidentity.html">
+                    accountidentity.js
+                  </a>
+                </li>
+              
+                
+                <li>
                   <a class="source" href="core.html">
                     core.js
                   </a>
@@ -121,14 +128,13 @@
 <p>Gets a list of all the recordings currently in your account:</p>
 
         
-          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getRecordings</span><span class="hljs-params">()</span> </span>{
-	ds.pylon.get(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getRecordings</span><span class="hljs-params">()</span> {</span>
+	ds.pylon.get(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
 		<span class="hljs-keyword">if</span>(err)
-			<span class="hljs-built_in">console</span>.log(err);
+			console.log(err);
 		<span class="hljs-keyword">else</span>
 		{
-			listId = response.id;
-			<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Current recordings: \n"</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+			console.log(<span class="hljs-string">"Current recordings: \n"</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
 			validate();
 		}
 	});
@@ -139,14 +145,14 @@
         <p>Validates the CSDL we’ll use for the recording:</p>
 
         
-          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">validate</span><span class="hljs-params">()</span> </span>{
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">validate</span><span class="hljs-params">()</span> {</span>
 	ds.pylon.validate({ <span class="hljs-string">"csdl"</span>: csdl },
-		<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
+		<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
 			<span class="hljs-keyword">if</span> (err) 
-				<span class="hljs-built_in">console</span>.log(err);
+				console.log(err);
 			<span class="hljs-keyword">else</span>
 			{
-				<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"CSDL is valid"</span>);
+				console.log(<span class="hljs-string">"CSDL is valid"</span>);
 				compile();
 			}
 		});
@@ -157,15 +163,15 @@
         <p>Compiles the CSDL, to give a hash for the recording:</p>
 
         
-          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">compile</span><span class="hljs-params">()</span> </span>{
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">compile</span><span class="hljs-params">()</span> {</span>
 	ds.pylon.compile({ <span class="hljs-string">"csdl"</span>: csdl },
-		<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
+		<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
 			<span class="hljs-keyword">if</span> (err) 
-				<span class="hljs-built_in">console</span>.log(err);
+				console.log(err);
 			<span class="hljs-keyword">else</span>
 			{
 				hash = response.hash;
-				<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Filter hash: "</span> + response.hash);
+				console.log(<span class="hljs-string">"Filter hash: "</span> + response.hash);
 				start();
 			}
 		});
@@ -176,14 +182,14 @@
         <p>Starts the recording:</p>
 
         
-          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">start</span><span class="hljs-params">()</span> </span>{
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">start</span><span class="hljs-params">()</span> {</span>
 	ds.pylon.start({ <span class="hljs-string">"hash"</span>: hash, <span class="hljs-string">"name"</span>: <span class="hljs-string">"Example recording"</span> },
-		<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
+		<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
 			<span class="hljs-keyword">if</span> (err) 
-				<span class="hljs-built_in">console</span>.log(err);
+				console.log(err);
 			<span class="hljs-keyword">else</span>
 			{
-				<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Recording started successfully"</span>);
+				console.log(<span class="hljs-string">"Recording started successfully"</span>);
 				getRecording();
 			}
 		});
@@ -194,14 +200,14 @@
         <p>Gets details for the recording, once it’s created:</p>
 
         
-          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getRecording</span><span class="hljs-params">()</span> </span>{
-	ds.pylon.get({ <span class="hljs-string">"hash"</span>: hash }, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getRecording</span><span class="hljs-params">()</span> {</span>
+	ds.pylon.get({ <span class="hljs-string">"hash"</span>: hash }, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
 		<span class="hljs-keyword">if</span>(err)
-			<span class="hljs-built_in">console</span>.log(err);
+			console.log(err);
 		<span class="hljs-keyword">else</span>
 		{
 			listId = response.id;
-			<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Current recording: \n"</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+			console.log(<span class="hljs-string">"Current recording: \n"</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
 			analyze();
 		}
 	});
@@ -212,7 +218,7 @@
         <p>Performs a basic analysis on the recording data:</p>
 
         
-          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">analyze</span><span class="hljs-params">()</span> </span>{
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">analyze</span><span class="hljs-params">()</span> {</span>
 
 	<span class="hljs-keyword">var</span> parameters = {
 		   <span class="hljs-string">"analysis_type"</span>: <span class="hljs-string">"freqDist"</span>,
@@ -224,13 +230,13 @@
 
 	ds.pylon.analyze({ <span class="hljs-string">"hash"</span>: hash, 
 			<span class="hljs-string">"parameters"</span>: parameters
-	 }, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
+	 }, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
 		<span class="hljs-keyword">if</span>(err)
-			<span class="hljs-built_in">console</span>.log(err);
+			console.log(err);
 		<span class="hljs-keyword">else</span>
 		{
 			listId = response.id;
-			<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Analysis result: \n"</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+			console.log(<span class="hljs-string">"Analysis result: \n"</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
 			analyzeWithFilter();
 		}
 	});
@@ -241,7 +247,7 @@
         <p>Performs analysis, but with the addition of an analysis filter:</p>
 
         
-          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">analyzeWithFilter</span><span class="hljs-params">()</span> </span>{
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">analyzeWithFilter</span><span class="hljs-params">()</span> {</span>
 
 	<span class="hljs-keyword">var</span> parameters = {
 		   <span class="hljs-string">"analysis_type"</span>: <span class="hljs-string">"freqDist"</span>,
@@ -254,13 +260,13 @@
 	ds.pylon.analyze({ <span class="hljs-string">"hash"</span>: hash, 
 			<span class="hljs-string">"filter"</span>: <span class="hljs-string">"fb.author.gender == \"male\""</span>,
 			<span class="hljs-string">"parameters"</span>: parameters
-	 }, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
+	 }, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
 		<span class="hljs-keyword">if</span>(err)
-			<span class="hljs-built_in">console</span>.log(err);
+			console.log(err);
 		<span class="hljs-keyword">else</span>
 		{
 			listId = response.id;
-			<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Analysis with filter result: \n"</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+			console.log(<span class="hljs-string">"Analysis with filter result: \n"</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
 			stop();
 		}
 	});
@@ -271,14 +277,14 @@
         <p>Stops the recording running:</p>
 
         
-          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">stop</span><span class="hljs-params">()</span> </span>{
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">stop</span><span class="hljs-params">()</span> {</span>
 	ds.pylon.stop({ <span class="hljs-string">"hash"</span>: hash },
-		<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
+		<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
 			<span class="hljs-keyword">if</span> (err) 
-				<span class="hljs-built_in">console</span>.log(err);
+				console.log(err);
 			<span class="hljs-keyword">else</span>
 			{
-				<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Recording stopped successfully"</span>);
+				console.log(<span class="hljs-string">"Recording stopped successfully"</span>);
 			}
 		});
 }</pre></div>

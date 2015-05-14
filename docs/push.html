@@ -27,6 +27,13 @@
               
                 
                 <li>
+                  <a class="source" href="accountidentity.html">
+                    accountidentity.js
+                  </a>
+                </li>
+              
+                
+                <li>
                   <a class="source" href="core.html">
                     core.js
                   </a>
@@ -115,13 +122,13 @@
 
         
           <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">compileFilter</span><span class="hljs-params">()</span>
-</span>{
-	ds.compile({ <span class="hljs-string">'csdl'</span>: <span class="hljs-string">'interaction.content contains "music"'</span> }, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err, response)</span> </span>{
+{</span>
+	ds.compile({ <span class="hljs-string">'csdl'</span>: <span class="hljs-string">'interaction.content contains "music"'</span> }, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err, response)</span> {</span>
 		<span class="hljs-keyword">if</span> (err) 
-			<span class="hljs-built_in">console</span>.log(err);
+			console.log(err);
 		<span class="hljs-keyword">else</span>
 		{
-			<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Compiled filter hash: "</span> + response.hash);
+			console.log(<span class="hljs-string">"Compiled filter hash: "</span> + response.hash);
 			createPullDestination(response.hash);
 		}
 	});
@@ -133,20 +140,20 @@
 
         
           <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createPullDestination</span><span class="hljs-params">(hash)</span> 
-</span>{
+{</span>
 	ds.push.create({ 
 			<span class="hljs-string">'hash'</span>: hash,
 			<span class="hljs-string">'name'</span>: <span class="hljs-string">"Example pull subscription"</span>,
 			<span class="hljs-string">'output_type'</span>: <span class="hljs-string">'pull'</span>
-		}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
+		}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
 			<span class="hljs-keyword">if</span> (err) 
-				<span class="hljs-built_in">console</span>.log(err);
+				console.log(err);
 			<span class="hljs-keyword">else</span>
 			{
 				subscriptionId = response.id;
-				<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Created subscription ID: "</span> + subscriptionId);
+				console.log(<span class="hljs-string">"Created subscription ID: "</span> + subscriptionId);
 
-				<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Waiting 5 seconds before data pull..."</span>);
+				console.log(<span class="hljs-string">"Waiting 5 seconds before data pull..."</span>);
 				setTimeout(pullData, <span class="hljs-number">5000</span>);
 			}
 		});
@@ -158,13 +165,13 @@
 
         
           <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">pullData</span><span class="hljs-params">()</span>
-</span>{
-	ds.pull({<span class="hljs-string">"id"</span>: subscriptionId}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> </span>{
+{</span>
+	ds.pull({<span class="hljs-string">"id"</span>: subscriptionId}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
 		<span class="hljs-keyword">if</span> (err) 
-			<span class="hljs-built_in">console</span>.log(err);
+			console.log(err);
 		<span class="hljs-keyword">else</span>
 		{
-			<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Pulled data: "</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+			console.log(<span class="hljs-string">"Pulled data: "</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
 			stopPullDestination();
 		}
 	});
@@ -176,12 +183,12 @@
 
         
           <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">stopPullDestination</span><span class="hljs-params">()</span>
-</span>{
-	ds.push.stop({<span class="hljs-string">"id"</span>: subscriptionId}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err)</span> </span>{
+{</span>
+	ds.push.stop({<span class="hljs-string">"id"</span>: subscriptionId}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err)</span> {</span>
 		<span class="hljs-keyword">if</span> (err) 
-			<span class="hljs-built_in">console</span>.log(err);
+			console.log(err);
 		<span class="hljs-keyword">else</span>
-			<span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Pull destination stopped."</span>);
+			console.log(<span class="hljs-string">"Pull destination stopped."</span>);
 	});
 }</pre></div>
         

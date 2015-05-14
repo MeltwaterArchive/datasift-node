@@ -22,7 +22,6 @@ function getRecordings() {
 			console.log(err);
 		else
 		{
-			listId = response.id;
 			console.log("Current recordings: \n" + JSON.stringify(response));
 			validate();
 		}
