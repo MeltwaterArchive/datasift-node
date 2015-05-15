@@ -68,6 +68,7 @@ The client library uses Grunt to run it's tests and will also lint the files. To
 
 ## Changelog
 
+- 1.1.1: PYLON GA release
 - 1.1.0: Added PYLON endpoints & examples
 - 1.0.0: Promoted out of BETA
 - 0.5.7: Fixed incorrectly required parameter. Added parameter to allow disabling of auto-reconnect.
