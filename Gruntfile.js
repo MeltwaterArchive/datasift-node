@@ -7,10 +7,13 @@ module.exports = function (grunt) {
 		pkg: grunt.file.readJSON('package.json'),
 		jshint: {
 			all: ['Gruntfile.js', 'lib/**/*.js', 'test/**/*.js']
+		},
+		nodeunit: {
+			all: ['tests/*.js']
 		}
 	});
 
 	grunt.loadNpmTasks('grunt-contrib-jshint');
-	/*grunt.loadNpmTasks('grunt-contrib-nodeunit');*/
-	grunt.registerTask('default', ['jshint' /*, 'nodeunit' */]);
+	grunt.loadNpmTasks('grunt-contrib-nodeunit');
+	grunt.registerTask('default', ['jshint', 'nodeunit']);
 };

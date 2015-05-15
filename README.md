@@ -68,6 +68,7 @@ The client library uses Grunt to run it's tests and will also lint the files. To
 
 ## Changelog
 
+- 1.1.2: Removed old tests ready for new test suite
 - 1.1.1: PYLON GA release
 - 1.1.0: Added PYLON endpoints & examples
 - 1.0.0: Promoted out of BETA
