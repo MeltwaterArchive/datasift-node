@@ -6,7 +6,7 @@ var DataSift = require('datasift-node'); // When running from NPM package
 var DataSift = require('../lib/datasift'); // When running within datasift-node repository
 
 // Create a DataSift client object - **insert your API credentials**:
-var ds = new DataSift('YOUR_USERNAME', 'YOUR_APIKEY');
+var ds = new DataSift('YOUR_USERNAME', 'YOUR_IDENTITY_APIKEY');
 
 // Variable to store the hash for the recording:
 var hash;
@@ -131,6 +131,38 @@ function analyzeWithFilter() {
 		{
 			listId = response.id;
 			console.log("Analysis with filter result: \n" + JSON.stringify(response));
+			analyzeWithNesting();
+		}
+	});
+}
+
+// Performs analysis, but this time with a nested query:
+function analyzeWithNesting() {
+
+	var parameters = {
+                "analysis_type": "freqDist",
+                "parameters": {
+                    "threshold": 3,
+                    "target": "fb.author.gender"
+                },
+                "child": {
+                    "analysis_type": "freqDist",
+                    "parameters": {
+                        "threshold": 3,
+                        "target": "fb.author.age"
+                    }
+                }
+            };
+
+	ds.pylon.analyze({ "hash": hash, 
+			"parameters": parameters
+	 }, function(err, response) {
+		if(err)
+			console.log(err);
+		else
+		{
+			listId = response.id;
+			console.log("Analysis with nesting result: \n" + JSON.stringify(response));
 			stop();
 		}
 	});
@@ -159,5 +191,6 @@ function stop() {
 // * **At this point in practice you'll need to let the recording run for a time to collect data for analysis!**
 // * Performing a basic analysis
 // * Performing an analysis with an analysis filter
+// * Performing an analysis with nesting
 // * Stopping the recording
 getRecordings();
