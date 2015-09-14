@@ -106,7 +106,7 @@
         <p>Create a DataSift client object - <strong>insert your API credentials</strong>:</p>
 
         
-          <div class='highlight'><pre><span class="hljs-keyword">var</span> ds = <span class="hljs-keyword">new</span> DataSift(<span class="hljs-string">'YOUR_USERNAME'</span>, <span class="hljs-string">'YOUR_APIKEY'</span>);</pre></div>
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> ds = <span class="hljs-keyword">new</span> DataSift(<span class="hljs-string">'YOUR_USERNAME'</span>, <span class="hljs-string">'YOUR_IDENTITY_APIKEY'</span>);</pre></div>
         
       
         
@@ -267,6 +267,42 @@
 		{
 			listId = response.id;
 			console.log(<span class="hljs-string">"Analysis with filter result: \n"</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
+			analyzeWithNesting();
+		}
+	});
+}</pre></div>
+        
+      
+        
+        <p>Performs analysis, but this time with a nested query:</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">analyzeWithNesting</span><span class="hljs-params">()</span> {</span>
+
+	<span class="hljs-keyword">var</span> parameters = {
+                <span class="hljs-string">"analysis_type"</span>: <span class="hljs-string">"freqDist"</span>,
+                <span class="hljs-string">"parameters"</span>: {
+                    <span class="hljs-string">"threshold"</span>: <span class="hljs-number">3</span>,
+                    <span class="hljs-string">"target"</span>: <span class="hljs-string">"fb.author.gender"</span>
+                },
+                <span class="hljs-string">"child"</span>: {
+                    <span class="hljs-string">"analysis_type"</span>: <span class="hljs-string">"freqDist"</span>,
+                    <span class="hljs-string">"parameters"</span>: {
+                        <span class="hljs-string">"threshold"</span>: <span class="hljs-number">3</span>,
+                        <span class="hljs-string">"target"</span>: <span class="hljs-string">"fb.author.age"</span>
+                    }
+                }
+            };
+
+	ds.pylon.analyze({ <span class="hljs-string">"hash"</span>: hash, 
+			<span class="hljs-string">"parameters"</span>: parameters
+	 }, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, response)</span> {</span>
+		<span class="hljs-keyword">if</span>(err)
+			console.log(err);
+		<span class="hljs-keyword">else</span>
+		{
+			listId = response.id;
+			console.log(<span class="hljs-string">"Analysis with nesting result: \n"</span> + <span class="hljs-built_in">JSON</span>.stringify(response));
 			stop();
 		}
 	});
@@ -302,6 +338,7 @@
 <li><strong>At this point in practice you’ll need to let the recording run for a time to collect data for analysis!</strong></li>
 <li>Performing a basic analysis</li>
 <li>Performing an analysis with an analysis filter</li>
+<li>Performing an analysis with nesting</li>
 <li>Stopping the recording</li>
 </ul>
 
