@@ -6,7 +6,7 @@ var DataSift = require('datasift-node'); // When running from NPM package
 var DataSift = require('../lib/datasift'); // When running within datasift-node repository
 
 // Create a DataSift client object - **insert your API credentials**:
-var ds = new DataSift('rcaudle', 'YOUR_APIKEY');
+var ds = new DataSift('YOUR_USERNAME', 'YOUR_APIKEY');
 
 // Validate and compile an example filter:
 var csdl = 'interaction.content contains "music"';
