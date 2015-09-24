@@ -1,6 +1,6 @@
 {
   "name": "datasift-node",
-  "version": "1.1.2",
+  "version": "1.2.1",
   "description": "DataSift REST API Client",
   "main": "./lib/datasift.js",
   "repository": {
