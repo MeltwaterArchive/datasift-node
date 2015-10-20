@@ -576,6 +576,22 @@
             }
         }
     },
+    "account": {
+        "usage": {
+            "uri": "/account/usage",
+            "method": "get",
+            "params": [{
+                "name": "period",
+                "type": "string"
+            }, {
+                "name": "start",
+                "type": "int"
+            }, {
+                "name": "end",
+                "type": "int"
+            }]
+        }
+    },
     "identity": {
         "get": {
             "uri": "/account/identity/{{id}}",
