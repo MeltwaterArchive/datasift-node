@@ -909,6 +909,31 @@
                 "type": "string",
                 "required": true
             }]
+        },
+        "sample": {
+            "uri": "/pylon/sample",
+            "method": "post",
+            "params": [{
+                "name": "hash",
+                "type": "string",
+                "required": true
+            },{
+                "name": "count",
+                "type": "int",
+                "required": false
+            },{
+                "name": "start",
+                "type": "int",
+                "required": false
+            },{
+                "name": "end",
+                "type": "int",
+                "required": false
+            },{
+                "name": "filter",
+                "type": "string",
+                "required": false
+            }]
         }
     }
 }
