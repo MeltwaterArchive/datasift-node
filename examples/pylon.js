@@ -163,9 +163,23 @@ function analyzeWithNesting() {
 		{
 			listId = response.id;
 			console.log("Analysis with nesting result: \n" + JSON.stringify(response));
-			stop();
+			retrieveSuperPublic();
 		}
 	});
+}
+
+// Retrieves 10 super public posts:
+function retrieveSuperPublic() {
+	ds.pylon.sample({ "hash": hash, "count": 10 },
+		function(err, response) {
+			if (err) 
+				console.log(err);
+			else
+			{
+				console.log("Retrieved super public posts: \n" + JSON.stringify(response));
+				stop();
+			}
+		});
 }
 
 // Stops the recording running:
@@ -192,5 +206,6 @@ function stop() {
 // * Performing a basic analysis
 // * Performing an analysis with an analysis filter
 // * Performing an analysis with nesting
+// * Retrieving super public sample posts
 // * Stopping the recording
 getRecordings();

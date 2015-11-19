@@ -68,6 +68,7 @@ The client library uses Grunt to run it's tests and will also lint the files. To
 
 ## Changelog
 
+- 1.2.3: Added support for pylon/sample and account/usage endpoints
 - 1.2.2: Hotfix for request method
 - 1.2.1: Added support ODP ingestion
 - 1.2.0: Moved to version 1.2 of the API
