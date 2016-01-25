@@ -1,0 +1,960 @@
+{
+    "validate": {
+        "uri": "/validate",
+        "method": "post",
+        "params": [{
+            "name": "csdl",
+            "type": "string",
+            "required": true
+        }]
+    },
+    "compile": {
+        "uri": "/compile",
+        "method": "post",
+        "params": [{
+            "name": "csdl",
+            "type": "string",
+            "required": true
+        }]
+    },
+    "usage": {
+        "uri": "/usage",
+        "method": "get",
+        "params": [{
+            "name": "period",
+            "type": "string",
+            "required": false
+        }]
+    },
+    "dpu": {
+        "uri": "/dpu",
+        "method": "get",
+        "params": [{
+            "name": "hash",
+            "type": "string",
+            "required": true
+        },{
+            "name": "historics_id",
+            "type": "string",
+            "required": false
+        }]
+    },
+    "balance": {
+        "uri": "/balance",
+        "method": "get",
+        "params": []
+    },
+    "pull": {
+        "uri": "/pull",
+        "method": "get",
+        "params": [{
+            "name": "id",
+            "type": "string",
+            "required": true
+        },{
+            "name": "size",
+            "type": "int",
+            "required": false
+        },{
+            "name": "cursor",
+            "type": "string",
+            "required": false
+        }]
+    },
+    "push": {
+        "validate": {
+            "uri": "/push/validate",
+            "method": "post",
+            "params": [{
+                "name": "output_type",
+                "type": "string",
+                "required": true
+            }, {
+                "name": "output_params",
+                "type": "string",
+                "required": true
+            }]
+        },
+        "create": {
+            "uri": "/push/create",
+            "method": "post",
+            "params": [{
+                "name": "hash",
+                "type": "string",
+                "required": false
+            }, {
+                "name": "historics_id",
+                "type": "string",
+                "required": false
+            },{
+                "name": "name",
+                "type": "string",
+                "required": true
+            },{
+                "name": "output_params",
+                "type": "string",
+                "required": false
+            },{
+                "name": "initial_status",
+                "type": "string",
+                "required": false
+            },{
+                "name": "start",
+                "type": "string",
+                "required": false
+            }, {
+                "name": "end",
+                "type": "string",
+                "required": false
+            }]
+        },
+        "pause": {
+            "uri": "/push/pause",
+            "method": "put",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": true
+            }]
+        },
+        "resume": {
+            "uri": "/push/resume",
+            "method": "put",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": true
+            }]
+        },
+        "update": {
+            "uri": "/push/update",
+            "method": "put",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": true
+            },{
+                "name": "name",
+                "type": "string",
+                "required": false
+            },{
+                "name": "output_params",
+                "type": "string",
+                "required": true
+            }]
+        },
+        "stop": {
+            "uri": "/push/stop",
+            "method": "put",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": true
+            }]
+        },
+        "delete": {
+            "uri": "/push/delete",
+            "method": "put",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": true
+            }]
+        },
+        "log": {
+            "uri": "/push/log",
+            "method": "get",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": false
+            },{
+                "name": "page",
+                "type": "int",
+                "required": false
+            },{
+                "name": "per_page",
+                "type": "int",
+                "required": false
+            },{
+                "name": "order_by",
+                "type": "string",
+                "required": false
+            },{
+                "name": "order_dir",
+                "type": "string",
+                "required": false
+            }]
+        },
+        "get": {
+            "uri": "/push/get",
+            "method": "get",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": false
+            },{
+                "name": "hash",
+                "type": "string",
+                "required": false
+            },{
+                "name": "historic_id",
+                "type": "string",
+                "required": false
+            },{
+                "name": "page",
+                "type": "int",
+                "required": false
+            },{
+                "name": "per_page",
+                "type": "int",
+                "required": false
+            },{
+                "name": "order_by",
+                "type": "string",
+                "required": false
+            },{
+                "name": "order_dir",
+                "type": "string",
+                "required": false
+            },{
+                "name": "include_finished",
+                "type": "string",
+                "required": false
+            }]
+        }
+    },
+    "historics": {
+        "prepare": {
+            "uri": "/historics/prepare",
+            "method": "post",
+            "params": [{
+                "name": "hash",
+                "type": "string",
+                "required": true
+            },{
+                "name": "start",
+                "type": "int",
+                "required": true
+            },{
+                "name": "end",
+                "type": "int",
+                "required": true
+            },{
+                "name": "sources",
+                "type": "string",
+                "required": true
+            },{
+                "name": "name",
+                "type": "string",
+                "required": true
+            },{
+                "name": "sample",
+                "type": "int",
+                "required": false
+            }]
+        },
+        "start": {
+            "uri": "/historics/start",
+            "method": "post",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": true
+            }]
+        },
+        "stop": {
+            "uri": "/historics/stop",
+            "method": "post",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": true
+            },{
+                "name": "reason",
+                "type": "string",
+                "required": false
+            }]
+        },
+        "status": {
+            "uri": "/historics/status",
+            "method": "get",
+            "params": [{
+                "name": "start",
+                "type": "int",
+                "required": true
+            },{
+                "name": "end",
+                "type": "int",
+                "required": true
+            },{
+                "name": "sources",
+                "type": "string",
+                "required": false
+            }]
+        },
+        "update": {
+            "uri": "/historics/update",
+            "method": "post",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": true
+            },{
+                "name": "name",
+                "type": "string",
+                "required": true
+            }]
+        },
+        "delete": {
+            "uri": "/historics/delete",
+            "method": "post",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": true
+            }]
+        },
+        "get": {
+            "uri": "/historics/get",
+            "method": "get",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": false
+            },{
+                "name": "max",
+                "type": "int",
+                "required": false
+            },{
+                "name": "page",
+                "type": "int",
+                "required": false
+            },{
+                "name": "with_estimate",
+                "type": "int",
+                "required": false
+            }]
+        },
+        "pause": {
+            "uri": "/historics/pause",
+            "method": "post",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": true
+            }, {
+                "name": "reason",
+                "type": "string",
+                "required": false
+            }]
+        },
+        "resume": {
+            "uri": "/historics/resume",
+            "method": "post",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": true
+            }]
+        }
+    },
+    "preview": {
+        "create": {
+            "uri": "/preview/create",
+            "method": "post",
+            "params": [{
+                "name": "start",
+                "type": "int",
+                "required": true
+            },{
+                "name": "end",
+                "type": "int",
+                "required": false
+            },{
+                "name": "hash",
+                "type": "string",
+                "required": true
+            },{
+                "name": "sources",
+                "type": "string",
+                "required": true
+            },{
+                "name": "parameters",
+                "type": "string",
+                "required": true
+            }]
+        },
+        "get": {
+            "uri": "/preview/get",
+            "method": "get",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": true
+            }]
+        }
+    },
+    "source": {
+        "create": {
+            "uri": "/source/create",
+            "method": "post",
+            "params": [{
+                "name": "source_type",
+                "type": "string",
+                "required": true
+            },{
+                "name": "name",
+                "type": "string",
+                "required": true
+            },{
+                "name": "parameters",
+                "type": "string",
+                "required": true
+            },{
+                "name": "resources",
+                "type": "string",
+                "required": true
+            },{
+                "name": "auth",
+                "type": "string",
+                "required": true
+            }]
+        },
+        "update": {
+            "uri": "/source/update",
+            "method": "post",
+            "params": [{
+                "name": "source_type",
+                "type": "string",
+                "required": false
+            },{
+                "name": "name",
+                "type": "string",
+                "required": false
+            },{
+                "name": "parameters",
+                "type": "string",
+                "required": false
+            },{
+                "name": "resources",
+                "type": "string",
+                "required": false
+            },{
+                "name": "auth",
+                "type": "string",
+                "required": false
+            }]
+        },
+        "delete": {
+            "uri": "/source/delete",
+            "method": "post",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": true
+            }]
+        },
+        "get": {
+            "uri": "/source/get",
+            "method": "post",
+            "params": [{
+                "name": "source_type",
+                "type": "string",
+                "required": false
+            },{
+                "name": "page",
+                "type": "int",
+                "required": false
+            },{
+                "name": "per_page",
+                "type": "int",
+                "required": false
+            },{
+                "name": "id",
+                "type": "string",
+                "required": false
+            }]
+        },
+        "log": {
+            "uri": "/source/log",
+            "method": "post",
+            "params": [{
+                "name": "page",
+                "type": "int",
+                "required": false
+            },{
+                "name": "per_page",
+                "type": "int",
+                "required": false
+            },{
+                "name": "id",
+                "type": "string",
+                "required": true
+            }]
+        },
+        "stop": {
+            "uri": "/source/stop",
+            "method": "post",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": true
+            }]
+        },
+        "start": {
+            "uri": "/source/start",
+            "method": "post",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": true
+            }]
+        },
+        "resource": {
+            "add": {
+                "uri": "/source/resource/add",
+                "method": "post",
+                "params": [{
+                    "name": "id",
+                    "type": "string",
+                    "required": true
+                },{
+                    "name": "resources",
+                    "type": "string",
+                    "required": true
+                },{
+                    "name": "validate",
+                    "type": "boolean",
+                    "required": false
+                }]
+            },
+            "remove": {
+                "uri": "/source/resource/remove",
+                "method": "post",
+                "params": [{
+                    "name": "id",
+                    "type": "string",
+                    "required": true
+                },{
+                    "name": "resource_ids",
+                    "type": "string",
+                    "required": true
+                }]
+            }
+        },
+        "auth": {
+            "add": {
+                "uri": "/source/auth/add",
+                "method": "post",
+                "params": [{
+                    "name": "id",
+                    "type": "string",
+                    "required": true
+                },{
+                    "name": "auth",
+                    "type": "string",
+                    "required": true
+                },{
+                    "name": "validate",
+                    "type": "boolean",
+                    "required": false
+                }]
+            },
+            "remove": {
+                "uri": "/source/auth/remove",
+                "method": "post",
+                "params": [{
+                    "name": "id",
+                    "type": "string",
+                    "required": true
+                },{
+                    "name": "auth_ids",
+                    "type": "string",
+                    "required": true
+                }]
+            }
+        }
+    },
+    "account": {
+        "usage": {
+            "uri": "/account/usage",
+            "method": "get",
+            "params": [{
+                "name": "period",
+                "type": "string"
+            }, {
+                "name": "start",
+                "type": "int"
+            }, {
+                "name": "end",
+                "type": "int"
+            }]
+        }
+    },
+    "identity": {
+        "get": {
+            "uri": "/account/identity/{{id}}",
+            "method": "get",
+            "params": [{
+                "name": "id",
+                "type": "string"
+            }, {
+                "name": "label",
+                "type": "string"
+            }, {
+                "name": "per_page",
+                "type": "int"
+            }, {
+                "name": "page",
+                "type": "int"
+            }]
+        }, 
+        "list": {
+            "uri": "/account/identity/",
+            "method": "get",
+            "params": [{
+                "name": "label",
+                "type": "string"
+            }, {
+                "name": "per_page",
+                "type": "int"
+            }, {
+                "name": "page",
+                "type": "int"
+            }]
+        }, 
+        "create": {
+            "uri": "/account/identity",
+            "method": "post",
+            "params": [{
+                "name": "label",
+                "type": "string",
+                "required": true
+            }, {
+                "name": "status",
+                "type": "string"
+            }, {
+                "name": "master",
+                "type": "boolean"
+            }]
+        },
+        "update": {
+            "uri": "/account/identity/{{id}}",
+            "method": "put",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": true
+            }, {
+                "name": "label",
+                "type": "string"
+            }, {
+                "name": "status",
+                "type": "string"
+            }, {
+                "name": "master",
+                "type": "boolean"
+            }]
+        },         
+        "delete": {
+            "uri": "/account/identity/{{id}}",
+            "method": "delete",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": true
+            }]
+        }
+    },
+    "token": {
+        "get": {
+            "uri": "/account/identity/{{identity_id}}/token/{{service}}",
+            "method": "get",
+            "params": [{
+                "name": "identity_id",
+                "type": "string",
+                "required": true
+            }, {
+                "name": "service",
+                "type": "string"
+            }]
+        },
+        "list": {
+            "uri": "/account/identity/{{identity_id}}/token",
+            "method": "get",
+            "params": [{
+                "name": "identity_id",
+                "type": "string",
+                "required": true
+            }, {
+                "name": "per_page",
+                "type": "int"
+            }, {
+                "name": "page",
+                "type": "int"
+            }]
+        },
+        "create": {
+            "uri": "/account/identity/{{identity_id}}/token",
+            "method": "post",
+            "params": [{
+                "name": "identity_id",
+                "type": "string",
+                "required": true
+            }, {
+                "name": "service",
+                "type": "string"
+            }, {
+                "name": "token",
+                "type": "string"
+            }]
+        },
+        "update": {
+            "uri": "/account/identity/{{identity_id}}/token/{{service}}",
+            "method": "put",
+            "params": [{
+                "name": "identity_id",
+                "type": "string",
+                "required": true
+            }, {
+                "name": "service",
+                "type": "string",
+                "required": true
+            }, {
+                "name": "token",
+                "type": "string"
+            }]
+        },
+        "delete": {
+            "uri": "/account/identity/{{identity_id}}/token/{{service}}",
+            "method": "delete",
+            "params": [{
+                "name": "identity_id",
+                "type": "string",
+                "required": true
+            }, {
+                "name": "service",
+                "type": "string",
+                "required": true
+            }]
+        }
+    },
+    "limit": {
+        "get": {
+            "uri": "/account/identity/{{identity_id}}/limit/{{service}}",
+            "method": "get",
+            "params": [{
+                "name": "identity_id",
+                "type": "string"
+            }, {
+                "name": "service",
+                "type": "string"
+            }, {
+                "name": "per_page",
+                "type": "int"
+            }, {
+                "name": "page",
+                "type": "int"
+            }]
+        },
+        "list": {
+            "uri": "/account/identity/limit/{{service}}",
+            "method": "get",
+            "params": [{
+                "name": "service",
+                "type": "string"
+            }, {
+                "name": "per_page",
+                "type": "int"
+            }, {
+                "name": "page",
+                "type": "int"
+            }]
+        },
+        "create": {
+            "uri": "/account/identity/{{identity_id}}/limit",
+            "method": "post",
+            "params": [{
+                "name": "identity_id",
+                "type": "string",
+                "required": true
+            }, {
+                "name": "service",
+                "type": "string",
+                "require": true
+            }, {
+                "name": "total_allowance",
+                "type": "int",
+                "require": true
+            }]
+        },
+        "update": {
+            "uri": "/account/identity/{{identity_id}}/limit/{{service}}",
+            "method": "put",
+            "params": [{
+                "name": "identity_id",
+                "type": "string",
+                "required": true
+            }, {
+                "name": "service",
+                "type": "string",
+                "require": true
+            }, {
+                "name": "total_allowance",
+                "type": "int",
+                "require": true
+            }]
+        },
+        "delete": {
+            "uri": "/account/identity/{{identity_id}}/limit/{{service}}",
+            "method": "delete",
+            "params": [{
+                "name": "identity_id",
+                "type": "string",
+                "required": true
+            }, {
+                "name": "service",
+                "type": "string",
+                "required": true
+            }]
+        }
+    },
+    "pylon": {
+        "get": {
+            "uri": "/pylon/get",
+            "method": "get",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": false
+            },{
+                "name": "per_page",
+                "type": "int"
+            }, {
+                "name": "page",
+                "type": "int"
+            }]
+        },
+        "validate": {
+            "uri": "/pylon/validate",
+            "method": "post",
+            "params": [{
+                "name": "csdl",
+                "type": "string",
+                "required": true
+            }]
+        },
+        "compile": {
+            "uri": "/pylon/compile",
+            "method": "post",
+            "params": [{
+                "name": "csdl",
+                "type": "string",
+                "required": true
+            }]
+        },
+        "start": {
+            "uri": "/pylon/start",
+            "method": "post",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": false
+            },{
+                "name": "hash",
+                "type": "string",
+                "required": false
+            },{
+                "name": "name",
+                "type": "string",
+                "required": false
+            }]
+        },
+        "stop": {
+            "uri": "/pylon/stop",
+            "method": "post",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": true
+            }]
+        },
+        "analyze": {
+            "uri": "/pylon/analyze",
+            "method": "post",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": true
+            },{
+                "name": "parameters",
+                "type": "object",
+                "required": true
+            },{
+                "name": "filter",
+                "type": "string",
+                "required": false
+            },{
+                "name": "start",
+                "type": "int",
+                "required": false
+            },{
+                "name": "end",
+                "type": "int",
+                "required": false
+            }]
+        },
+        "tags": {
+            "uri": "/pylon/tags",
+            "method": "get",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": true
+            }]
+        },
+        "sample": {
+            "uri": "/pylon/sample",
+            "method": "post",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": true
+            },{
+                "name": "count",
+                "type": "int",
+                "required": false
+            },{
+                "name": "start",
+                "type": "int",
+                "required": false
+            },{
+                "name": "end",
+                "type": "int",
+                "required": false
+            },{
+                "name": "filter",
+                "type": "string",
+                "required": false
+            }]
+        },
+        "update": {
+            "uri": "/pylon/update",
+            "method": "put",
+            "params": [{
+                "name": "id",
+                "type": "string",
+                "required": true
+            },{
+                "name": "hash",
+                "type": "string",
+                "required": false
+            },{
+                "name": "name",
+                "type": "string",
+                "required": false
+            }]
+        }
+    }
+}
