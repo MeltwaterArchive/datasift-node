@@ -122,7 +122,7 @@ function updateToken() {
 
 // Creates an identity limit:
 function createLimit() {
-	ds.limit.create({ "identity_id": identityId, "service": "facebook", "total_allowance": 10000 }, function(err, response) {
+	ds.limit.create({ "identity_id": identityId, "service": "facebook", "total_allowance": 10000, "analyze_queries": 500 }, function(err, response) {
 		if(err)
 			console.log(err);
 		else
@@ -161,7 +161,7 @@ function getIdentityServiceLimit() {
 
 // Updates the limit for an identity:
 function updateLimit() {
-	ds.limit.update({ "identity_id": identityId, "service": "facebook", "total_allowance": 20000 }, function(err, response) {
+	ds.limit.update({ "identity_id": identityId, "service": "facebook", "total_allowance": 20000, "analyze_queries": 600 }, function(err, response) {
 		if(err)
 			console.log(err);
 		else
