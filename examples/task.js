@@ -68,24 +68,22 @@ var process = {
 
     // Gets an individual task with its results
     getTask: function(callback) {
-    	$this = this;
-		
-		ds.task.get({ 'service': service, 'id': taskId }, function(err, response, headers, statusCode) {
+    	ds.task.get({ 'service': service, 'id': taskId }, function(err, response, headers, statusCode) {
 			if(err)
 				console.log(err);
 			else
 			{
 				
-				if(response.status === "Completed") {
+				if(response.status.toLowerCase() === "completed") {
 					console.log("Task results: \n" + JSON.stringify(response.result));
 					callback();
 				}
 				else {
 					console.log("WAITING: Task status: " + response.status);
-					setTimeout($this.getTask(callback), 5000);
+					setTimeout(this.getTask(callback), 5000);
 				}
 			}
-		});
+		}.bind(this));
     }
 }
 
