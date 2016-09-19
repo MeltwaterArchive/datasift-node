@@ -11,6 +11,9 @@ var async = require('async');
 // Create a DataSift client object - **insert your API credentials**:
 var ds = new DataSift('YOUR_USERNAME', 'YOUR_IDENTITY_APIKEY');
 
+// The PYLON service to use - **insert the service here**:
+var service = 'SERVICE';
+
 // The CSDL definitions we'll use for the recording:
 var csdl_v1 = 'fb.content contains_any "Ford, Honda, BMW"';
 var csdl_v2 = 'fb.content contains_any "Ford, Honda, BMW, Mercedes"';
@@ -23,7 +26,7 @@ var process = {
 
 	// Gets all the recordings for the identity we're using
 	getRecordings: function(callback){
-	    ds.pylon.get(function(err, response) {
+	    ds.pylon.get({'service': service}, function(err, response) {
 			if(err)
 				console.log(err);
 			else
@@ -36,7 +39,7 @@ var process = {
 
     // Gets details of one recording
     getRecording: function(id, callback) {
-    	ds.pylon.get({ "id": id }, function(err, response) {
+    	ds.pylon.get({'service': service, "id": id }, function(err, response) {
 			if(err)
 				console.log(err);
 			else
@@ -49,7 +52,7 @@ var process = {
 
     // Validate CSDL for an interaction filter
     validate: function(csdl, callback){
-    	ds.pylon.validate({ "csdl": csdl },
+    	ds.pylon.validate({ 'service': service, "csdl": csdl },
 			function(err, response) {
 				if (err) 
 					console.log(err);
@@ -63,7 +66,7 @@ var process = {
 
     // Compiles CSDL for an interaction filter
     compile: function(csdl, callback){
-    	ds.pylon.compile({ "csdl": csdl },
+    	ds.pylon.compile({ 'service': service, "csdl": csdl },
 			function(err, response) {
 				if (err) 
 					console.log(err);
@@ -77,7 +80,7 @@ var process = {
 
     // Starts a PYLON recording
     start: function(hash, name, callback){
-    	ds.pylon.start({ "hash": hash, "name": name },
+    	ds.pylon.start({ 'service': service, "hash": hash, "name": name },
 			function(err, response) {
 				if (err) 
 					console.log(err);
@@ -91,7 +94,7 @@ var process = {
 
     // Stops a recording
     stop: function(id, callback){
-    	ds.pylon.stop({ "id": id },
+    	ds.pylon.stop({ 'service': service, "id": id },
 			function(err, response) {
 				if (err) 
 					console.log(err);
@@ -105,7 +108,7 @@ var process = {
 
     // Updates a recording to a new CSDL definition and name
     update: function(id, hash, name, callback){
-    	ds.pylon.update({ "id": id, "hash": hash, "name": name },
+    	ds.pylon.update({ 'service': service, "id": id, "hash": hash, "name": name },
 			function(err, response) {
 				if (err) 
 					console.log(err);
@@ -119,7 +122,7 @@ var process = {
 
     // Submits an analysis request
     analyze: function(id, parameters, filter, callback){
-		ds.pylon.analyze({ "id": id, "parameters": parameters, "filter": filter},  
+		ds.pylon.analyze({ 'service': service, "id": id, "parameters": parameters, "filter": filter},  
 			function(err, response) {
 				if(err)
 					console.log(err);
@@ -133,7 +136,7 @@ var process = {
 
     // Retrieves super public sample data
     superPublicSample: function(id,count,callback){
-    	ds.pylon.sample({ "id": id, "count": count },
+    	ds.pylon.sample({ 'service': service, "id": id, "count": count },
 			function(err, response) {
 				if (err) 
 					console.log(err);
