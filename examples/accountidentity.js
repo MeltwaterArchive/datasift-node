@@ -9,194 +9,233 @@ var DataSift = require('../lib/datasift'); // When running within datasift-node 
 var ds = new DataSift('YOUR_USERNAME', 'YOUR_APIKEY');
 
 // Variable to store the ID for the identity:
-var identityId = "";
+var identityId = '';
 
 // ## Declare Utility Methods
-// Gets a list of current identities in your account:
-function getIdentities() {
-	ds.identity.list(function(err, response) {
-		if(err)
+
+// Deletes the token for a service:
+function deleteToken() {
+	'use strict';
+	ds.token.delete({
+		'identity_id': identityId,
+		'service': 'facebook'
+	}, function(err) {
+		if (err)
 			console.log(err);
-		else
-		{
-			console.log("Current identities: \n" + JSON.stringify(response));
-			createIdentity();
+		else {
+			console.log('Deleted token.');
 		}
 	});
 }
 
-// Creates a new identity:
-function createIdentity() {
-	ds.identity.create({ "label": "Test Node Identity" },
-		function(err, response) {
-		if(err)
+// Deletes the service limit for an identity:
+function deleteLimit() {
+	'use strict';
+	ds.limit.delete({
+		'identity_id': identityId,
+		'service': 'facebook'
+	}, function(err) {
+		if (err)
 			console.log(err);
-		else
-		{
-			identityId = response.id;
-			console.log("Identity created: \n" + JSON.stringify(response));
-			updateIdentity();
+		else {
+			console.log('Deleted limit.');
+			deleteToken();
 		}
 	});
 }
 
-// Updates the new identity:
-function updateIdentity() {
-	ds.identity.update({ "id": identityId, "label": "Test Node Identity - Renamed" },
-		function(err, response) {
-		if(err)
+// Updates the limit for an identity:
+function updateLimit() {
+	'use strict';
+	ds.limit.update({
+		'identity_id': identityId,
+		'service': 'facebook',
+		'total_allowance': 20000,
+		'analyze_queries': 600
+	}, function(err, response) {
+		if (err)
 			console.log(err);
-		else
-		{
-			console.log("Identity updated: \n" + JSON.stringify(response));
-			getIdentity();
+		else {
+			console.log('Updated limit: \n' + JSON.stringify(response));
+			deleteLimit();
 		}
 	});
 }
 
-// Gets the new identity:
-function getIdentity() {
-	ds.identity.get({ "id": identityId }, function(err, response) {
-		if(err)
+// Gets the limit for the identity, for a service:
+function getIdentityServiceLimit() {
+	'use strict';
+	ds.limit.get({
+		'identity_id': identityId,
+		'service': 'facebook'
+	}, function(err, response) {
+		if (err)
 			console.log(err);
-		else
-		{
-			console.log("Got identity: \n" + JSON.stringify(response));
-			createToken();
+		else {
+			console.log('Identity service limit: \n' + JSON.stringify(response));
+			updateLimit();
 		}
 	});
 }
 
-// Creates a token for the identity:
-function createToken() {
-	ds.token.create({ "identity_id": identityId, "service": "facebook", "token": "680558d94ee9fdbc191cd446a17171fe" }, function(err, response) {
-		if(err)
+// Gets all limits for a service:
+function getAllServiceLimits() {
+	'use strict';
+	ds.limit.list({
+		'service': 'facebook'
+	}, function(err, response) {
+		if (err)
 			console.log(err);
-		else
-		{
-			console.log("Created token: \n" + JSON.stringify(response));
-			getAllTokens();
+		else {
+			console.log('Service limits: \n' + JSON.stringify(response));
+			getIdentityServiceLimit();
 		}
 	});
-} 
+}
 
-// Get all tokens for the identity:
-function getAllTokens() {
-	ds.token.list({ "identity_id": identityId }, function(err, response) {
-		if(err)
+// Creates an identity limit:
+function createLimit() {
+	'use strict';
+	ds.limit.create({
+		'identity_id': identityId,
+		'service': 'facebook',
+		'total_allowance': 10000,
+		'analyze_queries': 500
+	}, function(err, response) {
+		if (err)
 			console.log(err);
-		else
-		{
-			console.log("All tokens for identity: \n" + JSON.stringify(response));
-			getServiceToken();
+		else {
+			console.log('Created limit: \n' + JSON.stringify(response));
+			getAllServiceLimits();
+		}
+	});
+}
+
+// Update the identity with a new token:
+function updateToken() {
+	'use strict';
+	ds.token.update({
+		'identity_id': identityId,
+		'service': 'facebook',
+		'token': '780558d94ee9fdbc191cd446a17171fe'
+	}, function(err, response) {
+		if (err)
+			console.log(err);
+		else {
+			console.log('Updated token: \n' + JSON.stringify(response));
+			createLimit();
 		}
 	});
 }
 
 // Get identity token by service:
 function getServiceToken() {
-	ds.token.get({ "identity_id": identityId, "service": "facebook" }, function(err, response) {
-		if(err)
+	'use strict';
+	ds.token.get({
+		'identity_id': identityId,
+		'service': 'facebook'
+	}, function(err, response) {
+		if (err)
 			console.log(err);
-		else
-		{
-			console.log("Got service token: \n" + JSON.stringify(response));
+		else {
+			console.log('Got service token: \n' + JSON.stringify(response));
 			updateToken();
 		}
 	});
-} 
+}
 
-
-// Update the identity with a new token:
-function updateToken() {
-	ds.token.update({ "identity_id": identityId, "service": "facebook", "token": "780558d94ee9fdbc191cd446a17171fe" }, function(err, response) {
-		if(err)
+// Get all tokens for the identity:
+function getAllTokens() {
+	'use strict';
+	ds.token.list({
+		'identity_id': identityId
+	}, function(err, response) {
+		if (err)
 			console.log(err);
-		else
-		{
-			console.log("Updated token: \n" + JSON.stringify(response));
-			createLimit();
+		else {
+			console.log('All tokens for identity: \n' + JSON.stringify(response));
+			getServiceToken();
 		}
 	});
-} 
+}
 
-// Creates an identity limit:
-function createLimit() {
-	ds.limit.create({ "identity_id": identityId, "service": "facebook", "total_allowance": 10000, "analyze_queries": 500 }, function(err, response) {
-		if(err)
+// Creates a token for the identity:
+function createToken() {
+	'use strict';
+	ds.token.create({
+		'identity_id': identityId,
+		'service': 'facebook',
+		'token': '680558d94ee9fdbc191cd446a17171fe'
+	}, function(err, response) {
+		if (err)
 			console.log(err);
-		else
-		{
-			console.log("Created limit: \n" + JSON.stringify(response));
-			getAllServiceLimits();
+		else {
+			console.log('Created token: \n' + JSON.stringify(response));
+			getAllTokens();
 		}
 	});
-} 
+}
 
-// Gets all limits for a service:
-function getAllServiceLimits() {
-	ds.limit.list({ "service": "facebook" }, function(err, response) {
-		if(err)
+// Gets the new identity:
+function getIdentity() {
+	'use strict';
+	ds.identity.get({
+		'id': identityId
+	}, function(err, response) {
+		if (err)
 			console.log(err);
-		else
-		{
-			console.log("Service limits: \n" + JSON.stringify(response));
-			getIdentityServiceLimit();
+		else {
+			console.log('Got identity: \n' + JSON.stringify(response));
+			createToken();
 		}
 	});
-} 
+}
 
-// Gets the limit for the identity, for a service:
-function getIdentityServiceLimit() {
-	ds.limit.get({ "identity_id": identityId, "service": "facebook" }, function(err, response) {
-		if(err)
+// Updates the new identity:
+function updateIdentity() {
+	'use strict';
+	ds.identity.update({
+			'id': identityId,
+			'label': 'Test Node Identity - Renamed'
+		},
+		function(err, response) {
+			if (err)
+				console.log(err);
+			else {
+				console.log('Identity updated: \n' + JSON.stringify(response));
+				getIdentity();
+			}
+		});
+}
+
+// Creates a new identity:
+function createIdentity() {
+	'use strict';
+	ds.identity.create({
+		'label': 'Test Node Identity'
+	}, function(err, response) {
+		if (err) {
 			console.log(err);
-		else
-		{
-			console.log("Identity service limit: \n" + JSON.stringify(response));
-			updateLimit();
+		} else {
+			identityId = response.id;
+			console.log('Identity created: \n' + JSON.stringify(response));
+			updateIdentity();
 		}
 	});
-} 
+}
 
-// Updates the limit for an identity:
-function updateLimit() {
-	ds.limit.update({ "identity_id": identityId, "service": "facebook", "total_allowance": 20000, "analyze_queries": 600 }, function(err, response) {
-		if(err)
+// Gets a list of current identities in your account:
+function getIdentities() {
+	'use strict';
+	ds.identity.list(function(err, response) {
+		if (err)
 			console.log(err);
-		else
-		{
-			console.log("Updated limit: \n" + JSON.stringify(response));
-			deleteLimit();
+		else {
+			console.log('Current identities: \n' + JSON.stringify(response));
+			createIdentity();
 		}
 	});
-} 
-
-// Deletes the service limit for an identity:
-function deleteLimit() {
-	ds.limit.delete({ "identity_id": identityId, "service": "facebook" }, function(err, response) {
-		if(err)
-			console.log(err);
-		else
-		{
-			console.log("Deleted limit.");
-			deleteToken();
-		}
-	});
-} 
-
-// Deletes the token for a service:
-function deleteToken() {
-	ds.token.delete({ "identity_id": identityId, "service": "facebook" }, function(err, response) {
-		if(err)
-			console.log(err);
-		else
-		{
-			console.log("Deleted token.");
-		}
-	});
-} 
-
+}
 
 // ## Initiate Process
 // Finally we start the process creating a list. This will lead to:

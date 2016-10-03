@@ -10,74 +10,85 @@ var ds = new DataSift('YOUR_USERNAME', 'YOUR_IDENTITY_APIKEY');
 
 
 // ## Declare Utility Methods
-// Creates a new managed source for ingestion:
-function createSource() {
 
-	var resources = [
-	    {
-	        'parameters': {
-	            'mapping': 'gnip_1'
-	        }
-	    }
-	];
+// Deletes the new source
+function deleteSource(id) {
 
-	ds.source.create({ "source_type": "twitter_gnip", 
-			"name": "Example ODP Source", "resources": JSON.stringify(resources) }, 
-			function(err, response) {
-				if(err)
-					console.log(err);
-				else
-				{
-					console.log("Created new source: \n" + response.id);
-					startSource(response.id);
-				}
-			});
+	'use strict';
+
+	ds.source.delete({
+		'id': id
+	}, function(err) {
+		if (err) {
+			console.log(err);
+		} else {
+			console.log('Source deleted.');
+		}
+	});
+}
+
+// Ingests one item of data
+function ingest(sourceId) {
+	'use strict';
+	var data = [{
+		'id': '23456234347',
+		'body': 'This is the body '
+	}];
+
+	ds.ingest(
+		sourceId,
+		data,
+		function(err, response) {
+			if (err)
+				console.log(err);
+			else {
+				console.log('Ingested: ' + JSON.stringify(response));
+				deleteSource(sourceId);
+			}
+		}
+	);
 }
 
 // Starts the new source
 function startSource(id) {
 
-	ds.source.start({ "id": id }, 
-		function(err, response) {
-			if(err)
-				console.log(err);
-			else
-			{
-				console.log("Source started.");
-				ingest(id);
-			}
-		});
+	'use strict';
+
+	ds.source.start({
+		'id': id
+	}, function(err) {
+		if (err)
+			console.log(err);
+		else {
+			console.log('Source started.');
+			ingest(id);
+		}
+	});
 }
 
-// Ingests one item of data
-function ingest(sourceId) {
+// Creates a new managed source for ingestion:
+function createSource() {
 
-	var data = [{'id': '23456234347', 'body': 'This is the body '}]
+	'use strict';
 
-	ds.ingest(sourceId, data, 
-		function(err, response) {
-			if(err)
-				console.log(err);
-			else
-			{
-				console.log("Ingested: " + JSON.stringify(response));
-				deleteSource(sourceId);
-			}
-		});
-}
+	var resources = [{
+		'parameters': {
+			'mapping': 'gnip_1'
+		}
+	}];
 
-// Deletes the new source
-function deleteSource(id) {
-
-	ds.source.delete({ "id": id }, 
-		function(err, response) {
-			if(err)
-				console.log(err);
-			else
-			{
-				console.log("Source deleted.");
-			}
-		});
+	ds.source.create({
+		'source_type': 'twitter_gnip',
+		'name': 'Example ODP Source',
+		'resources': JSON.stringify(resources)
+	}, function(err, response) {
+		if (err) {
+			console.log(err);
+		} else {
+			console.log('Created new source: \n' + response.id);
+			startSource(response.id);
+		}
+	});
 }
 
 // ## Initiate Process

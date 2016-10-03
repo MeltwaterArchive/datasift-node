@@ -1,5 +1,7 @@
 // #Example - Push Delivery
-// *How to setup and reliably deliver to a push destination. In this case we use a [Pull Destination](https://datasift.com/destination/pull) which provides a data buffer which you can pull data from whenever suits you. *
+// *How to setup and reliably deliver to a push destination. In this case we use 
+// a [Pull Destination](https://datasift.com/destination/pull) which provides a 
+// data buffer which you can pull data from whenever suits you. *
 
 // Require the DataSift library - **choose one of these**:
 var DataSift = require('datasift-node'); // When running from NPM package
@@ -12,63 +14,68 @@ var ds = new DataSift('YOUR_USERNAME', 'YOUR_APIKEY');
 var subscriptionId;
 
 // ## Declare Utility Methods
-// This method compiles CSDL to obtain a filter hash, then creates the pull destination:
-function compileFilter()
-{
-	ds.compile({ 'csdl': 'interaction.content contains "music"' }, function (err, response) {
-		if (err) 
+
+// Stops the destination:
+function stopPullDestination() {
+	'use strict';
+	ds.push.stop({
+		'id': subscriptionId
+	}, function(err) {
+		if (err) {
 			console.log(err);
-		else
-		{
-			console.log("Compiled filter hash: " + response.hash);
-			createPullDestination(response.hash);
+		} else {
+			console.log('Pull destination stopped.');
 		}
 	});
 }
 
-// Creates a Pull destination for the data:
-function createPullDestination(hash) 
-{
-	ds.push.create({ 
-			'hash': hash,
-			'name': "Example pull subscription",
-			'output_type': 'pull'
-		}, function(err, response) {
-			if (err) 
-				console.log(err);
-			else
-			{
-				subscriptionId = response.id;
-				console.log("Created subscription ID: " + subscriptionId);
-
-				console.log("Waiting 5 seconds before data pull...");
-				setTimeout(pullData, 5000);
-			}
-		});
-}
-
 // Pulls data from the destination buffer:
-function pullData()
-{
-	ds.pull({"id": subscriptionId}, function(err, response) {
-		if (err) 
+function pullData() {
+	'use strict';
+	ds.pull({
+		'id': subscriptionId
+	}, function(err, response) {
+		if (err) {
 			console.log(err);
-		else
-		{
-			console.log("Pulled data: " + JSON.stringify(response));
+		} else {
+			console.log('Pulled data: ' + JSON.stringify(response));
 			stopPullDestination();
 		}
 	});
 }
 
-// Stops the destination:
-function stopPullDestination()
-{
-	ds.push.stop({"id": subscriptionId}, function(err) {
-		if (err) 
+// Creates a Pull destination for the data:
+function createPullDestination(hash) {
+	'use strict';
+	ds.push.create({
+		'hash': hash,
+		'name': 'Example pull subscription',
+		'output_type': 'pull'
+	}, function(err, response) {
+		if (err) {
 			console.log(err);
-		else
-			console.log("Pull destination stopped.");
+		} else {
+			subscriptionId = response.id;
+			console.log('Created subscription ID: ' + subscriptionId);
+
+			console.log('Waiting 5 seconds before data pull...');
+			setTimeout(pullData, 5000);
+		}
+	});
+}
+
+// This method compiles CSDL to obtain a filter hash, then creates the pull destination:
+function compileFilter() {
+	'use strict';
+	ds.compile({
+		'csdl': 'interaction.content contains "music"'
+	}, function(err, response) {
+		if (err) {
+			console.log(err);
+		} else {
+			console.log('Compiled filter hash: ' + response.hash);
+			createPullDestination(response.hash);
+		}
 	});
 }
 

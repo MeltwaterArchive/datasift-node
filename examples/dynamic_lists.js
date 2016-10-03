@@ -16,134 +16,143 @@ var ds = new DataSift('YOUR_USERNAME', 'YOUR_APIKEY');
 var listId;
 
 // ## Declare Utility Methods
-// This method creates a dynamic list, then shows all lists you have:
-function create() {
 
-	ds.list.create({
-		"type": "integer",
-		"name": "Example integer list"
-	},function(err, response) {
-		if(err)
+// This method deletes the list
+function deleteList() {
+	'use strict';
+	ds.list.delete({
+		'id': listId
+	}, function(err) {
+		if (err) {
 			console.log(err);
-		else
-		{
-			listId = response.id;
-			console.log("Created list: " + response.id);
-			get();
-		}
-	});
-}
-
-// This method shows all lists you have, then adds items to a list:
-function get() {
-
-	ds.list.get(function(err, response) {
-		if(err)
-			console.log(err);
-		else {
-			console.log("Current lists: " + JSON.stringify(response));
-			add();
-		}
-	});
-}
-
-// This method adds items to the created list, then removes some items:
-function add() {
-	ds.list.add({
-		"id": listId,
-		"items": JSON.stringify([1,2,3,4,5])
-	},function(err,response) {
-		if(err)
-			console.log(err);
-		else {
-			console.log("Items have been added to the list.");
-			remove();
-		}
-	});
-}
-
-// This method removes items from the list, then checks for item existence:
-function remove() {
-	ds.list.remove({
-		"id": listId,
-		"items": JSON.stringify([1,2])
-	},function(err,response) {
-		if(err)
-			console.log(err);
-		else {
-			console.log("Items have been removed from the list.");
-			exists();
-		}
-	});
-}
-
-// This method checks for item existence in the list, then starts a bulk replace:
-function exists() {
-	ds.list.exists({
-		"id": listId,
-		"items": JSON.stringify([3,4])
-	},function(err,response) {
-		if(err)
-			console.log(err);
-		else {
-			console.log("Exists result: " + JSON.stringify(response));
-			replaceStart();
-		}
-	});
-}
-
-// This method starts a bulk replace, then performs the replace:
-function replaceStart() {
-	ds.list.replace.start({
-		"list_id": listId
-	},function(err,response) {
-		if(err)
-			console.log(err);
-		else {
-			console.log("Replace started");
-			replaceAdd(response.id);
-		}
-	});
-}
-
-// This method adds items during the bulk replace, then commits:
-function replaceAdd(replaceId) {
-	ds.list.replace.add({
-		"id": replaceId,
-		"items": JSON.stringify([1,2,3,4,5,6,7,8,9])
-	},function(err,response) {
-		if(err)
-			console.log(err);
-		else {
-			console.log("Replace completed");
-			replaceCommit(replaceId);
+		} else {
+			console.log('List deleted');
 		}
 	});
 }
 
 // This method commits the bulk replace, then deletes the list for cleanup:
 function replaceCommit(replaceId) {
+	'use strict';
 	ds.list.replace.commit({
-		"id": replaceId
-	},function(err,response) {
-		if(err)
+		'id': replaceId
+	}, function(err) {
+		if (err) {
 			console.log(err);
-		else {
-			console.log("Replace committed");
+		} else {
+			console.log('Replace committed');
 			deleteList();
 		}
 	});
 }
 
-// This method deletes the list
-function deleteList() {
-	ds.list.delete({
-		"id": listId
-	},function(err,response) {
-		if(err)
+// This method adds items during the bulk replace, then commits:
+function replaceAdd(replaceId) {
+	'use strict';
+	ds.list.replace.add({
+		'id': replaceId,
+		'items': JSON.stringify([1, 2, 3, 4, 5, 6, 7, 8, 9])
+	}, function(err) {
+		if (err) {
 			console.log(err);
-		else {
-			console.log("List deleted");
+		} else {
+			console.log('Replace completed');
+			replaceCommit(replaceId);
+		}
+	});
+}
+
+// This method starts a bulk replace, then performs the replace:
+function replaceStart() {
+	'use strict';
+	ds.list.replace.start({
+		'list_id': listId
+	}, function(err, response) {
+		if (err) {
+			console.log(err);
+		} else {
+			console.log('Replace started');
+			replaceAdd(response.id);
+		}
+	});
+}
+
+// This method checks for item existence in the list, then starts a bulk replace:
+function exists() {
+	'use strict';
+	ds.list.exists({
+		'id': listId,
+		'items': JSON.stringify([3, 4])
+	}, function(err, response) {
+		if (err) {
+			console.log(err);
+		} else {
+			console.log('Exists result: ' + JSON.stringify(response));
+			replaceStart();
+		}
+	});
+}
+
+// This method removes items from the list, then checks for item existence:
+function remove() {
+	'use strict';
+	ds.list.remove({
+		'id': listId,
+		'items': JSON.stringify([1, 2])
+	}, function(err) {
+		if (err) {
+			console.log(err);
+		} else {
+			console.log('Items have been removed from the list.');
+			exists();
+		}
+	});
+}
+
+// This method adds items to the created list, then removes some items:
+function add() {
+	'use strict';
+	ds.list.add({
+		'id': listId,
+		'items': JSON.stringify([1, 2, 3, 4, 5])
+	}, function(err) {
+		if (err) {
+			console.log(err);
+		} else {
+			console.log('Items have been added to the list.');
+			remove();
+		}
+	});
+}
+
+// This method shows all lists you have, then adds items to a list:
+function get() {
+	'use strict';
+	ds.list.get(function(err, response) {
+		if (err) {
+			console.log(err);
+		} else {
+			console.log('Current lists: ' + JSON.stringify(response));
+			add();
+		}
+	});
+}
+
+
+
+// This method creates a dynamic list, then shows all lists you have:
+function create() {
+	'use strict';
+	ds.list.create({
+		'type': 'integer',
+		'name': 'Example integer list'
+	}, function(err, response) {
+		if (err) {
+			console.log(err);
+		} else {
+			listId = response.id;
+			console.log('Created list: ' + response.id);
+			get();
 		}
 	});
 }

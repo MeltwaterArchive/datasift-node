@@ -11,42 +11,43 @@ var ds = new DataSift('YOUR_USERNAME', 'YOUR_APIKEY');
 // Validate and compile an example filter:
 var csdl = 'interaction.content contains "music"';
 
-ds.validate({ 'csdl': csdl }, function (err, response) {
-	if (err) 
+ds.validate({
+	'csdl': csdl
+}, function(err, response) {
+	'use strict';
+	if (err) {
 		console.log(err);
-	else
-	{
-		console.log("CSDL is valid, DPU cost = " + response.dpu);
+	} else {
+		console.log('CSDL is valid, DPU cost = ' + response.dpu);
 
-		ds.compile({ 'csdl': csdl }, function (err, response) {
-			if (err) 
+		ds.compile({
+			'csdl': csdl
+		}, function(err, response) {
+			if (err)
 				console.log(err);
-			else
-			{
-				console.log("Compiled filter hash: " + response.hash);
+			else {
+				console.log('Compiled filter hash: ' + response.hash);
 			}
 		});
 	}
 });
 
 // Query API for usage metrics:
-ds.usage(function(err,response) {
-	if (err) 
+ds.usage(function(err, response) {
+	'use strict';
+	if (err) {
 		console.log(err);
-	else
-	{
-		console.log("Usage = " + JSON.stringify(response));
+	} else {
+		console.log('Usage = ' + JSON.stringify(response));
 	}
 });
 
 // Query API for account balance:
-ds.balance(function(err,response) {
-	if (err) 
+ds.balance(function(err, response) {
+	'use strict';
+	if (err) {
 		console.log(err);
-	else
-	{
-		console.log("Balance = " + JSON.stringify(response));
+	} else {
+		console.log('Balance = ' + JSON.stringify(response));
 	}
 });
-
-

@@ -822,9 +822,13 @@
     },
     "pylon": {
         "get": {
-            "uri": "/pylon/get",
+            "uri": "/pylon/{{service}}/get",
             "method": "get",
             "params": [{
+                "name": "service",
+                "type": "string",
+                "required": true
+            }, {
                 "name": "id",
                 "type": "string",
                 "required": false
@@ -837,27 +841,39 @@
             }]
         },
         "validate": {
-            "uri": "/pylon/validate",
+            "uri": "/pylon/{{service}}/validate",
             "method": "post",
             "params": [{
+                "name": "service",
+                "type": "string",
+                "required": true
+            }, {
                 "name": "csdl",
                 "type": "string",
                 "required": true
             }]
         },
         "compile": {
-            "uri": "/pylon/compile",
+            "uri": "/pylon/{{service}}/compile",
             "method": "post",
             "params": [{
+                "name": "service",
+                "type": "string",
+                "required": true
+            }, {
                 "name": "csdl",
                 "type": "string",
                 "required": true
             }]
         },
         "start": {
-            "uri": "/pylon/start",
+            "uri": "/pylon/{{service}}/start",
             "method": "post",
             "params": [{
+                "name": "service",
+                "type": "string",
+                "required": true
+            }, {
                 "name": "id",
                 "type": "string",
                 "required": false
@@ -872,18 +888,26 @@
             }]
         },
         "stop": {
-            "uri": "/pylon/stop",
+            "uri": "/pylon/{{service}}/stop",
             "method": "post",
             "params": [{
+                "name": "service",
+                "type": "string",
+                "required": true
+            }, {
                 "name": "id",
                 "type": "string",
                 "required": true
             }]
         },
         "analyze": {
-            "uri": "/pylon/analyze",
+            "uri": "/pylon/{{service}}/analyze",
             "method": "post",
             "params": [{
+                "name": "service",
+                "type": "string",
+                "required": true
+            }, {
                 "name": "id",
                 "type": "string",
                 "required": true
@@ -906,18 +930,26 @@
             }]
         },
         "tags": {
-            "uri": "/pylon/tags",
+            "uri": "/pylon/{{service}}/tags",
             "method": "get",
             "params": [{
+                "name": "service",
+                "type": "string",
+                "required": true
+            }, {
                 "name": "id",
                 "type": "string",
                 "required": true
             }]
         },
         "sample": {
-            "uri": "/pylon/sample",
+            "uri": "/pylon/{{service}}/sample",
             "method": "post",
             "params": [{
+                "name": "service",
+                "type": "string",
+                "required": true
+            }, {
                 "name": "id",
                 "type": "string",
                 "required": true
@@ -940,9 +972,13 @@
             }]
         },
         "update": {
-            "uri": "/pylon/update",
+            "uri": "/pylon/{{service}}/update",
             "method": "put",
             "params": [{
+                "name": "service",
+                "type": "string",
+                "required": true
+            }, {
                 "name": "id",
                 "type": "string",
                 "required": true
