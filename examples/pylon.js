@@ -2,7 +2,7 @@
 // *How to perform Pylon API functions, such as creating recordings and performing analysis.*
 
 // Require the DataSift library - **choose one of these**:
-var DataSift = require('datasift-node'); // When running from NPM package
+//var DataSift = require('datasift-node'); // When running from NPM package
 var DataSift = require('../lib/datasift'); // When running within datasift-node repository
 
 // Require the async framework to help us with control flow
@@ -243,7 +243,7 @@ async.waterfall([
 					'target': 'fb.author.age'
 				}
 			},
-			'fb.author.gender == \'male\'',
+			'fb.author.gender == "male"',
 			callback);
 	},
 
