@@ -14,6 +14,9 @@ var ds = new DataSift('YOUR_USERNAME', 'YOUR_IDENTITY_APIKEY');
 // The PYLON service to use - **insert the service here**:
 var service = 'SERVICE';
 
+// This example runs a 'strategy' task for the Media Strategies API
+var task_type = 'strategy';
+
 // The PYLON recording to use - **insert the recording id here**:
 var subscriptionId = 'YOUR_RECORDING_ID';
 
@@ -27,7 +30,8 @@ var process = {
 	getTasks: function(callback) {
 		'use strict';
 		ds.task.list({
-			'service': service
+			'service': service,
+			'type': task_type
 		}, function(err, response) {
 			if (err) {
 				console.log(err);
@@ -44,15 +48,16 @@ var process = {
 		ds.task.create({
 			'service': service,
 			'subscription_id': subscriptionId,
-			'name': 'Time series analysis',
-			'type': 'analysis',
+			'name': 'Example task',
+			'type': task_type,
 			'parameters': {
+				'strategy': 'top_urls',
+				'version': 1,
 				'parameters': {
-					'analysis_type': 'timeSeries',
-					'parameters': {
-						'interval': 'hour',
-						'span': 1
-					}
+					'keywords': {
+						'any': ["cloud", "azure", "aws", "google cloud", "vmware"]
+					},
+					'comparison_audience': 'global'
 				}
 			}
 		}, function(err, response) {
@@ -71,6 +76,7 @@ var process = {
 		'use strict';
 		ds.task.get({
 			'service': service,
+			'type': task_type,
 			'id': taskId
 		}, function(err, response) {
 			if (err) {

@@ -66,6 +66,7 @@ The client library uses Grunt to run it's tests and will also lint the files. To
 
 ## Changelog
 
+- 1.5.0: Moved to v1.5 of the DataSift API, adding support for Media Strategies API.
 - 1.4.0: Moved to v1.4 of the DataSift API, adding Task API.
 - 1.3.0: Moved to v1.3 of the DataSift API, adding pylon/update endpoint.
 - 1.2.3: Added support for pylon/sample and account/usage endpoints
