@@ -1,3 +1,9 @@
+- - -
+
+**_This project is no longer actively maintained. Proceed at your own risk!_**
+
+- - -
+
 [![Build Status](https://travis-ci.org/datasift/datasift-node.svg?branch=master)](https://travis-ci.org/datasift/datasift-node)
 
 # DataSift Node Client Library
